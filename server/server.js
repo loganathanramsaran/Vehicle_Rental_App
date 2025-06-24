@@ -13,17 +13,37 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health check route
+app.get("/", (req, res) => {
+  res.send("🚗 Vehicle Rental API is running...");
+});
+
 // Routes
 const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);
+const vehicleRoutes = require("./routes/vehicleRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
 
-// Start server
+app.use("/api/auth", authRoutes);
+app.use("/api/vehicles", vehicleRoutes);
+app.use("/api/bookings", bookingRoutes);
+
+// Optional: Error handler middleware
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ error: "Something went wrong!" });
+});
+
+// MongoDB connection
+mongoose.set("strictQuery", false); // optional, helps with query warnings
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose
+  .connect(process.env.MONGO_URI)
   .then(() => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
   })
-  .catch((err) => console.error("MongoDB connection failed:", err));
+  .catch((err) => {
+    console.error("MongoDB connection failed:", err);
+  });
