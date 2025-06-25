@@ -50,4 +50,24 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
+router.delete("/:id", verifyToken, async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    if (booking.user.toString() !== req.user.id && !req.user.isAdmin) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await booking.deleteOne();
+    res.json({ message: "Booking deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Delete failed" });
+  }
+});
+
+
+
 module.exports = router;

@@ -34,4 +34,32 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// DELETE /api/vehicles/:id - Delete vehicle (admin only)
+router.delete("/:id", verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const deleted = await Vehicle.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: "Vehicle not found" });
+    res.json({ message: "Vehicle deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Delete failed" });
+  }
+});
+
+
+// PUT /api/vehicles/:id - Update vehicle (admin only)
+router.put("/:id", verifyToken, requireAdmin, async (req, res) => {
+  try {
+    const updated = await Vehicle.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ error: "Vehicle not found" });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+
+
 module.exports = router;
