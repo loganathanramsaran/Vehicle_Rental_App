@@ -8,19 +8,44 @@ router.post("/", verifyToken, async (req, res) => {
   try {
     const { vehicle, startDate, endDate, totalPrice } = req.body;
 
+    // Validate dates
+    if (new Date(startDate) >= new Date(endDate)) {
+      return res.status(400).json({ error: "End date must be after start date" });
+    }
+
+    // Check for overlapping bookings
+    const conflict = await Booking.findOne({
+      vehicle,
+      $or: [
+        {
+          startDate: { $lt: new Date(endDate) },
+          endDate: { $gt: new Date(startDate) },
+        },
+      ],
+    });
+
+    if (conflict) {
+      return res
+        .status(400)
+        .json({ error: "Vehicle already booked for the selected dates" });
+    }
+
+    // Create booking
     const booking = await Booking.create({
       vehicle,
-      user: req.user.id, // ✅ From decoded token
+      user: req.user.id,
       startDate,
       endDate,
-      totalPrice
+      totalPrice,
     });
 
     res.status(201).json({ message: "Booking created", booking });
   } catch (err) {
+    console.error("Booking failed:", err);
     res.status(500).json({ error: "Booking failed" });
   }
 });
+
 
 // ✅ PROTECTED: Get bookings by user ID
 router.get("/user/:userId", verifyToken, async (req, res) => {

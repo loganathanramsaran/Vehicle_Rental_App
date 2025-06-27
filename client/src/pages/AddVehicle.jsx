@@ -20,17 +20,27 @@ function AddVehicle() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:5000/api/vehicles", form);
-      alert("Vehicle added successfully!");
-      navigate("/vehicles");
-    } catch (err) {
-      console.error("Add vehicle error:", err);
-      alert("Failed to add vehicle");
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Unauthorized. Please log in again.");
+    return;
+  }
+
+  try {
+    await axios.post("http://localhost:5000/api/vehicles", form, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    alert("Vehicle added successfully!");
+    navigate("/vehicles");
+  } catch (err) {
+    console.error("Add vehicle error:", err);
+    alert("Failed to add vehicle");
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">

@@ -2,49 +2,66 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function BookVehicle() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [vehicle, setVehicle] = useState(null);
-  const [form, setForm] = useState({ startDate: "", endDate: "" });
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [bookedRanges, setBookedRanges] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/vehicles/${id}`)
-      .then((res) => setVehicle(res.data))
-      .catch((err) => console.error("Vehicle fetch error:", err));
-  }, [id]);
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`http://localhost:5000/api/vehicles/${id}`);
+        setVehicle(res.data);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+        const bookingsRes = await axios.get(`http://localhost:5000/api/bookings/vehicle/${id}`);
+        const ranges = bookingsRes.data.map((b) => ({
+          start: new Date(b.startDate),
+          end: new Date(b.endDate),
+        }));
+        setBookedRanges(ranges);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!startDate || !endDate) return alert("Please select both dates");
+
+    if (startDate > endDate) {
+      alert("Start date must be before end date.");
+      return;
+    }
+
     const token = localStorage.getItem("token");
     if (!token) return alert("Login required");
 
     const decoded = jwtDecode(token);
-    const start = new Date(form.startDate);
-    const end = new Date(form.endDate);
-    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-
+    const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
     const totalPrice = vehicle.pricePerDay * days;
 
     try {
-      await axios.post("http://localhost:5000/api/bookings", {
-        vehicle: id,
-        startDate: form.startDate,
-        endDate: form.endDate,
-        totalPrice,
-      },
-      {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }
-    );
+      await axios.post(
+        "http://localhost:5000/api/bookings",
+        {
+          vehicle: id,
+          startDate,
+          endDate,
+          totalPrice,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       alert("Booking successful!");
       navigate("/dashboard");
     } catch (err) {
@@ -75,21 +92,27 @@ function BookVehicle() {
         </p>
 
         <label className="block mb-2 text-sm">Start Date</label>
-        <input
-          type="date"
-          name="startDate"
+        <DatePicker
+          selected={startDate}
+          onChange={(date) => setStartDate(date)}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+          minDate={new Date()}
+          excludeDateIntervals={bookedRanges}
           className="w-full border px-3 py-2 rounded mb-4"
-          onChange={handleChange}
-          required
         />
 
         <label className="block mb-2 text-sm">End Date</label>
-        <input
-          type="date"
-          name="endDate"
+        <DatePicker
+          selected={endDate}
+          onChange={(date) => setEndDate(date)}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          minDate={startDate || new Date()}
+          excludeDateIntervals={bookedRanges}
           className="w-full border px-3 py-2 rounded mb-4"
-          onChange={handleChange}
-          required
         />
 
         <button

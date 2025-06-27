@@ -9,7 +9,8 @@ router.post("/", verifyToken, requireAdmin, async (req, res) => {
     const vehicle = await Vehicle.create(req.body);
     res.status(201).json(vehicle);
   } catch (err) {
-    res.status(500).json({ error: "Vehicle creation failed" });
+    console.error("Vehicle creation failed:", err);
+    res.status(500).json({ error: "Vehicle creation failed",details: err.message });
   }
 });
 
