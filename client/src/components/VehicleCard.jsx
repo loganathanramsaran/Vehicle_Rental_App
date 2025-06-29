@@ -17,6 +17,15 @@ function VehicleCard({ vehicle }) {
         {vehicle.make} {vehicle.model} ({vehicle.year})
       </p>
       <p className="text-gray-600 mb-1">📍 {vehicle.location}</p>
+
+       {/* ⭐ Average Rating  */}
+      {vehicle.averageRating !== null && (
+        <p className="text-yellow-600 font-medium text-sm mb-1">
+          ⭐ {vehicle.averageRating.toFixed(1)} / 5{" "}
+          <span className="text-gray-500">({vehicle.reviewCount} reviews)</span>
+        </p>
+      )}
+
       <p className="text-green-700 font-semibold mb-2">
         ₹{vehicle.pricePerDay} / day
       </p>

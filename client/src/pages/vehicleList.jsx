@@ -5,13 +5,14 @@ import VehicleCard from "../components/VehicleCard";
 function VehicleList() {
   const [vehicles, setVehicles] = useState([]);
   const [error, setError] = useState("");
+
   const [sortOption, setSortOption] = useState("");
   const [filterDates, setFilterDates] = useState({ start: "", end: "" });
-
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
+  const [minRating, setMinRating] = useState(0);
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -35,16 +36,29 @@ function VehicleList() {
     setFilterDates({ ...filterDates, [e.target.name]: e.target.value });
   };
 
-  // Sorting
+  const handleClearFilters = () => {
+    setSortOption("");
+    setFilterDates({ start: "", end: "" });
+    setSearch("");
+    setTypeFilter("");
+    setLocationFilter("");
+    setMaxPrice("");
+    setMinRating(0);
+  };
+
   const sortedVehicles = [...vehicles].sort((a, b) => {
     if (sortOption === "priceLowHigh") return a.pricePerDay - b.pricePerDay;
     if (sortOption === "priceHighLow") return b.pricePerDay - a.pricePerDay;
     if (sortOption === "yearNewOld") return b.year - a.year;
     if (sortOption === "yearOldNew") return a.year - b.year;
+    if (sortOption === "ratingHighLow") {
+      const aRating = typeof a.averageRating === "number" ? a.averageRating : 0;
+      const bRating = typeof b.averageRating === "number" ? b.averageRating : 0;
+      return bRating - aRating;
+    }
     return 0;
   });
 
-  // Filtering
   const filteredVehicles = sortedVehicles.filter((v) => {
     const matchesSearch =
       v.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -57,25 +71,30 @@ function VehicleList() {
       : true;
     const matchesPrice = maxPrice ? v.pricePerDay <= maxPrice : true;
     const matchesAvailability = v.available;
+    const matchesRating =
+      typeof v.averageRating === "number" ? v.averageRating >= minRating : true;
 
     return (
       matchesSearch &&
       matchesType &&
       matchesLocation &&
       matchesPrice &&
-      matchesAvailability
+      matchesAvailability &&
+      matchesRating
     );
   });
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">Available Vehicles</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">
+        Available Vehicles
+      </h1>
 
       {error && (
         <p className="text-center text-red-500 font-medium mb-4">{error}</p>
       )}
 
-      {/* Filters and Sorting */}
+      {/* Filters */}
       <div className="grid gap-4 grid-cols-1 md:grid-cols-3 lg:grid-cols-4 mb-6">
         <input
           type="text"
@@ -116,7 +135,7 @@ function VehicleList() {
         />
       </div>
 
-      {/* Sorting & Dates */}
+      {/* Sorting & Ratings & Dates */}
       <div className="flex flex-wrap gap-4 mb-6 justify-center">
         <select
           onChange={handleSortChange}
@@ -128,7 +147,23 @@ function VehicleList() {
           <option value="priceHighLow">Price: High to Low</option>
           <option value="yearNewOld">Year: New to Old</option>
           <option value="yearOldNew">Year: Old to New</option>
+          <option value="ratingHighLow">Rating: High to Low</option>
         </select>
+
+        <div>
+          <label className="block text-sm">Min Rating</label>
+          <select
+            value={minRating}
+            onChange={(e) => setMinRating(parseFloat(e.target.value))}
+            className="p-2 border rounded"
+          >
+            <option value={0}>All</option>
+            <option value={4}>4 ★ & above</option>
+            <option value={3}>3 ★ & above</option>
+            <option value={2}>2 ★ & above</option>
+            <option value={1}>1 ★ & above</option>
+          </select>
+        </div>
 
         <div>
           <label className="block text-sm text-center">Start Date</label>
@@ -153,18 +188,27 @@ function VehicleList() {
         </div>
       </div>
 
+      {/* Clear Filters Button */}
+      <div className="text-center mb-6">
+        <button
+          onClick={handleClearFilters}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
+        >
+          Clear All Filters
+        </button>
+      </div>
+
+      {/* Vehicle Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {filteredVehicles.length > 0 ? (
-          filteredVehicles.map((vehicle) => (
-            <VehicleCard key={vehicle._id} vehicle={vehicle} />
-          ))
-        ) : (
-          !error && (
-            <p className="text-center text-gray-600 col-span-full">
-              No vehicles match your criteria.
-            </p>
-          )
-        )}
+        {filteredVehicles.length > 0
+          ? filteredVehicles.map((vehicle) => (
+              <VehicleCard key={vehicle._id} vehicle={vehicle} />
+            ))
+          : !error && (
+              <p className="text-center text-gray-600 col-span-full">
+                No vehicles match your criteria.
+              </p>
+            )}
       </div>
     </div>
   );

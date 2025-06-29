@@ -1,5 +1,6 @@
 const express = require("express");
 const Vehicle = require("../models/Vehicle");
+const Review = require("../models/Review");
 const { verifyToken, requireAdmin } = require("../middleware/auth");
 const router = express.Router();
 
@@ -14,12 +15,31 @@ router.post("/", verifyToken, requireAdmin, async (req, res) => {
   }
 });
 
-// GET /api/vehicles - All vehicles
+// GET /api/vehicles - All vehicles with average rating
 router.get("/", async (req, res) => {
   try {
     const vehicles = await Vehicle.find();
-    res.json(vehicles);
+
+    // Fetch and attach average rating to each vehicle
+    const vehicleWithRatings = await Promise.all(
+      vehicles.map(async (vehicle) => {
+        const reviews = await Review.find({ vehicle: vehicle._id });
+        const avgRating =
+          reviews.length > 0
+            ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+            : null;
+
+        return {
+          ...vehicle.toObject(),
+          averageRating: avgRating,
+          reviewCount: reviews.length,
+        };
+      })
+    );
+
+    res.json(vehicleWithRatings);
   } catch (err) {
+    console.error("Error fetching vehicles with ratings:", err);
     res.status(500).json({ error: "Failed to fetch vehicles" });
   }
 });
