@@ -64,7 +64,7 @@ function BookVehicle() {
         }
       );
       alert("Booking successful!");
-      navigate("/dashboard");
+      navigate("/my-bookings");
     } catch (err) {
       console.error("Booking error:", err);
       alert("Booking failed.");

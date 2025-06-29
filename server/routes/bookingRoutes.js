@@ -87,9 +87,9 @@ router.delete("/:id", verifyToken, async (req, res) => {
     }
 
     await booking.deleteOne();
-    res.json({ message: "Booking deleted" });
+    res.json({ message: "Booking cancelled" });
   } catch (err) {
-    res.status(500).json({ error: "Delete failed" });
+    res.status(500).json({ error: "Failed to cancel booking" });
   }
 });
 

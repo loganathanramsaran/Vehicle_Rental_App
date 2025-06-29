@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
   isAdmin: {
     type: Boolean,
     default: false
+  },
+  avatar: {
+    type: String, // This stores the path to the image, e.g., "/uploads/avatars/user123.png"
+    default: ""   // Optional: you can set a default image path if needed
   }
 });
 
@@ -30,7 +34,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// Optional method to compare passwords
+// Compare entered password with hashed one
 userSchema.methods.comparePassword = async function (candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };

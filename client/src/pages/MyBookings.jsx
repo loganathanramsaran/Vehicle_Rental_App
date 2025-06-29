@@ -34,7 +34,7 @@ function MyBookings() {
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this booking?"))
+    if (!window.confirm("Are you sure you want to cancel this booking?"))
       return;
     setDeletingId(id);
     try {
@@ -45,10 +45,10 @@ function MyBookings() {
         },
       });
       setBookings((prev) => prev.filter((b) => b._id !== id));
-      alert("Booking deleted");
+      alert("Booking cancelled successfully");
     } catch (err) {
-      console.error("Delete failed:", err);
-      alert("Failed to delete booking");
+      console.error("cancel failed:", err);
+      alert("Failed to cancel booking");
     } finally {
       setDeletingId(null);
     }
@@ -102,7 +102,7 @@ function MyBookings() {
                 disabled={deletingId === booking._id}
                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mt-2 disabled:opacity-50"
               >
-                {deletingId === booking._id ? "Deleting..." : "Delete"}
+                {deletingId === booking._id ? "Cancelling..." : "Cancel Booking"}
               </button>
             </div>
           ))}
