@@ -1,12 +1,14 @@
 // src/App.jsx
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
 
+import About from './pages/About';
+import Services from './pages/Services';
+import Contact from './pages/Contact';
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import NavbarSidebarLayout from "./components/NavbarSidebarLayout";
 
 import VehicleList from "./pages/vehicleList";
 import AddVehicle from "./pages/AddVehicle";
@@ -16,24 +18,30 @@ import AdminBookings from "./pages/AdminBookings";
 import AdminVehicleList from "./pages/AdminVehicleList";
 import EditVehicle from "./pages/EditVehicle";
 import Profile from "./pages/Profile";
+import LandingPage from "./pages/LandingPage";
+
+import MainLayout from "./components/MainLayout"; // ✅ import layout
 
 function App() {
   return (
     <UserProvider>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<MainLayout><About /></MainLayout>} />
+        <Route path="/services" element={<MainLayout><Services /> </MainLayout>} />
+        <Route path="/contact" element={<MainLayout><Contact /> </MainLayout>} />
 
-        {/* Protected Routes with NavbarSidebarLayout */}
+        {/* Protected Routes with MainLayout */}
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <Dashboard />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -41,9 +49,9 @@ function App() {
           path="/vehicles"
           element={
             <ProtectedRoute>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <VehicleList />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -51,9 +59,9 @@ function App() {
           path="/add-vehicle"
           element={
             <ProtectedRoute adminOnly={true}>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <AddVehicle />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -61,9 +69,9 @@ function App() {
           path="/vehicles/:id/book"
           element={
             <ProtectedRoute>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <BookVehicle />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -71,9 +79,9 @@ function App() {
           path="/my-bookings"
           element={
             <ProtectedRoute adminOnly={false}>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <MyBookings />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -81,9 +89,9 @@ function App() {
           path="/admin/bookings"
           element={
             <ProtectedRoute adminOnly={true}>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <AdminBookings />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -91,9 +99,9 @@ function App() {
           path="/admin/vehicles"
           element={
             <ProtectedRoute adminOnly={true}>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <AdminVehicleList />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -101,9 +109,9 @@ function App() {
           path="/vehicles/edit/:id"
           element={
             <ProtectedRoute adminOnly={true}>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <EditVehicle />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
@@ -111,9 +119,9 @@ function App() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <NavbarSidebarLayout>
+              <MainLayout>
                 <Profile />
-              </NavbarSidebarLayout>
+              </MainLayout>
             </ProtectedRoute>
           }
         />
