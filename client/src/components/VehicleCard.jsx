@@ -8,7 +8,7 @@ function VehicleCard({ vehicle }) {
       <img
         src={vehicle.image || placeholderImage}
         alt={vehicle.title}
-        className="w-full h-40 object-cover rounded mb-3"
+        className="w-full h-28 object-cover rounded mb-3"
         onError={(e) => (e.target.src = placeholderImage)}
       />
 

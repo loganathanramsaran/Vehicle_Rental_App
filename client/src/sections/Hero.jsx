@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { ArrowRightCircle } from "lucide-react";
 import carImage from "../assets/blue-car.png";
 import HeroFilter from "./HeroFilter";
-import VehicleCard from "../components/VehicleCard"; // Ensure this exists
 import MiniVehicleCard from "./MiniVehicleCard";
 
 function Hero() {
