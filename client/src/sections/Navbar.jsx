@@ -34,6 +34,7 @@ function Navbar() {
     localStorage.removeItem("token");
     setUser(null);
     toast.success("Logged out successfully");
+    navigate("/");
   };
 
   const staticLinks = [

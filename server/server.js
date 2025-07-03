@@ -28,12 +28,18 @@ const vehicleRoutes = require("./routes/vehicleRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
 const userRoutes = require("./routes/userRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+const reminderJob = require("./reminderJob");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/payment", paymentRoutes);
+
+// Start reminder job
+reminderJob();
 
 // Error handler middleware
 app.use((err, req, res, next) => {

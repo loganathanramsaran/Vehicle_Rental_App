@@ -18,9 +18,8 @@ router.post("/", verifyToken, requireAdmin, async (req, res) => {
 // GET /api/vehicles - All vehicles with average rating
 router.get("/", async (req, res) => {
   try {
-    const vehicles = await Vehicle.find();
+    const vehicles = await Vehicle.find().lean();
 
-    // Fetch and attach average rating to each vehicle
     const vehicleWithRatings = await Promise.all(
       vehicles.map(async (vehicle) => {
         const reviews = await Review.find({ vehicle: vehicle._id });
@@ -30,8 +29,8 @@ router.get("/", async (req, res) => {
             : null;
 
         return {
-          ...vehicle.toObject(),
-          averageRating: avgRating,
+          ...vehicle,
+          averageRating: avgRating ? Number(avgRating.toFixed(1)) : null,
           reviewCount: reviews.length,
         };
       })
@@ -43,6 +42,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch vehicles" });
   }
 });
+
 
 // GET /api/vehicles/:id - Single vehicle
 router.get("/:id", async (req, res) => {

@@ -204,7 +204,7 @@ function VehicleList() {
 
       {/* Vehicle List */}
       <div className="flex-1">
-        <h1 className="text-3xl font-bold mb-6 text-center">Available Vehicles</h1>
+        <h1 className="text-3xl font-bold mt-2 mb-10 border-b-2 pb-6 text-center">Available Vehicles</h1>
         {error && <p className="text-center text-red-500 font-medium mb-4">{error}</p>}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredVehicles.length > 0 ? (
