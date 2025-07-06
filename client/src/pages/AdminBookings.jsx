@@ -49,17 +49,25 @@ function AdminBookings() {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:5000/api/bookings/${bookingId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      setBookings((prev) => prev.filter((b) => b._id !== bookingId));
-      alert("Booking cancelled successfully.");
+      await axios.put(
+        `http://localhost:5000/api/bookings/${bookingId}/cancel`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("Booking cancelled successfully");
+      // Refresh or filter list
+      setBookings((prev) =>
+        prev.map((b) =>
+          b._id === bookingId ? { ...b, status: "cancelled" } : b
+        )
+      );
     } catch (err) {
       console.error("Cancel error:", err);
-      alert("Failed to cancel booking.");
+      alert("Failed to cancel booking");
     }
   };
 
@@ -134,7 +142,7 @@ function AdminBookings() {
                 <p className="text-sm font-medium py-1">
                   <strong>Status:</strong>{" "}
                   <span
-                    className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
+                    className={`inline-block p-1 rounded text-xs font-semibold ${
                       booking.status === "confirmed"
                         ? "bg-green-100 text-green-700"
                         : "bg-red-100 text-red-600"
@@ -143,12 +151,14 @@ function AdminBookings() {
                     {booking.status}
                   </span>
                 </p>
-                <button
-                  onClick={() => handleCancelBooking(booking._id)}
-                  className="font-bold text-xs px-1 py-1 text-red-600 rounded-full hover:text-white hover:text-xs hover:bg-red-600"
-                >
-                  Cancel Booking
-                </button>
+                {booking.status !== "cancelled" && (
+                  <button
+                    onClick={() => handleCancelBooking(booking._id)}
+                    className="font-bold text-xs px-1 py-1 text-red-600 rounded hover:text-white hover:text-xs hover:bg-red-600"
+                  >
+                    Cancel Booking
+                  </button>
+                )}
               </div>
             </div>
           ))}

@@ -19,7 +19,7 @@ import AdminVehicleList from "./pages/AdminVehicleList";
 import EditVehicle from "./pages/EditVehicle";
 import Profile from "./pages/Profile";
 import LandingPage from "./pages/LandingPage";
-
+import VehicleDetails from "./pages/VehicleDetails";
 import MainLayout from "./components/MainLayout"; // ✅ import layout
 
 function App() {
@@ -33,6 +33,7 @@ function App() {
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
         <Route path="/services" element={<MainLayout><Services /> </MainLayout>} />
         <Route path="/contact" element={<MainLayout><Contact /> </MainLayout>} />
+        <Route path="/vehicle/:id" element={<VehicleDetails />} />
 
         
         {/* Protected Routes with MainLayout */}

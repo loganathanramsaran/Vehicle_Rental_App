@@ -4,7 +4,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import ReviewSection from "../components/ReviewSection"; 
+import ReviewSection from "../components/ReviewSection";
 
 function BookVehicle() {
   const { id } = useParams();
@@ -20,8 +20,14 @@ function BookVehicle() {
         const res = await axios.get(`http://localhost:5000/api/vehicles/${id}`);
         setVehicle(res.data);
 
-        const bookingsRes = await axios.get(`http://localhost:5000/api/bookings/vehicle/${id}`);
-        const ranges = bookingsRes.data.map((b) => ({
+        const bookingsRes = await axios.get(
+          `http://localhost:5000/api/bookings/vehicle/${id}`
+        );
+        const activeBookings = bookingsRes.data.filter(
+          (b) => b.status !== "cancelled"
+        );
+
+        const ranges = activeBookings.map((b) => ({
           start: new Date(b.startDate),
           end: new Date(b.endDate),
         }));
@@ -117,7 +123,8 @@ function BookVehicle() {
                   endDate,
                   totalPrice,
                   razorpayOrderId: response.razorpay_order_id,
-                  razorpayPaymentId: response.razorpay_payment_id,                },
+                  razorpayPaymentId: response.razorpay_payment_id,
+                },
                 {
                   headers: {
                     Authorization: `Bearer ${token}`,
@@ -161,7 +168,9 @@ function BookVehicle() {
     });
 
     if (isBooked) {
-      const el = document.querySelector(`[aria-label="${normalized.toDateString()}"]`);
+      const el = document.querySelector(
+        `[aria-label="${normalized.toDateString()}"]`
+      );
       if (el) el.setAttribute("title", "Booked");
     }
 
@@ -176,9 +185,10 @@ function BookVehicle() {
     );
   }
 
-  const totalDays = startDate && endDate
-    ? Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1
-    : 0;
+  const totalDays =
+    startDate && endDate
+      ? Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1
+      : 0;
 
   const totalPrice = totalDays * (vehicle?.pricePerDay || 0);
 
@@ -193,12 +203,16 @@ function BookVehicle() {
             Book Vehicle
           </h2>
 
-          <p className="font-semibold text-center dark:text-gray-200">{vehicle.title}</p>
+          <p className="font-semibold text-center dark:text-gray-200">
+            {vehicle.title}
+          </p>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-4">
             ₹{vehicle.pricePerDay}/day
           </p>
 
-          <label className="block mb-2 text-sm dark:text-gray-300">Start Date</label>
+          <label className="block mb-2 text-sm dark:text-gray-300">
+            Start Date
+          </label>
           <DatePicker
             selected={startDate}
             onChange={(date) => setStartDate(date)}
@@ -212,7 +226,9 @@ function BookVehicle() {
             className="w-full border px-3 py-2 rounded mb-4"
           />
 
-          <label className="block mb-2 text-sm dark:text-gray-300">End Date</label>
+          <label className="block mb-2 text-sm dark:text-gray-300">
+            End Date
+          </label>
           <DatePicker
             selected={endDate}
             onChange={(date) => setEndDate(date)}
@@ -231,12 +247,13 @@ function BookVehicle() {
               <p>
                 Selected:{" "}
                 <span className="font-medium">
-                  {startDate.toLocaleDateString()} → {endDate.toLocaleDateString()}
+                  {startDate.toLocaleDateString()} →{" "}
+                  {endDate.toLocaleDateString()}
                 </span>
               </p>
               <p>
-                Total Days:{" "}
-                <span className="font-medium">{totalDays}</span>, Total Price:{" "}
+                Total Days: <span className="font-medium">{totalDays}</span>,
+                Total Price:{" "}
                 <span className="font-semibold text-green-600 dark:text-green-400">
                   ₹{totalPrice}
                 </span>
@@ -246,10 +263,12 @@ function BookVehicle() {
 
           <div className="flex items-center gap-6 mb-4">
             <span className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <span className="w-4 h-4 bg-green-100 rounded border border-green-400 inline-block"></span> Available
+              <span className="w-4 h-4 bg-green-100 rounded border border-green-400 inline-block"></span>{" "}
+              Available
             </span>
             <span className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <span className="w-4 h-4 bg-red-200 rounded border border-red-400 inline-block"></span> Booked
+              <span className="w-4 h-4 bg-red-200 rounded border border-red-400 inline-block"></span>{" "}
+              Booked
             </span>
           </div>
 
@@ -259,9 +278,11 @@ function BookVehicle() {
           >
             Pay & Confirm Booking
           </button>
-          <p className="mt-2 text-gray-700 text-sm text-center">Please wait a moment for Confirm Your Booking after payment successful..!</p>
+          <p className="mt-2 text-gray-700 text-sm text-center">
+            Please wait a moment for Confirm Your Booking after payment
+            successful..!
+          </p>
         </form>
-
       </div>
 
       <ReviewSection className="max-w-4xl mx-auto" vehicleId={id} />

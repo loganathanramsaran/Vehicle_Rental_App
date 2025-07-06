@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 function VehicleCard({ vehicle }) {
-  const placeholderImage = "https://via.placeholder.com/300x200?text=No+Image";
+  const placeholderImage = "/placeholder.png";
 
   return (
     <div className="bg-white dark:bg-gray-700 shadow rounded p-4 hover:shadow-lg transition">

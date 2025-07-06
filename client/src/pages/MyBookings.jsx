@@ -36,21 +36,24 @@ function MyBookings() {
   }, [SERVER_URL]);
 
   const handleCancel = async (id) => {
-    if (!window.confirm("Are you sure you want to cancel this booking?")) return;
+    if (!window.confirm("Are you sure you want to cancel this booking?"))
+      return;
     setDeletingId(id);
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`${SERVER_URL}/api/bookings/${id}/cancel`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.put(
+        `${SERVER_URL}/api/bookings/${id}/cancel`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       // Update booking status locally instead of removing
       setBookings((prev) =>
-        prev.map((b) =>
-          b._id === id ? { ...b, status: "cancelled" } : b
-        )
+        prev.map((b) => (b._id === id ? { ...b, status: "cancelled" } : b))
       );
 
       alert("Booking cancelled successfully");
@@ -73,47 +76,83 @@ function MyBookings() {
       {bookings.length === 0 ? (
         <p className="text-center text-gray-500">You have no bookings.</p>
       ) : (
-        <div className="grid gap-4">
+        <div className="grid max-w-4xl mx-auto gap-4">
           {bookings.map((booking) => (
             <div
               key={booking._id}
               className={`shadow p-4 rounded ${
                 booking.status === "cancelled"
-                  ? "bg-red-100 dark:bg-red-300 text-gray-700"
-                  : "bg-white dark:bg-gray-600 dark:text-white"
+                  ? "bg-red-200 dark:bg-gray-700 text-gray-700 dark:text-gray-500"
+                  : "bg-green-200 dark:bg-gray-600 dark:text-white"
               }`}
             >
-              <h2 className="text-lg font-semibold mb-2">
-                {booking.vehicle?.title || "Vehicle Info Unavailable"}
-              </h2>
+              <div className="flex max-sm:flex-col justify-evenly items-center">
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">
+                    {booking.vehicle?.title || "Vehicle Info Unavailable"}
+                  </h2>
 
-              {booking.vehicle?.image ? (
-                <img
-                  src={booking.vehicle.image}
-                  alt={booking.vehicle.title || "No image"}
-                  onError={(e) => (e.target.src = "/placeholder.png")}
-                  className="w-full h-40 object-cover mb-2 rounded"
-                />
-              ) : (
-                <div className="w-full h-40 bg-gray-200 flex items-center justify-center text-gray-500 rounded mb-2">
-                  No image
+                  {booking.vehicle?.image ? (
+                    <img
+                      src={booking.vehicle.image}
+                      alt={booking.vehicle.title || "No image"}
+                      onError={(e) => (e.target.src = "/placeholder.png")}
+                      className="w-fit h-36 object-cover mb-2 rounded"
+                    />
+                  ) : (
+                    <div className="w-full h-40 bg-gray-200 flex items-center justify-center text-gray-500 rounded mb-2">
+                      No image
+                    </div>
+                  )}
                 </div>
-              )}
+                <div className="flex flex-col gap-1">
+                  <p>
+                    <strong>From:</strong>{" "}
+                    {new Date(booking.startDate).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>To:</strong>{" "}
+                    {new Date(booking.endDate).toLocaleDateString()}
+                  </p>
+                  <p>
+                    <strong>Total Price:</strong> ₹{booking.totalPrice}
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {booking.status}
+                  </p>
+                  <td
+                    className={` font-bold ${
+                      booking.status === "confirmed"
+                        ? "text-green-600"
+                        : booking.status === "pending"
+                        ? "text-yellow-600"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {booking.payment?.status || booking.status}
+                  </td>
+                </div>
+                <div className="flex flex-col items-center ">
+                  <a
+                    href={`/vehicle/${booking.vehicle._id}`}
+                    className="text-blue-500 underline"
+                  >
+                    View Vehicle
+                  </a>
 
-              <p><strong>From:</strong> {new Date(booking.startDate).toLocaleDateString()}</p>
-              <p><strong>To:</strong> {new Date(booking.endDate).toLocaleDateString()}</p>
-              <p><strong>Total Price:</strong> ₹{booking.totalPrice}</p>
-              <p><strong>Status:</strong> {booking.status}</p>
-
-              {booking.status !== "cancelled" && (
-                <button
-                  onClick={() => handleCancel(booking._id)}
-                  disabled={deletingId === booking._id}
-                  className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mt-2 disabled:opacity-50"
-                >
-                  {deletingId === booking._id ? "Cancelling..." : "Cancel Booking"}
-                </button>
-              )}
+                  {booking.status !== "cancelled" && (
+                    <button
+                      onClick={() => handleCancel(booking._id)}
+                      disabled={deletingId === booking._id}
+                      className="bg-red-500 hover:bg-red-600 text-white text-sm px-1 py-1 rounded mt-2 disabled:opacity-50"
+                    >
+                      {deletingId === booking._id
+                        ? "Cancelling..."
+                        : "Cancel Booking"}
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           ))}
         </div>

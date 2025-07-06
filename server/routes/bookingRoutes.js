@@ -28,14 +28,16 @@ router.post("/", verifyToken, async (req, res) => {
 
     // Check for overlapping bookings
     const conflict = await Booking.findOne({
-      vehicle,
-      $or: [
-        {
-          startDate: { $lt: new Date(endDate) },
-          endDate: { $gt: new Date(startDate) },
-        },
-      ],
-    });
+  vehicle,
+  status: { $ne: "cancelled" }, // exclude cancelled bookings
+  $or: [
+    {
+      startDate: { $lt: new Date(endDate) },
+      endDate: { $gt: new Date(startDate) },
+    },
+  ],
+});
+
 
     if (conflict) {
       return res
@@ -128,13 +130,32 @@ router.get("/", verifyToken, async (req, res) => {
 
 router.put("/:id/cancel", verifyToken, async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate("payment user");
-    if (!booking) return res.status(404).json({ error: "Booking not found" });
+    let booking = await Booking.findById(req.params.id)
+      .populate("payment")
+      .populate("user");
 
-    if (booking.user._id.toString() !== req.user.id && !req.user.isAdmin) {
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" });
+    }
+
+    // ✅ Defensive check for missing user
+    if (!booking.user) {
+      const fallbackUser = await User.findById(booking.user);
+      if (!fallbackUser) {
+        return res.status(400).json({ error: "User not found for booking" });
+      }
+      booking.user = fallbackUser;
+    }
+
+    // ✅ Auth check: only user or admin can cancel
+    if (
+      booking.user._id.toString() !== req.user.id &&
+      !req.user.isAdmin
+    ) {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
+    // ✅ Update booking and payment
     booking.status = "cancelled";
     await booking.save();
 
@@ -148,12 +169,12 @@ router.put("/:id/cancel", verifyToken, async (req, res) => {
       subject: "❌ Booking Cancelled",
       html: `
         <h2>Booking Cancelled</h2>
-        <p>Your booking has been cancelled successfully.</p>
-        <p>Booking ID: ${booking._id}</p>
+        <p>Your booking has been successfully cancelled.</p>
+        <p><strong>Booking ID:</strong> ${booking._id}</p>
       `,
     });
 
-    res.json({ message: "Booking cancelled and payment status updated." });
+    res.json({ message: "Booking cancelled successfully" });
   } catch (err) {
     console.error("Cancel error:", err);
     res.status(500).json({ error: "Failed to cancel booking" });

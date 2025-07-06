@@ -7,7 +7,6 @@ import Footer from "../sections/Footer";
 import About from "../pages/About";
 import Services from "../pages/Services";
 import Contact from "../pages/Contact";
-import PaymentHistory from "../pages/PaymentHistory";
 
 const LandingPage = () => {
   return (
@@ -21,7 +20,6 @@ const LandingPage = () => {
         <About />
         <Services />
         <Contact />
-        <PaymentHistory />
         <Footer />
       </main>
     </div>
