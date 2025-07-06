@@ -1,11 +1,12 @@
 const express = require("express");
-const router = express.Router();
 const Booking = require("../models/Booking");
-const { verifyToken } = require("../middleware/auth"); 
+const { verifyToken } = require("../middleware/auth");
 const sendEmail = require("../utils/sendEmail");
 const User = require("../models/User");
-const Payment = require("../models/payment"); 
+const Payment = require("../models/payment");
 const Vehicle = require("../models/Vehicle"); // top of file
+
+const router = express.Router();
 
 router.post("/", verifyToken, async (req, res) => {
   try {
@@ -66,17 +67,23 @@ router.post("/", verifyToken, async (req, res) => {
     const user = await User.findById(req.user.id);
     const vehicleData = await Vehicle.findById(vehicle);
     await sendEmail({
-  to: user.email,
-  subject: "✅ Booking Confirmation",
-  html: `
+      to: user.email,
+      subject: "✅ Booking Confirmation",
+      html: `
     <h2>Booking Confirmed!</h2>
     <p>Hi ${user.name},</p>
-    <p>Your booking for <strong>${vehicleData.title}</strong> from <strong>${new Date(startDate).toLocaleDateString()}</strong> to <strong>${new Date(endDate).toLocaleDateString()}</strong> is confirmed.</p>
+    <p>Your booking for <strong>${
+      vehicleData.title
+    }</strong> from <strong>${new Date(
+        startDate
+      ).toLocaleDateString()}</strong> to <strong>${new Date(
+        endDate
+      ).toLocaleDateString()}</strong> is confirmed.</p>
     <p>Total: ₹${totalPrice}</p>
     <br/>
     <p>Thank you for using Vehicle Rental!</p>
   `,
-});
+    });
 
     return res.status(201).json({ message: "Booking created", booking });
   } catch (err) {
@@ -119,33 +126,36 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
-router.delete("/:id", verifyToken, async (req, res) => {
+router.put("/:id/cancel", verifyToken, async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id);
-    if (!booking) {
-      return res.status(404).json({ error: "Booking not found" });
-    }
+    const booking = await Booking.findById(req.params.id).populate("payment user");
+    if (!booking) return res.status(404).json({ error: "Booking not found" });
 
-    if (booking.user.toString() !== req.user.id && !req.user.isAdmin) {
+    if (booking.user._id.toString() !== req.user.id && !req.user.isAdmin) {
       return res.status(403).json({ error: "Unauthorized" });
     }
 
-    await booking.deleteOne();
-    res.json({ message: "Booking cancelled" });
+    booking.status = "cancelled";
+    await booking.save();
 
-    const user = await User.findById(booking.user);
+    if (booking.payment) {
+      booking.payment.status = "cancelled";
+      await booking.payment.save();
+    }
 
     await sendEmail({
-      to: user.email,
+      to: booking.user.email,
       subject: "❌ Booking Cancelled",
       html: `
-    <h2>Booking Cancelled</h2>
-    <p>Hi ${user.name},</p>
-    <p>Your booking has been successfully cancelled.</p>
-    <p>Booking ID: ${booking._id}</p>
-  `,
+        <h2>Booking Cancelled</h2>
+        <p>Your booking has been cancelled successfully.</p>
+        <p>Booking ID: ${booking._id}</p>
+      `,
     });
+
+    res.json({ message: "Booking cancelled and payment status updated." });
   } catch (err) {
+    console.error("Cancel error:", err);
     res.status(500).json({ error: "Failed to cancel booking" });
   }
 });
@@ -157,6 +167,33 @@ router.get("/vehicle/:vehicleId", async (req, res) => {
     res.json(bookings);
   } catch (err) {
     console.error("Error fetching bookings for vehicle:", err);
+    res.status(500).json({ error: "Failed to fetch bookings" });
+  }
+});
+
+router.get("/history", verifyToken, async (req, res) => {
+  try {
+    const bookings = await Booking.find({ userId: req.user.id })
+      .populate("vehicleId", "title image type")
+      .sort({ createdAt: -1 });
+
+    res.json(bookings);
+  } catch (err) {
+    console.error("Fetch history failed", err);
+    res.status(500).json({ error: "Failed to fetch booking history" });
+  }
+});
+
+router.get("/mine", verifyToken, async (req, res) => {
+  try {
+    const bookings = await Booking.find({ user: req.user.id })
+      .populate("vehicle", "title")
+      .populate("payment", "razorpayPaymentId amount status createdAt")
+      .sort({ startDate: -1 });
+
+    res.json(bookings);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Failed to fetch bookings" });
   }
 });

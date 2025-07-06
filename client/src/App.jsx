@@ -9,7 +9,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import PaymentHistory from "./pages/PaymentHistory";
 import VehicleList from "./pages/vehicleList";
 import AddVehicle from "./pages/AddVehicle";
 import BookVehicle from "./pages/BookVehicle";
@@ -33,6 +33,7 @@ function App() {
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
         <Route path="/services" element={<MainLayout><Services /> </MainLayout>} />
         <Route path="/contact" element={<MainLayout><Contact /> </MainLayout>} />
+
         
         {/* Protected Routes with MainLayout */}
         <Route
@@ -121,6 +122,16 @@ function App() {
             <ProtectedRoute>
               <MainLayout>
                 <Profile />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/paymenthistory"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <PaymentHistory />
               </MainLayout>
             </ProtectedRoute>
           }

@@ -19,7 +19,7 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <section className="bg-gray-100 dark:bg-gray-900 pb-16">
+    <section className="bg-gray-100 dark:bg-gray-900 py-16">
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-3xl sm:text-4xl font-bold text-center text-orange-600 mb-10">
           What Our Customers Say

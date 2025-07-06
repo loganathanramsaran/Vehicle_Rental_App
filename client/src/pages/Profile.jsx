@@ -142,7 +142,7 @@ function Profile() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-700 rounded shadow">
       <h2 className="text-xl font-bold mb-4">My Profile</h2>
       {message && <p className="text-green-600 mb-4">{message}</p>}
 
@@ -153,7 +153,7 @@ function Profile() {
             name="name"
             value={form.name}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded dark:bg-slate-800 dark:text-white"
             required
           />
         </div>
@@ -163,7 +163,7 @@ function Profile() {
           <input
             value={profile.email}
             readOnly
-            className="w-full border bg-gray-100 px-3 py-2 rounded"
+            className="w-full border bg-gray-100 px-3 py-2 rounded dark:bg-slate-800 dark:text-white"
           />
         </div>
 
@@ -173,7 +173,7 @@ function Profile() {
             name="address"
             value={form.address}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded dark:bg-slate-800 dark:text-white"
             placeholder="123 Main St"
             required
           />
@@ -185,7 +185,7 @@ function Profile() {
             name="aadhar"
             value={form.aadhar}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded dark:bg-slate-800 dark:text-white"
             maxLength={14}
             pattern="\d{4}\s?\d{4}\s?\d{4}"
             title="Enter a valid 12-digit Aadhaar number"
@@ -199,7 +199,7 @@ function Profile() {
             name="mobile"
             value={form.mobile}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded dark:bg-slate-800 dark:text-white"
             maxLength={10}
             pattern="[6-9]{1}[0-9]{9}"
             title="Enter a valid 10-digit mobile number"
@@ -213,10 +213,10 @@ function Profile() {
             <img
               src={avatarPreview}
               alt="avatar"
-              className="w-24 h-24 object-cover rounded-full mb-2"
+              className="w-24 h-24 object-cover rounded-full mb-2 "
             />
           ) : (
-            <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 mb-2">
+            <div className="w-24 h-24 bg-gray-200 dark:bg-slate-800 dark:text-white rounded-full flex items-center justify-center text-gray-500 mb-2">
               No Avatar
             </div>
           )}
@@ -224,7 +224,7 @@ function Profile() {
             type="file"
             accept="image/*"
             onChange={handleAvatarChange}
-            className="block"
+            className="block "
           />
         </div>
 

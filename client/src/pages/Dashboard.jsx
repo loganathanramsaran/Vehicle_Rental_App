@@ -25,7 +25,7 @@ function Dashboard() {
   const role = user.isAdmin ? "Admin" : "User";
 
   const cardStyle =
-    "rounded-lg shadow-lg p-6 bg-white dark:bg-gray-400 dark:hover:bg-gray-500 dark:hover:text-white hover:bg-orange-400 hover:text-white transition flex flex-col justify-between items-center text-center";
+    "rounded-lg shadow-lg p-6 dark:bg-gray-400 dark:hover:bg-gray-500 dark:hover:text-white hover:text-white transition flex flex-col justify-between items-center text-center";
 
   const ActionCard = ({ to, label, icon, color }) => (
     <Link
@@ -75,17 +75,18 @@ function Dashboard() {
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {user.isAdmin ? (
           <>
-            <ActionCard to="/add-vehicle" label="Add Vehicle" icon={addVehicle} color="bg-yellow-50" />
-            <ActionCard to="/admin/vehicles" label="Manage Vehicles" icon={manageVehicle} color="bg-blue-50" />
-            <ActionCard to="/admin/bookings" label="View All Bookings" icon={viewAllBookings} color="bg-purple-50" />
+            <ActionCard to="/add-vehicle" label="Add Vehicle" icon={addVehicle} color="bg-yellow-500 hover:bg-yellow-600" />
+            <ActionCard to="/admin/vehicles" label="Manage Vehicles" icon={manageVehicle} color="bg-blue-500 hover:bg-blue-600" />
+            <ActionCard to="/admin/bookings" label="View All Bookings" icon={viewAllBookings} color="bg-purple-500 hover:bg-purple-600" />
           </>
         ) : (
           <>
-            <ActionCard to="/vehicles" label="Browse Vehicles" icon={browseVehicles} color="bg-blue-50" />
-            <ActionCard to="/my-bookings" label="My Bookings" icon={myBookings} color="bg-purple-50" />
+            <ActionCard to="/vehicles" label="Browse Vehicles" icon={browseVehicles} color="bg-yellow-500 hover:bg-yellow-600" />
+            <ActionCard to="/my-bookings" label="My Bookings" icon={myBookings} color="bg-blue-500 hover:bg-blue-600" />
+            <ActionCard to="/paymenthistory" label="Bookings History" icon={myBookings} color="bg-purple-500 hover:bg-purple-600" />
           </>
         )}
-        <ActionCard to="/profile" label="Edit Profile" icon={editProfile} color="bg-gray-100" />
+        <ActionCard to="/profile" label="Edit Profile" icon={editProfile} color="bg-green-500 hover:bg-green-600" />
       </div>
     </div>
   );
