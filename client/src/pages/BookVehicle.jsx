@@ -4,7 +4,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import ReviewSection from "../components/ReviewSection";
+import ReviewSection from "../components/ReviewSection"; 
 
 function BookVehicle() {
   const { id } = useParams();
@@ -259,9 +259,12 @@ function BookVehicle() {
           >
             Pay & Confirm Booking
           </button>
+          <p className="mt-2 text-gray-700 text-sm text-center">Please wait a moment for Confirm Your Booking after payment successful..!</p>
         </form>
 
       </div>
+
+      <ReviewSection className="max-w-4xl mx-auto" vehicleId={id} />
     </div>
   );
 }

@@ -4,7 +4,7 @@ function MiniVehicleCard({ vehicle }) {
   const placeholderImage = "https://via.placeholder.com/300x200?text=No+Image";
 
   return (
-    <div className="min-w-[250px] max-w-[250px] bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden flex-shrink-0">
+    <div className="min-w-[250px] max-w-[250px] bg-orange-100 dark:bg-gray-800 shadow-md rounded-lg overflow-hidden flex-shrink-0">
       <img
         src={vehicle.image || placeholderImage}
         alt={vehicle.title}
@@ -21,7 +21,7 @@ function MiniVehicleCard({ vehicle }) {
           {vehicle.make} {vehicle.model} ({vehicle.year})
         </p>
 
-        <p className="text-sm text-green-600 font-medium mt-1">
+        <p className="text-sm text-orange-700 font-medium mt-1">
           ₹{vehicle.pricePerDay}/day
         </p>
 
@@ -29,7 +29,7 @@ function MiniVehicleCard({ vehicle }) {
           <button
             className={`w-full mt-2 py-1 text-sm rounded text-white transition ${
               vehicle.available
-                ? "bg-green-600 hover:bg-green-700"
+                ? "bg-orange-500 hover:bg-orange-600"
                 : "bg-gray-400 cursor-not-allowed"
             }`}
             disabled={!vehicle.available}

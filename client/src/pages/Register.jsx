@@ -1,17 +1,49 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 
 function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    address: "",
+    aadhar: "",
+    mobile: "",
+    otp: "",
+  });
+
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [step, setStep] = useState(1); // 1 = Email step, 2 = OTP + full form
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
+
+  const sendOtp = async () => {
+    setError("");
+    if (!form.email || !form.name) {
+      return setError("Please enter your name and email first.");
+    }
+
+    try {
+      setLoading(true);
+      const res = await axios.post("http://localhost:5000/api/auth/send-otp", {
+        email: form.email,
+        name: form.name,
+      });
+      alert("OTP sent to your email");
+      setStep(2); // go to next step
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to send OTP.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,10 +51,10 @@ function Register() {
     setLoading(true);
     try {
       await axios.post("http://localhost:5000/api/auth/register", form);
-      alert("Registration successful! You can now login.");
+      alert("Registration successful! You can now log in.");
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.error || "Registration failed");
+      setError(err.response?.data?.error || "Registration failed.");
     } finally {
       setLoading(false);
     }
@@ -30,67 +62,122 @@ function Register() {
 
   return (
     <AuthLayout
-      side="right"
-      title="Join RentalApp"
-      message="Sign up to book vehicles, manage trips and more."
-      image="https://cdn-icons-png.flaticon.com/512/3917/3917241.png"
-      linkText="Already have an account? Login here"
+      title="Create Your Account"
+      message="Sign up to rent vehicles and more."
+      linkText="Already have an account? Login"
       linkTo="/login"
+      image="https://cdn-icons-png.flaticon.com/512/3917/3917241.png"
+      side="right"
     >
-      <h2 className="text-2xl font-bold text-blue-700 text-center mb-6">Create Your Account</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <h2 className="text-xl font-bold text-orange-600 text-center">Register</h2>
 
-      {error && <p className="bg-red-100 text-red-600 px-4 py-2 rounded mb-4 text-sm">{error}</p>}
+        {error && (
+          <p className="bg-red-100 text-red-700 px-3 py-2 rounded">{error}</p>
+        )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
         <input
           name="name"
           type="text"
-          placeholder="John Doe"
-          autoComplete="name"
-          className="w-full border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-blue-500"
+          placeholder="Full Name"
+          value={form.name}
           onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
           required
         />
-
         <input
           name="email"
           type="email"
-          placeholder="you@example.com"
-          autoComplete="email"
-          className="w-full border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-blue-500"
+          placeholder="Email Address"
+          value={form.email}
           onChange={handleChange}
+          className="w-full border px-3 py-2 rounded"
           required
         />
 
-        <div className="relative">
-          <input
-            name="password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Create a password"
-            autoComplete="new-password"
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-blue-500"
-            onChange={handleChange}
-            required
-          />
+        {step === 1 ? (
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-            tabIndex={-1}
+            onClick={sendOtp}
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
           >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            {loading ? "Sending OTP..." : "Send OTP"}
           </button>
-        </div>
+        ) : (
+          <>
+            <input
+              name="otp"
+              type="text"
+              placeholder="Enter OTP"
+              value={form.otp}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              required
+            />
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-2 rounded text-white transition ${
-            loading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
-          }`}
-        >
-          {loading ? "Registering..." : "Register"}
-        </button>
+            <div className="relative">
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+
+            <input
+              name="address"
+              type="text"
+              placeholder="Address"
+              value={form.address}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              required
+            />
+
+            <input
+              name="aadhar"
+              type="text"
+              placeholder="Aadhaar Number"
+              value={form.aadhar}
+              maxLength={14}
+              pattern="\d{4}\s?\d{4}\s?\d{4}"
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              required
+            />
+
+            <input
+              name="mobile"
+              type="tel"
+              placeholder="Mobile Number"
+              value={form.mobile}
+              pattern="[6-9]{1}[0-9]{9}"
+              maxLength={10}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              required
+            />
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-orange-600 text-white py-2 rounded hover:bg-orange-700"
+            >
+              {loading ? "Registering..." : "Register"}
+            </button>
+          </>
+        )}
       </form>
     </AuthLayout>
   );

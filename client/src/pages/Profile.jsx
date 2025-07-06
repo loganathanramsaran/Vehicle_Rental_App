@@ -5,13 +5,19 @@ import { UserContext } from "../context/UserContext";
 
 function Profile() {
   const [profile, setProfile] = useState({ name: "", email: "", avatar: "" });
-  const [form, setForm] = useState({ name: "", password: "" });
+  const [form, setForm] = useState({ name: "", address: "", aadhar: "", mobile: "" });
   const [avatarPreview, setAvatarPreview] = useState("");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const { fetchUser } = useContext(UserContext);
 
   const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
+
+  // For password update
+  const [showPasswordSection, setShowPasswordSection] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [passwordMessage, setPasswordMessage] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -21,10 +27,15 @@ function Profile() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        setProfile(res.data);
-        setForm({ name: res.data.name, password: "" });
-        if (res.data.avatar) {
-          setAvatarPreview(`${SERVER_URL}${res.data.avatar}`);
+        setProfile(res.data.user);
+        setForm({
+          name: res.data.user.name,
+          address: res.data.user.address || "",
+          aadhar: res.data.user.aadhar || "",
+          mobile: res.data.user.mobile || "",
+        });
+        if (res.data.user.avatar) {
+          setAvatarPreview(`${SERVER_URL}${res.data.user.avatar}`);
         }
       } catch (err) {
         console.error("Profile fetch failed", err);
@@ -48,7 +59,7 @@ function Profile() {
       setProfile(res.data);
       setMessage("Profile updated successfully ✅");
 
-      await fetchUser(); // 👈 sync context
+      await fetchUser();
 
       setTimeout(() => {
         setMessage("");
@@ -77,7 +88,7 @@ function Profile() {
       setAvatarPreview(`${SERVER_URL}${res.data.avatar}`);
       setMessage("Avatar updated ✅");
 
-      await fetchUser(); // 👈 sync context after avatar change
+      await fetchUser();
     } catch (err) {
       console.error("Avatar upload error", err);
       setMessage("Avatar upload failed ❌");
@@ -95,6 +106,38 @@ function Profile() {
     } catch (err) {
       console.error("Delete error", err);
       alert("Delete failed");
+    }
+  };
+
+  const requestOtp = async () => {
+    try {
+      const res = await axios.post(`${SERVER_URL}/api/user/request-password-otp`, {}, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setPasswordMessage(res.data.message);
+      setShowPasswordSection(true);
+    } catch (err) {
+      console.error("OTP request error", err);
+      setPasswordMessage("Failed to send OTP ❌");
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.put(`${SERVER_URL}/api/user/change-password`, {
+        otp,
+        newPassword,
+      }, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      setPasswordMessage("Password updated successfully ✅");
+      setOtp("");
+      setNewPassword("");
+      setShowPasswordSection(false);
+    } catch (err) {
+      console.error("Password update error", err);
+      setPasswordMessage(err.response?.data?.error || "Failed to update password ❌");
     }
   };
 
@@ -125,14 +168,42 @@ function Profile() {
         </div>
 
         <div>
-          <label className="block font-medium">New Password</label>
+          <label className="block font-medium">Address</label>
           <input
-            name="password"
-            type="password"
-            value={form.password}
+            name="address"
+            value={form.address}
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded"
-            placeholder="Leave blank to keep current"
+            placeholder="123 Main St"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium">Aadhaar Number</label>
+          <input
+            name="aadhar"
+            value={form.aadhar}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            maxLength={14}
+            pattern="\d{4}\s?\d{4}\s?\d{4}"
+            title="Enter a valid 12-digit Aadhaar number"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block font-medium">Mobile Number</label>
+          <input
+            name="mobile"
+            value={form.mobile}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            maxLength={10}
+            pattern="[6-9]{1}[0-9]{9}"
+            title="Enter a valid 10-digit mobile number"
+            required
           />
         </div>
 
@@ -168,6 +239,48 @@ function Profile() {
       >
         Delete My Account
       </button>
+
+      <button
+        onClick={requestOtp}
+        className="mt-4 bg-yellow-500 hover:bg-yellow-600 text-white w-full py-2 rounded"
+      >
+        Change Password
+      </button>
+
+      {showPasswordSection && (
+        <form onSubmit={handlePasswordChange} className="mt-4 space-y-3">
+          <div>
+            <label className="block font-medium">OTP</label>
+            <input
+              type="text"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              className="w-full border px-3 py-2 rounded"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block font-medium">New Password</label>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              className="w-full border px-3 py-2 rounded"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white w-full py-2 rounded"
+          >
+            Submit New Password
+          </button>
+
+          {passwordMessage && <p className="text-green-600">{passwordMessage}</p>}
+        </form>
+      )}
     </div>
   );
 }

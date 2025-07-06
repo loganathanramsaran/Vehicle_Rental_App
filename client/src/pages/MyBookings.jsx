@@ -57,14 +57,14 @@ function MyBookings() {
   if (loading) return <p className="p-4 text-gray-600">Loading bookings...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-2xl font-bold mb-4">My Bookings</h1>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 dark:text-white p-6">
+      <h1 className="text-3xl dark:text-orange-600 font-bold mt-2 mb-5 border-b-2 dark:border-yellow-500 pb-6 text-center">My Bookings</h1>
       {bookings.length === 0 ? (
         <p className="text-center text-gray-500">You have no bookings.</p>
       ) : (
         <div className="grid gap-4">
           {bookings.map((booking) => (
-            <div key={booking._id} className="bg-white shadow p-4 rounded">
+            <div key={booking._id} className="bg-white dark:bg-gray-600 dark:text-white shadow p-4 rounded">
               <h2 className="text-lg font-semibold mb-2">
                 {booking.vehicle?.title || "Vehicle Info Unavailable"}
               </h2>

@@ -2,19 +2,53 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
+const EmailOTP = require("../models/EmailOTP");
+const sendEmail = require("../utils/sendEmail");
 
 const router = express.Router();
+
+// Send OTP to email
+router.post("/send-otp", async (req, res) => {
+  const { name, email } = req.body;
+  if (!name || !email) return res.status(400).json({ error: "Name and Email required" });
+
+  try {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+
+    await EmailOTP.findOneAndUpdate(
+      { email },
+      { name, otp, createdAt: new Date() },
+      { upsert: true }
+    );
+
+    await sendEmail({
+      to: email,
+      subject: "Your OTP - Vehicle Rental",
+      html: `<p>Hi ${name},</p><p>Your OTP is: <strong>${otp}</strong></p>`
+    });
+
+    res.json({ message: "OTP sent to email" });
+  } catch (err) {
+    console.error("Send OTP error:", err);
+    res.status(500).json({ error: "Failed to send OTP" });
+  }
+});
 
 // Register
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) {
+    const { name, email, password, otp, address, aadhar, mobile } = req.body;
+    if (!name || !email || !password || !otp || !address || !aadhar || !mobile) {
       return res.status(400).json({ error: "All fields are required" });
     }
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ error: "Email already registered" });
+
+    const validOtp = await EmailOTP.findOne({ email });
+    if (!validOtp || validOtp.otp !== otp) {
+      return res.status(400).json({ error: "Invalid or expired OTP" });
+    }
 
     const isFirstUser = (await User.countDocuments()) === 0;
 
@@ -22,8 +56,13 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password,
+      address,
+      aadhar,
+      mobile,
       isAdmin: isFirstUser
     });
+
+    await EmailOTP.deleteOne({ email });
 
     res.status(201).json({ message: "User registered", user });
   } catch (err) {

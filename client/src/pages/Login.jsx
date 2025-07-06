@@ -37,7 +37,7 @@ function Login() {
       linkText="Don't have an account? Register here"
       linkTo="/register"
     >
-      <h2 className="text-2xl font-bold text-green-700 text-center mb-6">Login to Your Account</h2>
+      <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">Login to Your Account</h2>
 
       {error && <p className="bg-red-100 text-red-600 px-4 py-2 rounded mb-4 text-sm">{error}</p>}
 
@@ -47,7 +47,7 @@ function Login() {
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
-          className="w-full border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-green-500"
+          className="w-full border border-gray-300 px-4 py-2 rounded "
           onChange={handleChange}
           required
         />
@@ -58,7 +58,7 @@ function Login() {
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
             autoComplete="current-password"
-            className="w-full border border-gray-300 px-4 py-2 rounded focus:ring-2 focus:ring-green-500"
+            className="w-full border border-gray-300 px-4 py-2 rounded "
             onChange={handleChange}
             required
           />
@@ -76,7 +76,7 @@ function Login() {
           type="submit"
           disabled={loading}
           className={`w-full py-2 rounded text-white transition ${
-            loading ? "bg-green-400" : "bg-green-600 hover:bg-green-700"
+            loading ? "bg-orange-400" : "bg-orange-600 hover:bg-orange-700"
           }`}
         >
           {loading ? "Logging in..." : "Login"}

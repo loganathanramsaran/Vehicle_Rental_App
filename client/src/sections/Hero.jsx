@@ -9,10 +9,10 @@ function Hero() {
   const [results, setResults] = useState([]);
 
   return (
-    <section className="bg-gray-50 dark:bg-gray-900 pb-20">
-      <div className="max-w-7xl mx-auto px-6 md:px-10 py-16 grid md:grid-cols-1 lg:grid-cols-2 gap-52 items-center">
+    <section className="bg-gray-50 dark:bg-gray-900">
+      <div className=" mx-auto px-10 py-16 flex gap-24 items-center">
         {/* Left Text Area */}
-        <div>
+        <div className="flex-1 space-y-6">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
             Accompany your <br />
             <span className="text-orange-500">journey</span> with comfort
@@ -41,12 +41,12 @@ function Hero() {
         </div>
 
         {/* Right Image */}
-        <div className="relative hidden md:block">
-          <div className="absolute -top-10 -left-10 w-96 h-96 bg-orange-100 dark:bg-orange-700 rounded-[60px] z-0" />
+        <div className="relative hidden md:block ">
+          <div className="absolute -top-10 -left-10 w-96 h-96 bg-orange-400 dark:bg-orange-700 rounded-[60px] z-0" />
           <img
             src={carImage}
             alt="Hero Car"
-            className="relative z-10 w-full max-w-md mx-auto drop-shadow-xl"
+            className="relative z-10 w-full max-w-md mx-auto drop-shadow-xl "
           />
         </div>
       </div>

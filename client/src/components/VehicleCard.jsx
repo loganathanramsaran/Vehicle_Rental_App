@@ -4,7 +4,7 @@ function VehicleCard({ vehicle }) {
   const placeholderImage = "https://via.placeholder.com/300x200?text=No+Image";
 
   return (
-    <div className="bg-white shadow rounded p-4 hover:shadow-lg transition">
+    <div className="bg-white dark:bg-gray-700 shadow rounded p-4 hover:shadow-lg transition">
       <img
         src={vehicle.image || placeholderImage}
         alt={vehicle.title}
@@ -13,10 +13,10 @@ function VehicleCard({ vehicle }) {
       />
 
       <h2 className="text-xl font-bold mb-1">{vehicle.title}</h2>
-      <p className="text-gray-600 mb-1">
+      <p className="text-gray-600 dark:text-white mb-1">
         {vehicle.make} {vehicle.model} ({vehicle.year})
       </p>
-      <p className="text-gray-600 mb-1">📍 {vehicle.location}</p>
+      <p className="text-gray-600 dark:text-white mb-1">📍 {vehicle.location}</p>
 
        {/* ⭐ Average Rating  */}
       {vehicle.averageRating !== null && (
@@ -26,7 +26,7 @@ function VehicleCard({ vehicle }) {
         </p>
       )}
 
-      <p className="text-green-700 font-semibold mb-2">
+      <p className="text-green-700 dark:text-white font-semibold mb-2">
         ₹{vehicle.pricePerDay} / day
       </p>
       <p className="text-sm mb-3">
@@ -41,7 +41,7 @@ function VehicleCard({ vehicle }) {
         <button
           className={`w-full py-2 rounded text-white ${
             vehicle.available
-              ? "bg-green-600 hover:bg-green-700"
+              ? "bg-orange-500 hover:bg-orange-600"
               : "bg-gray-400 cursor-not-allowed"
           }`}
           disabled={!vehicle.available}

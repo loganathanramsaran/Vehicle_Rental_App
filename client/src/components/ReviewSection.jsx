@@ -1,20 +1,22 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
+import { Star, StarOff } from "lucide-react";
 
 function ReviewSection({ vehicleId }) {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 5, comment: "" });
+  const [hoverRating, setHoverRating] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/api/reviews/vehicle/${vehicleId}`);
+      const res = await axios.get(
+        `http://localhost:5000/api/reviews/vehicle/${vehicleId}`
+      );
       setReviews(res.data);
     } catch (err) {
       setError("Failed to load reviews");
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -24,55 +26,63 @@ function ReviewSection({ vehicleId }) {
     fetchReviews();
   }, [vehicleId]);
 
-  const handleInputChange = (e) => {
-    setNewReview({ ...newReview, [e.target.name]: e.target.value });
+  const handleStarClick = (index) => {
+    setNewReview({ ...newReview, rating: index });
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  const token = localStorage.getItem("token");
-  if (!token) return alert("Login required");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if (!token) return alert("Login required");
 
-  try {
-    const res = await axios.post(
-      "http://localhost:5000/api/reviews",
-      {
-        vehicle: vehicleId, 
-        rating: newReview.rating,
-        comment: newReview.comment,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/api/reviews",
+        {
+          vehicle: vehicleId,
+          rating: newReview.rating,
+          comment: newReview.comment,
         },
-      }
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setReviews((prev) => [...prev, res.data.review]);
+      setNewReview({ rating: 5, comment: "" });
+      setHoverRating(0);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to submit review");
+    }
+  };
+
+  const renderStars = (count) => {
+    return [...Array(5)].map((_, i) =>
+      i < count ? (
+        <Star key={i} className="w-5 h-5 text-yellow-500 inline-block" fill="currentColor" />
+      ) : (
+        <StarOff key={i} className="w-5 h-5 text-gray-400 inline-block" />
+      )
     );
-    setReviews((prev) => [...prev, res.data.review]);
-    setNewReview({ rating: 5, comment: "" });
-  } catch (err) {
-    console.error("Review post error:", err);
-    setError(
-      err.response?.data?.error || "Something went wrong while posting review."
-    );
-  }
-};
+  };
 
   return (
-    <div className="mt-8 bg-white shadow p-6 rounded w-full max-w-2xl mx-auto">
-      <h3 className="text-xl font-bold mb-4">User Reviews</h3>
+    <div className="mt-10 max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 shadow rounded-lg">
+      <h3 className="text-xl font-semibold mb-4">User Reviews</h3>
 
       {loading ? (
-        <p className="text-gray-600">Loading reviews...</p>
+        <p>Loading reviews...</p>
       ) : reviews.length === 0 ? (
         <p className="text-gray-500">No reviews yet. Be the first to review!</p>
       ) : (
         <div className="space-y-4 mb-6">
           {reviews.map((r) => (
             <div key={r._id} className="border-b pb-2">
-              <p className="font-semibold">⭐ {r.rating}/5</p>
-              <p>{r.comment}</p>
-              <p className="text-xs text-gray-500">
-                by {r.user?.name || "Anonymous"} on{" "}
+              <div>{renderStars(r.rating)}</div>
+              <p className="mt-1 text-gray-700">{r.comment}</p>
+              <p className="text-sm text-gray-500">
+                by {r.user?.name || "User"} on{" "}
                 {new Date(r.createdAt).toLocaleDateString()}
               </p>
             </div>
@@ -81,25 +91,35 @@ const handleSubmit = async (e) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <h4 className="font-semibold">Leave a Review</h4>
-        <select
-          name="rating"
-          value={newReview.rating}
-          onChange={handleInputChange}
-          className="w-full border px-3 py-2 rounded"
-          required
-        >
-          {[5, 4, 3, 2, 1].map((r) => (
-            <option key={r} value={r}>
-              {r} Star{r > 1 && "s"}
-            </option>
+        <h4 className="font-medium">Leave a Review</h4>
+
+        <div className="flex items-center gap-1">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <button
+              type="button"
+              key={i}
+              onClick={() => handleStarClick(i)}
+              onMouseEnter={() => setHoverRating(i)}
+              onMouseLeave={() => setHoverRating(0)}
+            >
+              <Star
+                className={`w-6 h-6 ${
+                  i <= (hoverRating || newReview.rating)
+                    ? "text-yellow-500"
+                    : "text-gray-300"
+                }`}
+                fill={i <= (hoverRating || newReview.rating) ? "currentColor" : "none"}
+              />
+            </button>
           ))}
-        </select>
+        </div>
 
         <textarea
           name="comment"
           value={newReview.comment}
-          onChange={handleInputChange}
+          onChange={(e) =>
+            setNewReview({ ...newReview, comment: e.target.value })
+          }
           placeholder="Write your review..."
           className="w-full border px-3 py-2 rounded"
           rows={3}

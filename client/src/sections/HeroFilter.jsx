@@ -106,7 +106,7 @@ function HeroFilter({ onResults }) {
         <div className="flex items-end">
           <button
             onClick={handleSearch}
-            className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200"
+            className="w-full bg-orange-500 text-white py-2 px-4 rounded-md hover:bg-orange-600 transition duration-200"
           >
             Search
           </button>

@@ -13,7 +13,7 @@ export function UserProvider({ children }) {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setUser(res.data);
+      setUser(res.data.user);
     } catch (err) {
       console.error("Failed to fetch user", err);
       setUser(null);

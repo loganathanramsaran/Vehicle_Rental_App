@@ -42,4 +42,17 @@ router.get("/vehicle/:vehicleId", async (req, res) => {
   }
 });
 
+// ✅ Public route to fetch all reviews
+router.get("/all", async (req, res) => {
+  try {
+    const reviews = await Review.find()
+      .populate("user", "name")
+      .populate("vehicle", "title image");
+    res.json(reviews);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch testimonials" });
+  }
+});
+
+
 module.exports = router;

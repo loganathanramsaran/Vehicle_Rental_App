@@ -33,7 +33,7 @@ function App() {
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
         <Route path="/services" element={<MainLayout><Services /> </MainLayout>} />
         <Route path="/contact" element={<MainLayout><Contact /> </MainLayout>} />
-
+        
         {/* Protected Routes with MainLayout */}
         <Route
           path="/dashboard"

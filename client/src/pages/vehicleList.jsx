@@ -86,18 +86,22 @@ function VehicleList() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 lg:flex">
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 p-4 lg:flex">
       {/* Sidebar (Desktop) */}
       <div className="hidden lg:block w-64 pr-6 sticky top-4 h-fit">
-        <div className="bg-white p-4 shadow rounded space-y-4">
+        <div className="bg-white dark:bg-gray-700 p-4 shadow rounded space-y-4">
           <input
             type="text"
             placeholder="Search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="p-2 border rounded w-full"
+            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
           />
-          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="p-2 border rounded w-full">
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+          >
             <option value="">All Types</option>
             <option value="SUV">SUV</option>
             <option value="Sedan">Sedan</option>
@@ -111,26 +115,46 @@ function VehicleList() {
             placeholder="Location"
             value={locationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
-            className="p-2 border rounded w-full"
+            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
           />
           <input
             type="number"
             placeholder="Max Price"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
-            className="p-2 border rounded w-full"
+            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
           />
-          <label className="text-sm font-medium">Min Rating</label>
-          <select value={minRating} onChange={(e) => setMinRating(parseFloat(e.target.value))} className="p-2 border rounded w-full">
+          <label className="text-sm font-medium dark:text-yellow-400 ">Min Rating</label>
+          <select
+            value={minRating}
+            onChange={(e) => setMinRating(parseFloat(e.target.value))}
+            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+          >
             <option value={0}>All</option>
             <option value={4}>4 ★ & up</option>
             <option value={3}>3 ★ & up</option>
             <option value={2}>2 ★ & up</option>
             <option value={1}>1 ★ & up</option>
           </select>
-          <input type="date" name="start" value={filterDates.start} onChange={handleDateChange} className="p-2 border rounded w-full" />
-          <input type="date" name="end" value={filterDates.end} onChange={handleDateChange} className="p-2 border rounded w-full" />
-          <select onChange={handleSortChange} value={sortOption} className="p-2 border rounded w-full">
+          <input
+            type="date"
+            name="start"
+            value={filterDates.start}
+            onChange={handleDateChange}
+            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+          />
+          <input
+            type="date"
+            name="end"
+            value={filterDates.end}
+            onChange={handleDateChange}
+            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+          />
+          <select
+            onChange={handleSortChange}
+            value={sortOption}
+            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+          >
             <option value="">-- Sort By --</option>
             <option value="priceLowHigh">Price: Low to High</option>
             <option value="priceHighLow">Price: High to Low</option>
@@ -138,18 +162,13 @@ function VehicleList() {
             <option value="yearOldNew">Year: Old to New</option>
             <option value="ratingHighLow">Rating: High to Low</option>
           </select>
-          <button onClick={handleClearFilters} className="bg-red-500 text-white px-4 py-2 rounded w-full hover:bg-red-600 transition">Clear Filters</button>
+          <button
+            onClick={handleClearFilters}
+            className="bg-red-500 text-white px-4 py-2 rounded w-full hover:bg-red-600 transition"
+          >
+            Clear Filters
+          </button>
         </div>
-      </div>
-
-      {/* Mobile Filter Button */}
-      <div className="lg:hidden mb-4 text-center w-full">
-        <button
-          onClick={() => setShowMobileFilter(true)}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-        >
-          Filter
-        </button>
       </div>
 
       {/* Mobile Drawer */}
@@ -159,16 +178,29 @@ function VehicleList() {
             className="fixed inset-0 bg-black bg-opacity-40 z-40"
             onClick={() => setShowMobileFilter(false)}
           />
-          <div className="fixed top-0 left-0 w-80 h-full bg-white shadow-lg z-50 p-4 space-y-4 overflow-y-auto">
+          <div className="fixed top-0 left-0 w-80 h-full bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 shadow-lg z-50 p-4 space-y-4 overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold">Filters</h2>
-              <button onClick={() => setShowMobileFilter(false)} className="text-gray-600 hover:text-red-500">
+              <button
+                onClick={() => setShowMobileFilter(false)}
+                className="text-gray-600 hover:text-red-500"
+              >
                 <X size={24} />
               </button>
             </div>
-            {/* Copy same filter inputs from sidebar here */}
-            <input type="text" placeholder="Search" value={search} onChange={(e) => setSearch(e.target.value)} className="p-2 border rounded w-full" />
-            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="p-2 border rounded w-full">
+
+            <input
+              type="text"
+              placeholder="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            />
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            >
               <option value="">All Types</option>
               <option value="SUV">SUV</option>
               <option value="Sedan">Sedan</option>
@@ -177,19 +209,51 @@ function VehicleList() {
               <option value="Truck">Truck</option>
               <option value="Van">Van</option>
             </select>
-            <input type="text" placeholder="Location" value={locationFilter} onChange={(e) => setLocationFilter(e.target.value)} className="p-2 border rounded w-full" />
-            <input type="number" placeholder="Max Price" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} className="p-2 border rounded w-full" />
+            <input
+              type="text"
+              placeholder="Location"
+              value={locationFilter}
+              onChange={(e) => setLocationFilter(e.target.value)}
+              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            />
+            <input
+              type="number"
+              placeholder="Max Price"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            />
             <label className="text-sm font-medium mt-2">Min Rating</label>
-            <select value={minRating} onChange={(e) => setMinRating(parseFloat(e.target.value))} className="p-2 border rounded w-full">
+            <select
+              value={minRating}
+              onChange={(e) => setMinRating(parseFloat(e.target.value))}
+              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            >
               <option value={0}>All</option>
               <option value={4}>4 ★ & up</option>
               <option value={3}>3 ★ & up</option>
               <option value={2}>2 ★ & up</option>
               <option value={1}>1 ★ & up</option>
             </select>
-            <input type="date" name="start" value={filterDates.start} onChange={handleDateChange} className="p-2 border rounded w-full" />
-            <input type="date" name="end" value={filterDates.end} onChange={handleDateChange} className="p-2 border rounded w-full" />
-            <select onChange={handleSortChange} value={sortOption} className="p-2 border rounded w-full">
+            <input
+              type="date"
+              name="start"
+              value={filterDates.start}
+              onChange={handleDateChange}
+              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            />
+            <input
+              type="date"
+              name="end"
+              value={filterDates.end}
+              onChange={handleDateChange}
+              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            />
+            <select
+              onChange={handleSortChange}
+              value={sortOption}
+              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            >
               <option value="">-- Sort By --</option>
               <option value="priceLowHigh">Price: Low to High</option>
               <option value="priceHighLow">Price: High to Low</option>
@@ -197,22 +261,47 @@ function VehicleList() {
               <option value="yearOldNew">Year: Old to New</option>
               <option value="ratingHighLow">Rating: High to Low</option>
             </select>
-            <button onClick={() => { handleClearFilters(); setShowMobileFilter(false); }} className="bg-red-500 text-white px-4 py-2 rounded w-full hover:bg-red-600 transition">Clear Filters</button>
+            <button
+              onClick={() => {
+                handleClearFilters();
+                setShowMobileFilter(false);
+              }}
+              className="bg-red-500 text-white px-4 py-2 rounded w-full hover:bg-red-600 transition"
+            >
+              Clear Filters
+            </button>
           </div>
         </>
       )}
 
       {/* Vehicle List */}
       <div className="flex-1">
-        <h1 className="text-3xl font-bold mt-2 mb-10 border-b-2 pb-6 text-center">Available Vehicles</h1>
-        {error && <p className="text-center text-red-500 font-medium mb-4">{error}</p>}
+        <h1 className="text-3xl dark:text-orange-600 font-bold mt-2 mb-5 border-b-2 dark:border-yellow-500 pb-6 text-center">
+          Available Vehicles
+        </h1>
+        {error && (
+          <p className="text-center text-red-500 font-medium mb-4">{error}</p>
+        )}
+
+        {/* Mobile Filter Button */}
+        <div className="lg:hidden mb-4 w-full">
+          <button
+            onClick={() => setShowMobileFilter(true)}
+            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700 transition"
+          >
+            Filter
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredVehicles.length > 0 ? (
             filteredVehicles.map((vehicle) => (
               <VehicleCard key={vehicle._id} vehicle={vehicle} />
             ))
           ) : (
-            <p className="text-center text-gray-600 col-span-full">No vehicles match your criteria.</p>
+            <p className="text-center text-gray-600 col-span-full">
+              No vehicles match your criteria.
+            </p>
           )}
         </div>
       </div>

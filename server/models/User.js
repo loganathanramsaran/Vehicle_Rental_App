@@ -4,26 +4,69 @@ const bcrypt = require("bcryptjs");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Name is required"]
+    required: [true, "Name is required"],
   },
   email: {
     type: String,
     required: [true, "Email is required"],
     unique: true,
-    lowercase: true
+    lowercase: true,
   },
   password: {
     type: String,
-    required: [true, "Password is required"]
+    required: [true, "Password is required"],
   },
   isAdmin: {
     type: Boolean,
-    default: false
+    default: false,
   },
   avatar: {
-    type: String, // This stores the path to the image, e.g., "/uploads/avatars/user123.png"
-    default: ""   // Optional: you can set a default image path if needed
-  }
+    type: String,
+    default: "", // URL to avatar image
+  },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
+  emailToken: {
+    type: String,
+  },
+  emailTokenExpires: {
+    type: Date,
+  },
+  otp: String,
+  otpExpires: Date,
+
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  mobile: {
+    type: String,
+    required: [true, "Mobile number is required"],
+    unique: true,
+    validate: {
+      validator: function (v) {
+        return /^\d{10}$/.test(v); // Format: 1234567890
+      },
+      message: (props) => `${props.value} is not a valid mobile number!`,
+    },
+  },
+  address: {
+    type: String,
+    required: [true, "Address is required"],
+  },
+  aadhar: {
+    type: String,
+    required: [true, "Aadhaar number is required"],
+    unique: true,
+    validate: {
+      validator: function (v) {
+        return /^\d{4}\s\d{4}\s\d{4}$/.test(v); // Format: 1234 5678 9012
+      },
+      message: (props) => `${props.value} is not a valid Aadhaar number!`,
+    },
+  },
 });
 
 // Hash password before saving

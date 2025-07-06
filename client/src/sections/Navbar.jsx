@@ -61,11 +61,11 @@ function Navbar() {
   const roleLinks = user?.isAdmin ? adminLinks : user ? userLinks : [];
 
   return (
-    <header className="bg-gradient-to-r from-green-700 to-emerald-700 dark:from-gray-900 dark:to-gray-800 text-white shadow-md sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-orange-600 to-orange-700 dark:from-gray-900 dark:to-gray-800 text-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Brand */}
         <div className="flex items-center gap-4">
-          <Link to="/" className="text-2xl font-bold text-yellow-300">🚗 Rental<span className="text-white">App</span></Link>
+          <Link to="/" className="text-2xl font-bold text-yellow-300">Rental<span className="text-white">App</span></Link>
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden">
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -136,14 +136,14 @@ function Navbar() {
 
       {/* Mobile Nav */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-green-800/90 dark:bg-gray-900 backdrop-blur-sm px-4 pb-4 pt-2 flex flex-col space-y-3 text-white shadow-lg">
+        <div className="md:hidden dark:bg-gray-900 backdrop-blur-sm px-4 pb-4 pt-2 flex flex-col space-y-3 text-white shadow-lg">
           {[...staticLinks, ...roleLinks].map(link => (
             <Link key={link.to} to={link.to} className="hover:text-yellow-300 text-lg font-medium transition">
               {link.label}
             </Link>
           ))}
           {user && (
-            <button onClick={handleLogout} className="text-left text-red-300 hover:text-red-500 mt-2">
+            <button onClick={handleLogout} className="text-left text-lg font-bold hover:text-black text-white mt-2">
               Logout
             </button>
           )}

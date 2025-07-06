@@ -25,7 +25,7 @@ function Dashboard() {
   const role = user.isAdmin ? "Admin" : "User";
 
   const cardStyle =
-    "rounded-lg shadow-lg p-6 bg-white hover:shadow-xl transition flex flex-col justify-between items-center text-center";
+    "rounded-lg shadow-lg p-6 bg-white dark:bg-gray-400 dark:hover:bg-gray-500 dark:hover:text-white hover:bg-orange-400 hover:text-white transition flex flex-col justify-between items-center text-center";
 
   const ActionCard = ({ to, label, icon, color }) => (
     <Link
@@ -38,9 +38,9 @@ function Dashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen overflow-auto scroll-hidden bg-gray-100 dark:bg-gray-800 p-10">
       {/* Profile Card */}
-      <div className="bg-white shadow-md rounded-xl p-6 flex flex-col md:flex-row justify-between items-center mb-8">
+      <div className="bg-white dark:bg-gray-600 shadow-md rounded-xl p-6 flex flex-col md:flex-row justify-between items-center mb-8">
         <div className="flex items-center gap-6">
           <div className="w-24 h-24 rounded-full border overflow-hidden">
             {user.avatar ? (
@@ -56,8 +56,8 @@ function Dashboard() {
             )}
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-1">Welcome, {user.name} 👋</h2>
-            <p className="text-gray-600">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-1">Welcome, {user.name} 👋</h2>
+            <p className="text-gray-600 dark:text-slate-100">
               <strong>Email:</strong> {user.email}
             </p>
             <span className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
