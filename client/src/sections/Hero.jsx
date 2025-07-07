@@ -25,7 +25,7 @@ function Hero() {
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="mx-auto px-10 py-16 grid grid-cols-2 gap-10 max-md:grid-cols-1 items-center">
         {/* Left Text Area */}
-        <div className="space-y-6">
+        <div className="space-y-6 p-10 rounded-lg shadow-xl bg-gray-100 dark:bg-gray-700">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
             Accompany your <br />
             <span className="text-orange-500">journey</span> with comfort
