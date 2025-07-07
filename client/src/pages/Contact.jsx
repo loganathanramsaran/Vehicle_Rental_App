@@ -1,23 +1,57 @@
-// src/pages/Contact.jsx
+import { useState } from "react";
+import axios from "axios";
+import toast, { Toaster } from "react-hot-toast";
+
 function Contact() {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post("http://localhost:5000/api/feedback", form);
+      toast.success("Feedback sent successfully!");
+      setForm({ name: "", email: "", message: "" });
+    } catch (err) {
+      toast.error("Failed to send feedback");
+    }
+  };
+
   return (
     <div className="px-10 pb-16 mx-auto dark:bg-gray-900 dark:text-white">
-      <h1 className="text-3xl font-bold mb-4 text-center text-orange-600">Contact Us</h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">Have questions or feedback? Reach out to us and we’ll get back to you soon.</p>
-
-      <form className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Name</label>
-          <input type="text" className="w-full p-2 border rounded focus:outline-none dark:bg-gray-600 focus:border-orange-500" placeholder="Your name" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input type="email" className="w-full p-2 border rounded focus:outline-none dark:bg-gray-600 focus:border-orange-500" placeholder="you@example.com" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Message</label>
-          <textarea className="w-full p-2 border rounded h-32 focus:outline-none dark:bg-gray-600 focus:border-orange-500" placeholder="Your message..." />
-        </div>
+      <Toaster position="top-right" />
+      <h1 className="text-3xl font-bold mb-4 text-center text-orange-600">
+        Contact Us
+      </h1>
+      <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+        <input
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          required
+          placeholder="Your name"
+          className="w-full p-2 border rounded dark:bg-gray-600"
+        />
+        <input
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          type="email"
+          placeholder="you@example.com"
+          className="w-full p-2 border rounded dark:bg-gray-600"
+        />
+        <textarea
+          name="message"
+          value={form.message}
+          onChange={handleChange}
+          required
+          placeholder="Your message..."
+          className="w-full p-2 border rounded h-32 dark:bg-gray-600"
+        />
         <button
           type="submit"
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"

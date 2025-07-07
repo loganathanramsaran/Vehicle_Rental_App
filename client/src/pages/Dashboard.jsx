@@ -8,6 +8,7 @@ import editProfile from "../assets/editProfile.png";
 import addVehicle from "../assets/addVehicle.png";
 import manageVehicle from "../assets/manageVehicle.png";
 import viewAllBookings from "../assets/viewAllBookings.png";
+import feedbacks from "../assets/feedback.png";
 
 function Dashboard() {
   const { user, fetchUser } = useContext(UserContext);
@@ -78,6 +79,7 @@ function Dashboard() {
             <ActionCard to="/add-vehicle" label="Add Vehicle" icon={addVehicle} color="bg-yellow-500 hover:bg-yellow-600" />
             <ActionCard to="/admin/vehicles" label="Manage Vehicles" icon={manageVehicle} color="bg-blue-500 hover:bg-blue-600" />
             <ActionCard to="/admin/bookings" label="View All Bookings" icon={viewAllBookings} color="bg-purple-500 hover:bg-purple-600" />
+            <ActionCard to="/admin/feedback" label="User Feedbacks" icon={feedbacks} color="bg-pink-500 hover:bg-pink-600" />
           </>
         ) : (
           <>

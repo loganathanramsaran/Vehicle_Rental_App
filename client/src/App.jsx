@@ -21,6 +21,7 @@ import Profile from "./pages/Profile";
 import LandingPage from "./pages/LandingPage";
 import VehicleDetails from "./pages/VehicleDetails";
 import MainLayout from "./components/MainLayout"; // ✅ import layout
+import AdminFeedbacks from "./pages/AdminFeedbacks";
 
 function App() {
   return (
@@ -113,6 +114,16 @@ function App() {
             <ProtectedRoute adminOnly={true}>
               <MainLayout>
                 <EditVehicle />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/feedback"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <MainLayout>
+                <AdminFeedbacks />
               </MainLayout>
             </ProtectedRoute>
           }

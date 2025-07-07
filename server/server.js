@@ -37,6 +37,8 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/feedback", require("./routes/feedbackRoutes"));
+
 
 // Start reminder job
 reminderJob();
