@@ -1,87 +1,115 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import InvoiceTemplate from "../components/InvoiceTemplate";
+import { jwtDecode } from "jwt-decode";
 
 function PaymentHistory() {
-  const [bookings, setBookings] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const res = await axios.get(`${SERVER_URL}/api/bookings/mine`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Unauthorized");
+
+        const decoded = jwtDecode(token);
+        const res = await axios.get("http://localhost:5000/api/bookings/mine", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setBookings(res.data);
+
+const withPayments = res.data
+  .filter((b) => b.payment && b.payment.razorpayPaymentId)
+  .sort((a, b) => new Date(b.payment.createdAt) - new Date(a.payment.createdAt));
+        setPayments(withPayments);
       } catch (err) {
-        console.error("Failed to fetch payment history", err);
+        console.error("Failed to load payments:", err);
+        setError("Could not load payment history");
       } finally {
         setLoading(false);
       }
     };
 
     fetchPayments();
-  }, [SERVER_URL]);
+  }, []);
+
+  if (loading)
+    return <p className="p-6 text-center text-gray-500">Loading payment history...</p>;
+
+  if (error)
+    return <p className="p-6 text-center text-red-500">{error}</p>;
+
+  if (payments.length === 0)
+    return <p className="p-6 text-center text-gray-500">No payments found.</p>;
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
-      <h2 className="text-2xl text-orange-500 text-center border-b-2 pb-3 dark:border-yellow-500 font-bold mb-10">Payment History</h2>
-      {loading ? (
-        <p>Loading...</p>
-      ) : bookings.length === 0 ? (
-        <p>No past bookings or payments found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-orange-200 dark:bg-gray-700 dark:text-orange-100 ">
-              <tr>
-                <th className="p-2 ">Start Date</th>
-                <th className="p-2 ">Vehicle</th>
-                <th className="p-2 ">End Date</th>
-                <th className="p-2 ">Amount</th>
-                <th className="p-2 ">Payment ID</th>
-                <th className="p-2 ">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((booking) => (
-                <tr key={booking._id} className="text-center dark:text-white bg-orange-50 dark:bg-gray-600">
-                  <td className="p-2 ">
-                    {booking.vehicle?.title || "N/A"}
-                  </td>
-                  <td className="p-2 ">
-                    {new Date(booking.startDate).toLocaleDateString()}
-                  </td>
-                  <td className="p-2 ">
-                    {new Date(booking.endDate).toLocaleDateString()}
-                  </td>
-                  <td className="p-2 ">
-                    ₹{booking.payment?.amount || booking.totalPrice}
-                  </td>
-                  <td className="p-2 ">
-                    {booking.payment?.razorpayPaymentId || "-"}
-                  </td>
-                  <td
-                    className={`p-2 font-semibold
-                    ${
-                        booking.payment?.status === "success"
-                        ? "text-green-600"
-                        : booking.status === "cancelled" || booking.payment?.status === "failed"
-                        ? "text-red-600"
-                        : "text-yellow-600"
-                    }
-                    `}
+    <div className="min-h-screen px-4 py-8 bg-gray-100 dark:bg-gray-900 dark:text-white">
+      <h1 className="text-3xl font-bold text-center text-green-700 dark:text-green-400 mb-6">
+        Booking & Payment History
+      </h1>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white dark:bg-gray-800 shadow-md rounded-lg">
+          <thead>
+            <tr className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-sm uppercase">
+              <th className="p-3 text-left">Vehicle</th>
+              <th className="p-3 text-left">Start</th>
+              <th className="p-3 text-left">End</th>
+              <th className="p-3 text-left">Amount</th>
+              <th className="p-3 text-left">Payment ID</th>
+              <th className="p-3 text-left">Status</th>
+              <th className="p-3 text-left">Date</th>
+              <th className="p-3 text-left">Invoice</th>
+            </tr>
+          </thead>
+          <tbody>
+            {payments.map((booking) => (
+              <tr key={booking._id} className="border-t dark:border-gray-700">
+                <td className="p-3">{booking.vehicle?.title || "N/A"}</td>
+                <td className="p-3">
+                  {new Date(booking.startDate).toLocaleDateString()}
+                </td>
+                <td className="p-3">
+                  {new Date(booking.endDate).toLocaleDateString()}
+                </td>
+                <td className="p-3 text-green-600 font-medium">
+                  ₹{booking.payment?.amount / 100}
+                </td>
+                <td className="p-3 text-sm break-all">
+                  {booking.payment?.razorpayPaymentId || "N/A"}
+                </td>
+                <td className="p-3">
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                      booking.status === "cancelled"
+                        ? "bg-red-100 text-red-600"
+                        : "bg-green-100 text-green-700"
+                    }`}
                   >
-                    {booking.payment?.status || booking.status}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                    {booking.status}
+                  </span>
+                </td>
+                <td className="p-3 text-sm">
+                  {new Date(booking.payment?.createdAt).toLocaleDateString()}
+                </td>
+                <td className="p-3">
+                  {booking.status === "cancelled" ? (
+                    <button
+                      disabled
+                      className="text-sm px-3 py-1 rounded bg-gray-400 text-white cursor-not-allowed"
+                    >
+                      Invoice
+                    </button>
+                  ) : (
+                    <InvoiceTemplate payment={booking} />
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

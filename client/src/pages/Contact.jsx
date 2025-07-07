@@ -21,7 +21,7 @@ function Contact() {
   };
 
   return (
-    <div className="px-10 pb-16 mx-auto dark:bg-gray-900 dark:text-white">
+    <div className="px-10 py-16 mx-auto dark:bg-gray-900 dark:text-white">
       <Toaster position="top-right" />
       <h1 className="text-3xl font-bold mb-4 text-center text-orange-600">
         Contact Us

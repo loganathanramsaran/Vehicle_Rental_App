@@ -2,8 +2,8 @@ const express = require("express");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Payment = require("../models/payment");
+const Vehicle = require("../models/Vehicle")
 const { verifyToken } = require("../middleware/auth");
-
 const router = express.Router();
 
 const razorpay = new Razorpay({
@@ -78,6 +78,21 @@ router.post("/verify", verifyToken, async (req, res) => {
   } catch (err) {
     console.error("Verify payment error:", err);
     res.status(500).json({ success: false, message: "Payment verification failed" });
+  }
+});
+
+
+// Get logged-in user's payment history
+router.get("/history", verifyToken, async (req, res) => {
+  try {
+    const payments = await Payment.find({ userId: req.user.id })
+      .populate("vehicleId", "title")
+      .sort({ createdAt: -1 });
+
+    res.json(payments);
+  } catch (err) {
+    console.error("Error fetching payment history:", err);
+    res.status(500).json({ error: "Failed to load payment history" });
   }
 });
 

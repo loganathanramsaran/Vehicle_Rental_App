@@ -56,6 +56,7 @@ function Navbar() {
     { to: "/add-vehicle", label: "Add Vehicle" },
     { to: "/admin/vehicles", label: "Manage Vehicles" },
     { to: "/admin/bookings", label: "All Bookings" },
+    { to: "/admin/feedback", label: "Feedbacks" },
   ];
 
   const roleLinks = user?.isAdmin ? adminLinks : user ? userLinks : [];
