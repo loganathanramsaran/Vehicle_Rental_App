@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
-import {ArrowBigRight} from "lucide-react"
+import { ArrowBigRight } from "lucide-react";
 
 import browseVehicles from "../assets/browseVehicle.png";
 import myBookings from "../assets/myBookings.png";
@@ -63,7 +63,9 @@ const Features = () => {
   return (
     <section id="features" className=" bg-gray-100 dark:bg-gray-900 py-12">
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-orange-600 ">Explore Features</h2>
+        <h2 className="text-4xl font-bold text-orange-600 ">
+          Explore Features
+        </h2>
         <p className="text-gray-600 dark:text-gray-300 mt-2">
           Built for both customers and administrators
         </p>
@@ -85,10 +87,13 @@ const Features = () => {
           </Link>
         ))}
       </div>
-      <div className="flex justify-center text-lg items-center mt-8">
-      <Link to={'/dashboard'}>
-        <button className="flex items-center text-orange-500"><strong>More Features</strong><ArrowBigRight /></button>
-      </Link>
+      <div className="flex justify-center items-center mt-8">
+        <Link to={"/dashboard"}>
+          <button className="flex items-center text-orange-500 hover:text-white hover:bg-orange-500 bg-orange-100 px-2 py-1 rounded-full">
+            <strong>More Features</strong>
+            <ArrowBigRight />
+          </button>
+        </Link>
       </div>
     </section>
   );

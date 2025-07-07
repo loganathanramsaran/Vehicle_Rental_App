@@ -23,9 +23,10 @@ function Contact() {
   return (
     <div className="px-10 py-16 mx-auto dark:bg-gray-900 dark:text-white">
       <Toaster position="top-right" />
-      <h1 className="text-3xl font-bold mb-4 text-center text-orange-600">
+      <h1 className="text-3xl font-bold text-center text-orange-600">
         Contact Us
       </h1>
+      <p className="text-center text-gray-700 mb-4 text-sm">Please submit your user experience and your valuable feedback!</p>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
         <input
           name="name"
