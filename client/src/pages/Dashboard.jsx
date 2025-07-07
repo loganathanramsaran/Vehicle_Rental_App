@@ -85,7 +85,7 @@ function Dashboard() {
           <>
             <ActionCard to="/vehicles" label="Browse Vehicles" icon={browseVehicles} color="bg-yellow-500 hover:bg-yellow-600" />
             <ActionCard to="/my-bookings" label="My Bookings" icon={myBookings} color="bg-blue-500 hover:bg-blue-600" />
-            <ActionCard to="/paymenthistory" label="Bookings History" icon={myBookings} color="bg-purple-500 hover:bg-purple-600" />
+            <ActionCard to="/paymenthistory" label="Bookings & Payment History" icon={myBookings} color="bg-purple-500 hover:bg-purple-600" />
           </>
         )}
         <ActionCard to="/profile" label="Edit Profile" icon={editProfile} color="bg-green-500 hover:bg-green-600" />

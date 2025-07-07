@@ -49,7 +49,21 @@ router.get("/:id", async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
     if (!vehicle) return res.status(404).json({ error: "Vehicle not found" });
-    res.json(vehicle);
+    res.status(200).json({
+  _id: vehicle._id,
+  title: vehicle.title,
+  description: vehicle.description,
+  image: vehicle.image,
+  brand: vehicle.brand,
+  model: vehicle.model,
+  pricePerDay: vehicle.pricePerDay,
+  fuelType: vehicle.fuelType,
+  transmission: vehicle.transmission,
+  seats: vehicle.seats,
+  available: vehicle.available,
+  year: vehicle.year,
+});
+
   } catch (err) {
     res.status(500).json({ error: "Error fetching vehicle" });
   }

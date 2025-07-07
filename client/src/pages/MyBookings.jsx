@@ -133,12 +133,12 @@ function MyBookings() {
                   </td>
                 </div>
                 <div className="flex flex-col items-center ">
-                  <a
-                    href={`/vehicle/${booking.vehicle._id}`}
+                  <Link
+                    to={`/vehicle/${booking.vehicle._id}`}
                     className="text-blue-500 underline"
                   >
                     View Vehicle
-                  </a>
+                  </Link>
 
                   {booking.status !== "cancelled" && (
                     <button

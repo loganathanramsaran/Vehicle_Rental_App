@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import {ArrowBigRight} from "lucide-react"
 
 import browseVehicles from "../assets/browseVehicle.png";
 import myBookings from "../assets/myBookings.png";
@@ -83,6 +84,11 @@ const Features = () => {
             />
           </Link>
         ))}
+      </div>
+      <div className="flex justify-center text-lg items-center mt-8">
+      <Link to={'/dashboard'}>
+        <button className="flex items-center text-orange-500"><strong>More Features</strong><ArrowBigRight /></button>
+      </Link>
       </div>
     </section>
   );

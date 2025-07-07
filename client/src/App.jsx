@@ -148,6 +148,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/vehicle/:id"
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <VehicleDetails />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </UserProvider>
   );

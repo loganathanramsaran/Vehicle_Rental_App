@@ -12,6 +12,10 @@ function AddVehicle() {
     pricePerDay: "",
     location: "",
     image: "",
+    brand: "",
+    fuelType: "",
+    transmission: "",
+    seats: "",
   });
 
   const navigate = useNavigate();
@@ -57,6 +61,10 @@ const handleSubmit = async (e) => {
         <input name="make" onChange={handleChange} value={form.make} placeholder="Make" className="w-full border px-3 py-2 rounded" />
 
         <input name="model" onChange={handleChange} value={form.model} placeholder="Model" className="w-full border px-3 py-2 rounded" />
+        <input name="brand" onChange={handleChange} value={form.brand} placeholder="Brand" className="w-full border px-3 py-2 rounded" />
+        <input name="fuelType" onChange={handleChange} value={form.fuelType} placeholder="Fuel Type" className="w-full border px-3 py-2 rounded" />
+        <input name="transmission" onChange={handleChange} value={form.transmission} placeholder="Transmission" className="w-full border px-3 py-2 rounded" />
+        <input name="seats" onChange={handleChange} value={form.seats} placeholder="Seats" className="w-full border px-3 py-2 rounded" />
 
         <input name="year" onChange={handleChange} value={form.year} type="number" placeholder="Year" className="w-full border px-3 py-2 rounded" />
 
