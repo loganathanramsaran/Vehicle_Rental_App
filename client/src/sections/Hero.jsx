@@ -1,18 +1,31 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRightCircle } from "lucide-react";
-import carImage from "../assets/blue-car.png";
 import HeroFilter from "./HeroFilter";
 import MiniVehicleCard from "./MiniVehicleCard";
+
+import hero1 from "../assets/hero1.png";
+import hero2 from "../assets/hero2.png";
+import hero3 from "../assets/hero3.png";
+import hero4 from "../assets/hero4.png";
+import hero5 from "../assets/hero5.png";
+
+// Swiper imports
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/effect-fade";
+
+const heroImages = [hero1, hero2, hero3, hero4, hero5];
 
 function Hero() {
   const [results, setResults] = useState([]);
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
-      <div className=" mx-auto px-10 py-16 flex gap-24 items-center">
+      <div className="mx-auto px-10 py-16 grid grid-cols-2 gap-10 max-md:grid-cols-1 items-center">
         {/* Left Text Area */}
-        <div className="flex-1 space-y-6">
+        <div className="space-y-6">
           <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
             Accompany your <br />
             <span className="text-orange-500">journey</span> with comfort
@@ -40,14 +53,25 @@ function Hero() {
           <HeroFilter onResults={(vehicles) => setResults(vehicles)} />
         </div>
 
-        {/* Right Image */}
-        <div className="relative hidden md:block ">
-          <div className="absolute -top-10 -left-10 w-96 h-96 bg-orange-400 dark:bg-orange-700 rounded-[60px] z-0" />
-          <img
-            src={carImage}
-            alt="Hero Car"
-            className="relative z-10 w-full max-w-md mx-auto drop-shadow-xl "
-          />
+        {/* Right Image Swiper */}
+        <div className="hidden md:block w-full h-[400px] relative overflow-hidden">
+          <Swiper
+            modules={[Autoplay, EffectFade]}
+            effect="slide"
+            autoplay={{ delay: 3000, disableOnInteraction: false }}
+            loop={true}
+            className="w-full h-full"
+          >
+            {heroImages.map((img, i) => (
+              <SwiperSlide key={i}>
+                <img
+                  src={img}
+                  alt={`Hero ${i}`}
+                  className="w-full h-full object-contain transition-all duration-1000"
+                />
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
 
