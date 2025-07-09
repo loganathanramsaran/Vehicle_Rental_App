@@ -50,7 +50,7 @@ function HeroFilter({ onResults }) {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 md:p-6 mt-6 w-full">
+    <div className="w-3/4">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {/* Start Date */}
         <div>

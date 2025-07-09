@@ -1,7 +1,10 @@
+import { Section } from "lucide-react";
+
 // src/pages/Services.jsx
 function Services() {
   return (
-    <div className="px-10 py-16 mx-auto dark:bg-gray-900 dark:text-white">
+    <section className="dark:bg-gray-900 max-w-7xl mx-auto">
+          <div className="px-10 py-16 dark:text-white">
       <h1 className="text-3xl font-bold mb-6 text-center text-orange-600">Our Services</h1>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ">
         {[
@@ -19,6 +22,8 @@ function Services() {
         ))}
       </div>
     </div>
+
+    </section>
   );
 }
 

@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 
-
 .booked-day {
   background-color: #fecaca !important; /* Tailwind's red-200 */
   color: #6b7280 !important;            /* Tailwind's gray-500 */

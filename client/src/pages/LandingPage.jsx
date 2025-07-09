@@ -10,7 +10,7 @@ import Contact from "../pages/Contact";
 
 const LandingPage = () => {
   return (
-    <div className="scroll-smooth">
+    <div className="scroll-smooth max-w-full mx-auto">
       <Navbar />
       <main>
         <Hero />

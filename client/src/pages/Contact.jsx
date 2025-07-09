@@ -27,7 +27,7 @@ function Contact() {
         Contact Us
       </h1>
       <p className="text-center text-gray-700 mb-4 text-sm">Please submit your user experience and your valuable feedback!</p>
-      <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto">
         <input
           name="name"
           value={form.name}

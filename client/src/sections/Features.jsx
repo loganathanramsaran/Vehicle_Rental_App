@@ -61,7 +61,7 @@ const Features = () => {
   });
 
   return (
-    <section id="features" className=" bg-gray-100 dark:bg-gray-900 py-12">
+    <section id="features" className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 mx-auto py-10">
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold text-orange-600 ">
           Explore Features

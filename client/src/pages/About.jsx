@@ -1,7 +1,8 @@
 // src/pages/About.jsx
 function About() {
   return (
-    <div className="px-10 py-10 mx-auto dark:bg-gray-900 dark:text-white">
+    <section className="dark:bg-gray-900 max-w-7xl mx-auto">
+          <div className="px-10 py-10 mx-auto dark:bg-gray-900 dark:text-white">
       <h1 className="text-3xl font-bold mb-4 text-center text-orange-600">About RentalApp</h1>
       <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
         RentalApp is your trusted platform to rent vehicles anytime, anywhere.
@@ -19,6 +20,8 @@ function About() {
         </div>
       </div>
     </div>
+
+    </section>
   );
 }
 

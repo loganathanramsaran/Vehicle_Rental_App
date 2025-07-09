@@ -6,7 +6,7 @@ function MiniVehicleCard({ vehicle }) {
   return (
     <div className="min-w-[250px] max-w-[250px] bg-orange-100 dark:bg-gray-800 shadow-md rounded-lg overflow-hidden flex-shrink-0">
       <img
-        src={vehicle.image || placeholderImage}
+        src={vehicle.image || "/placeholder.png"}
         alt={vehicle.title}
         className="w-full h-32 object-cover"
         onError={(e) => (e.target.src = placeholderImage)}

@@ -62,11 +62,11 @@ function Navbar() {
   const roleLinks = user?.isAdmin ? adminLinks : user ? userLinks : [];
 
   return (
-    <header className="bg-gradient-to-r from-orange-600 to-orange-700 dark:from-gray-900 dark:to-gray-800 text-white shadow-md sticky top-0 z-50">
+    <header className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700  text-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Brand */}
         <div className="flex items-center gap-4">
-          <Link to="/" className="text-2xl font-bold text-yellow-300">Rental<span className="text-white">App</span></Link>
+          <Link to="/" className="text-2xl font-bold text-orange-500">Rental<span className="text-gray-600">App</span></Link>
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden">
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -78,7 +78,7 @@ function Navbar() {
             <Link
               key={link.to}
               to={link.to}
-              className="relative hover:text-yellow-300 transition"
+              className="relative text-black dark:text-white dark:hover:text-orange-500 hover:text-orange-500 focus:underline transition"
             >
               {link.label}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-yellow-300 group-hover:w-full transition-all duration-300"></span>
@@ -95,14 +95,9 @@ function Navbar() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3 relative">
-          {/* Notifications */}
-          <div className="relative cursor-pointer">
-            <Bell size={20} />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
-          </div>
 
           {/* Theme Switch */}
-          <button onClick={() => setDarkMode(prev => !prev)} className="text-white hover:text-yellow-300 transition">
+          <button onClick={() => setDarkMode(prev => !prev)} className="text-black dark:text-white dark:hover:text-orange-500 hover:text-orange-500 transition">
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 

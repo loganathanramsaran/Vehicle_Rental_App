@@ -6,8 +6,11 @@ import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
+<div className=''>
+    <BrowserRouter >
     <App />
     <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
   </BrowserRouter>
+
+</div>
 )
