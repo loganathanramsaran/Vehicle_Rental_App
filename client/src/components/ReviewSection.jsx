@@ -12,7 +12,7 @@ function ReviewSection({ vehicleId }) {
   const fetchReviews = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/reviews/vehicle/${vehicleId}`
+        `${process.env.VITE_SERVER_URL}/api/reviews/vehicle/${vehicleId}`
       );
       setReviews(res.data);
     } catch (err) {
@@ -37,7 +37,7 @@ function ReviewSection({ vehicleId }) {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/reviews",
+        `${process.env.VITE_SERVER_URL}/api/reviews`,
         {
           vehicle: vehicleId,
           rating: newReview.rating,

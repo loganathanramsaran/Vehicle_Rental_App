@@ -18,7 +18,7 @@ function AdminVehicleList() {
       if (!decoded.isAdmin) return navigate("/dashboard");
 
       try {
-        const res = await axios.get("http://localhost:5000/api/vehicles", {
+        const res = await axios.get(`${process.env.VITE_SERVER_URL}/api/vehicles`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setVehicles(res.data);
@@ -52,7 +52,7 @@ function AdminVehicleList() {
     if (!window.confirm("Are you sure you want to delete this vehicle?")) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/vehicles/${id}`, {
+      await axios.delete(`${process.env.VITE_SERVER_URL}/api/vehicles/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setVehicles((prev) => prev.filter((v) => v._id !== id));

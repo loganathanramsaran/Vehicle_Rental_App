@@ -11,7 +11,12 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // 🔥 Serve uploaded files (avatars, etc.)
@@ -38,7 +43,6 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/feedback", require("./routes/feedbackRoutes"));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Start reminder job
 reminderJob();

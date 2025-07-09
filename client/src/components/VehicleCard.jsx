@@ -6,7 +6,7 @@ function VehicleCard({ vehicle }) {
   const imageSrc = vehicle.image?.startsWith("http")
     ? vehicle.image
     : vehicle.image
-    ? `http://localhost:5000${vehicle.image}` // Adjust to your server URL
+    ? `${process.env.VITE_SERVER_URL}${vehicle.image}` 
     : placeholderImage;
 
   return (

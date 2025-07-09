@@ -22,7 +22,7 @@ function EditVehicle() {
     const token = localStorage.getItem("token");
 
     axios
-      .get(`http://localhost:5000/api/vehicles/${id}`, {
+      .get(`${process.env.VITE_SERVER_URL}/api/vehicles/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then((res) => {
@@ -45,7 +45,7 @@ function EditVehicle() {
     const token = localStorage.getItem("token");
 
     try {
-      await axios.put(`http://localhost:5000/api/vehicles/${id}`, form, {
+      await axios.put(`${process.env.VITE_SERVER_URL}/api/vehicles/${id}`, form, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("Vehicle updated!");

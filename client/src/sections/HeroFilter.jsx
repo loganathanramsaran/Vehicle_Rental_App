@@ -11,7 +11,7 @@ function HeroFilter({ onResults }) {
 
   const fetchVehicles = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/vehicles");
+      const res = await axios.get(`${process.env.VITE_SERVER_URL}/api/vehicles`);
       setVehicles(res.data);
     } catch (err) {
       console.error("Error fetching vehicles:", err);

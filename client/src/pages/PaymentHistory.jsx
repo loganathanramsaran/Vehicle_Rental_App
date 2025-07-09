@@ -15,7 +15,7 @@ function PaymentHistory() {
         if (!token) throw new Error("Unauthorized");
 
         const decoded = jwtDecode(token);
-        const res = await axios.get("http://localhost:5000/api/bookings/mine", {
+        const res = await axios.get(`${process.env.VITE_SERVER_URL}/api/bookings/mine`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
