@@ -49,8 +49,7 @@ function AdminVehicleList() {
 
   const handleDelete = async (id) => {
     const token = localStorage.getItem("token");
-    if (!window.confirm("Are you sure you want to delete this vehicle?"))
-      return;
+    if (!window.confirm("Are you sure you want to delete this vehicle?")) return;
 
     try {
       await axios.delete(`http://localhost:5000/api/vehicles/${id}`, {
@@ -64,70 +63,81 @@ function AdminVehicleList() {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Manage Vehicles</h1>
+    <section className="bg-gray-100 dark:bg-gray-900 min-h-screen py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-3xl font-bold text-center text-green-700 dark:text-green-400 mb-8">
+          Admin - Manage Vehicles
+        </h1>
 
-      <div className="flex flex-wrap gap-4 mb-4">
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search by title..."
-          className="border px-3 py-2 rounded w-full sm:w-1/3"
-        />
-        <select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          className="border px-3 py-2 rounded w-full sm:w-1/4"
-        >
-          <option value="">Select Type</option>
-          <option value="SUV">SUV</option>
-          <option value="Sedan">Sedan</option>
-          <option value="Bike">Bike</option>
-          <option value="Hatchback">Hatchback</option>
-          <option value="Truck">Truck</option>
-          <option value="Van">Van</option>{" "}
-        </select>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by title..."
+            className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-green-300 dark:bg-gray-800 dark:text-white dark:border-gray-600"
+          />
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="w-full sm:w-1/4 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-green-300 dark:bg-gray-800 dark:text-white dark:border-gray-600"
+          >
+            <option value="All">All Types</option>
+            <option value="SUV">SUV</option>
+            <option value="Sedan">Sedan</option>
+            <option value="Bike">Bike</option>
+            <option value="Hatchback">Hatchback</option>
+            <option value="Truck">Truck</option>
+            <option value="Van">Van</option>
+          </select>
+        </div>
+
+        {filtered.length === 0 ? (
+          <p className="text-center text-gray-600 dark:text-gray-400">No vehicles found.</p>
+        ) : (
+          <div className="overflow-x-auto rounded-lg shadow">
+            <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+              <thead>
+                <tr className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-left">
+                  <th className="px-6 py-3">Title</th>
+                  <th className="px-6 py-3">Type</th>
+                  <th className="px-6 py-3">Price / Day</th>
+                  <th className="px-6 py-3 text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((vehicle, index) => (
+                  <tr
+                    key={vehicle._id}
+                    className={`border-t dark:border-gray-700 ${
+                      index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-800"
+                    } hover:bg-green-50 dark:hover:bg-gray-700 transition`}
+                  >
+                    <td className="px-6 py-3">{vehicle.title}</td>
+                    <td className="px-6 py-3">{vehicle.type}</td>
+                    <td className="px-6 py-3">₹{vehicle.pricePerDay}</td>
+                    <td className="px-6 py-3 text-center space-x-2">
+                      <button
+                        onClick={() => navigate(`/vehicles/edit/${vehicle._id}`)}
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(vehicle._id)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded transition"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
-
-      {filtered.length === 0 ? (
-        <p>No vehicles found.</p>
-      ) : (
-        <table className="min-w-full bg-white shadow rounded">
-          <thead>
-            <tr className="bg-gray-200 text-left">
-              <th className="p-2">Title</th>
-              <th className="p-2">Type</th>
-              <th className="p-2">Price/Day</th>
-              <th className="p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((vehicle) => (
-              <tr key={vehicle._id} className="border-t hover:bg-gray-50">
-                <td className="p-2">{vehicle.title}</td>
-                <td className="p-2">{vehicle.type}</td>
-                <td className="p-2">₹{vehicle.pricePerDay}</td>
-                <td className="p-2 space-x-2">
-                  <button
-                    onClick={() => navigate(`/vehicles/edit/${vehicle._id}`)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(vehicle._id)}
-                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
+    </section>
   );
 }
 

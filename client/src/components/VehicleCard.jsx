@@ -25,14 +25,22 @@ function VehicleCard({ vehicle }) {
       <p className="text-gray-600 dark:text-white mb-1">
         {vehicle.make} {vehicle.model} ({vehicle.year})
       </p>
-      <p className="text-gray-600 dark:text-white mb-1">📍 {vehicle.location}</p>
+      <p className="text-gray-600 dark:text-white mb-1">
+        📍 {vehicle.location}
+      </p>
 
-      {vehicle.averageRating !== null && (
-        <p className="text-yellow-600 font-medium text-sm mb-1">
-          ⭐ {vehicle.averageRating.toFixed(1)} / 5{" "}
-          <span className="text-gray-500">({vehicle.reviewCount} reviews)</span>
-        </p>
-      )}
+      <p className="text-yellow-600 font-medium text-sm mb-1">
+        {vehicle.averageRating !== null ? (
+          <>
+            ⭐ {vehicle.averageRating.toFixed(1)} / 5{" "}
+            <span className="text-gray-500">
+              ({vehicle.reviewCount} reviews)
+            </span>
+          </>
+        ) : (
+          <>☆ Not yet rated</>
+        )}
+      </p>
 
       <p className="text-green-700 dark:text-white font-semibold mb-2">
         ₹{vehicle.pricePerDay} / day
