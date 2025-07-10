@@ -63,9 +63,9 @@ function AdminVehicleList() {
   };
 
   return (
-    <section className="bg-gray-100 dark:bg-gray-900 min-h-screen py-10">
+    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-center text-green-700 dark:text-green-400 mb-8">
+        <h1 className="text-3xl font-bold text-center text-orange-600 dark:text-orange-400 mb-8">
           Admin - Manage Vehicles
         </h1>
 
@@ -98,7 +98,7 @@ function AdminVehicleList() {
           <div className="overflow-x-auto rounded-lg shadow">
             <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
               <thead>
-                <tr className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-left">
+                <tr className="bg-gradient-to-r from-orange-300 via-orange-600 to-orange-300 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 text-white dark:text-gray-200 text-left">
                   <th className="px-6 py-3">Title</th>
                   <th className="px-6 py-3">Type</th>
                   <th className="px-6 py-3">Price / Day</th>
@@ -110,8 +110,8 @@ function AdminVehicleList() {
                   <tr
                     key={vehicle._id}
                     className={`border-t dark:border-gray-700 ${
-                      index % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-800"
-                    } hover:bg-green-50 dark:hover:bg-gray-700 transition`}
+                      index % 2 === 0 ? "bg-orange-100 dark:bg-gray-700" : "bg-orange-200 dark:bg-gray-800"
+                    } hover:bg-orange-400 dark:hover:bg-gray-500 transition`}
                   >
                     <td className="px-6 py-3">{vehicle.title}</td>
                     <td className="px-6 py-3">{vehicle.type}</td>

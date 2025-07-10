@@ -63,11 +63,11 @@ function Navbar() {
 
   return (
     <header className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700  text-white sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-6 max-md:px-2 flex justify-between items-center">
         {/* Brand */}
         <div className="flex items-center gap-4">
-          <Link to="/" className="text-2xl font-bold text-orange-500">Rental<span className="text-gray-600">App</span></Link>
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden">
+          <img src="/logo.png" className="w-20"></img>
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden bg-orange-300 px-1 hover:text-orange-500 hover:bg-white text-gray-800 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-200 dark:hover:text-orange-500">
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
@@ -104,22 +104,22 @@ function Navbar() {
           {/* Avatar + Dropdown */}
           {user && (
             <div className="relative">
-              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 focus:outline-none">
+              <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 focus:outline-none ">
                 <img
                   src={user.avatar ? `${SERVER_URL}${user.avatar}` : "https://via.placeholder.com/30"}
                   alt="avatar"
-                  className="w-8 h-8 rounded-full object-cover border"
+                  className="w-8 h-8 rounded-full bg-orange-300 object-cover border"
                 />
-                <ChevronDown size={16} />
+                <ChevronDown size={16} className="text-orange-500" />
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 bg-white text-black rounded shadow-md py-2 w-40 dark:bg-gray-800 dark:text-white z-50">
-                  <Link to="/profile" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</Link>
-                  <Link to="/dashboard" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Dashboard</Link>
+                <div className="absolute right-0 mt-2 bg-orange-300 text-black rounded shadow-md py-2 w-40 dark:bg-gray-800 dark:text-white z-50">
+                  <Link to="/profile" className="block px-4 py-2 hover:bg-orange-400 hover:text-white dark:hover:bg-gray-700">Profile</Link>
+                  <Link to="/dashboard" className="block px-4 py-2 hover:bg-orange-400 hover:text-white dark:hover:bg-gray-700">Dashboard</Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="w-full text-left px-4 py-2 hover:bg-red-500 hover:text-white dark:hover:bg-gray-700"
                   >
                     Logout
                   </button>
@@ -134,12 +134,12 @@ function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden dark:bg-gray-900 backdrop-blur-sm px-4 pb-4 pt-2 flex flex-col space-y-3 text-white shadow-lg">
           {[...staticLinks, ...roleLinks].map(link => (
-            <Link key={link.to} to={link.to} className="hover:text-yellow-300 text-lg font-medium transition">
+            <Link key={link.to} to={link.to} className="hover:text-orange-500 dark:hover:text-orange-500 text-black dark:text-white text-lg font-medium transition">
               {link.label}
             </Link>
           ))}
           {user && (
-            <button onClick={handleLogout} className="text-left text-lg font-bold hover:text-black text-white mt-2">
+            <button onClick={handleLogout} className="text-left text-lg font-semibold hover:text-red-700 dark:hover:text-red-600 text-red-500 dark:text-white mt-2">
               Logout
             </button>
           )}

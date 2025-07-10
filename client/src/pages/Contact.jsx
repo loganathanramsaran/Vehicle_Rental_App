@@ -21,12 +21,12 @@ function Contact() {
   };
 
   return (
-    <div className="px-10 py-16 mx-auto dark:bg-gray-900 dark:text-white">
+    <div className="px-10 min-h-screen bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 dark:text-white">
       <Toaster position="top-right" />
       <h1 className="text-3xl font-bold text-center text-orange-600">
         Contact Us
       </h1>
-      <p className="text-center text-gray-700 mb-4 text-sm">Please submit your user experience and your valuable feedback!</p>
+      <p className="text-center text-gray-700 mb-10 text-sm">Please submit your user experience and your valuable feedback!</p>
       <form onSubmit={handleSubmit} className="space-y-4 max-w-lg mx-auto">
         <input
           name="name"

@@ -70,9 +70,9 @@ function AdminBookings() {
     );
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 py-10 px-4">
+    <div className="min-h-screen bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 py-10 px-4">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-green-700 dark:text-green-400 mb-8">
+        <h1 className="text-3xl font-bold text-center text-orange-600 dark:text-orange-400 mb-8">
           Admin - All Bookings
         </h1>
 
@@ -83,7 +83,7 @@ function AdminBookings() {
             {bookings.map((booking) => (
               <div
                 key={booking._id}
-                className="bg-white dark:bg-gray-800 rounded-2xl shadow hover:shadow-lg transition p-5"
+                className="bg-orange-100 dark:bg-gray-800 rounded-2xl shadow hover:shadow-lg transition p-5"
               >
                 {booking.vehicle?.image ? (
                   <img

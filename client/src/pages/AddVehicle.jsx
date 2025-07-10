@@ -57,10 +57,10 @@ function AddVehicle() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 p-4">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded shadow-md w-full max-w-lg space-y-4"
+        className="bg-orange-300 dark:bg-gray-900 p-6 rounded shadow-md w-full max-w-lg space-y-4"
         encType="multipart/form-data"
       >
         <h2 className="text-2xl font-bold text-center mb-4">Add New Vehicle</h2>
