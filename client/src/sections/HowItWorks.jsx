@@ -51,30 +51,32 @@ const HowItWorks = () => {
       id="how-it-works"
       className=" px-10 bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700  pb-20 text-center"
     >
-      <h2 className="text-4xl font-bold text-orange-600 mb-4">
-        How It Works
-      </h2>
-      <p className="text-gray-600 dark:text-gray-300 mb-12 max-w-xl mx-auto">
-        Renting a vehicle has never been easier. Follow these simple steps to get
-        started with your next ride.
-      </p>
+      <div className="max-w-7xl mx-auto py-10"> 
+        <h2 className="text-4xl font-bold text-orange-600 mb-4">
+          How It Works
+        </h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-12 max-w-xl mx-auto">
+          Renting a vehicle has never been easier. Follow these simple steps to
+          get started with your next ride.
+        </p>
 
-      <div className="grid lg:grid-cols-3 gap-10 mx-auto">
-        {steps.map((step) => (
-          <div
-            key={step.key}
-            onClick={() => navigate(step.path)}
-            className="cursor-pointer bg-orange-100 dark:bg-gray-800 rounded-xl p-6 shadow hover:shadow-xl transition duration-300 hover:-translate-y-1 group"
-          >
-            <div className="flex justify-center">{step.icon}</div>
-            <h3 className="text-xl font-semibold mt-3 mb-2 text-gray-900 dark:text-white group-hover:text-orange-600">
-              {step.title}
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
-              {step.text}
-            </p>
-          </div>
-        ))}
+        <div className="grid lg:grid-cols-3 gap-10 mx-auto">
+          {steps.map((step) => (
+            <div
+              key={step.key}
+              onClick={() => navigate(step.path)}
+              className="cursor-pointer bg-orange-100 dark:bg-gray-800 rounded-xl p-6 shadow hover:shadow-xl transition duration-300 hover:-translate-y-1 group"
+            >
+              <div className="flex justify-center">{step.icon}</div>
+              <h3 className="text-xl font-semibold mt-3 mb-2 text-gray-900 dark:text-white group-hover:text-orange-600">
+                {step.title}
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                {step.text}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

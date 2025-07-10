@@ -17,7 +17,9 @@ function BookVehicle() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`
+        );
         setVehicle(res.data);
 
         const bookingsRes = await axios.get(
@@ -193,23 +195,36 @@ function BookVehicle() {
   const totalPrice = totalDays * (vehicle?.pricePerDay || 0);
 
   return (
-    <div className="min-h-screen bg-gray-100 px-4 py-8 dark:bg-gray-900">
+    <div className="min-h-screen px-4 py-8 bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
       <div className="max-w-4xl mx-auto">
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="bg-white dark:bg-gray-800 shadow p-6 rounded mb-8"
+          className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700shadow p-6 rounded mb-8"
         >
           <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
             Book Vehicle
           </h2>
 
-          <p className="font-semibold text-center dark:text-gray-200">
-            {vehicle.title}
-          </p>
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-4">
-            ₹{vehicle.pricePerDay}/day
-          </p>
+          <div className="p-5 flex items-center justify-evenly ">
+            <div>
+              <p className="font-semibold dark:text-gray-200">
+                {vehicle.title}
+              </p>
+              <p className="text-center text-gray-600 dark:text-gray-400 mb-4">
+                ₹{vehicle.pricePerDay}/day
+              </p>
+            </div>
 
+            <img
+              src={
+                vehicle.image
+                  ? `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
+                  : "/placeholder.png"
+              }
+              alt={vehicle.title}
+              className="w-1/3 h-36 object-cover "
+            />
+          </div>{" "}
           <label className="block mb-2 text-sm dark:text-gray-300">
             Start Date
           </label>
@@ -225,7 +240,6 @@ function BookVehicle() {
             // filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6} // Optional: disable weekends
             className="w-full border px-3 py-2 rounded mb-4"
           />
-
           <label className="block mb-2 text-sm dark:text-gray-300">
             End Date
           </label>
@@ -241,7 +255,6 @@ function BookVehicle() {
             // filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6} // Optional: disable weekends
             className="w-full border px-3 py-2 rounded mb-4"
           />
-
           {startDate && endDate && (
             <div className="mb-4 text-center text-sm text-gray-700 dark:text-gray-300">
               <p>
@@ -260,7 +273,6 @@ function BookVehicle() {
               </p>
             </div>
           )}
-
           <div className="flex items-center gap-6 mb-4">
             <span className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <span className="w-4 h-4 bg-green-100 rounded border border-green-400 inline-block"></span>{" "}
@@ -271,7 +283,6 @@ function BookVehicle() {
               Booked
             </span>
           </div>
-
           <button
             onClick={handlePayment}
             className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"

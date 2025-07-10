@@ -1,17 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import placeholder from "/placeholder.png"; // ✅ ensure this exists
 
 function MiniVehicleCarousel() {
   const [vehicles, setVehicles] = useState([]);
+  const scrollRef = useRef(null);
   const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
 
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
         const res = await axios.get(`${SERVER_URL}/api/vehicles/available`);
-        console.log("Mini carousel vehicles:", res.data);
         setVehicles(res.data);
       } catch (err) {
         console.error("Failed to fetch vehicles", err);
@@ -21,32 +20,66 @@ function MiniVehicleCarousel() {
     fetchVehicles();
   }, []);
 
+  useEffect(() => {
+    const scrollContainer = scrollRef.current;
+    const cardWidth = 220; // approx width of one card
+    const interval = setInterval(() => {
+      if (!scrollContainer) return;
+
+      // If we’re near the end, scroll back to start
+      if (
+        scrollContainer.scrollLeft + scrollContainer.offsetWidth >=
+        scrollContainer.scrollWidth - cardWidth
+      ) {
+        scrollContainer.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        scrollContainer.scrollBy({ left: cardWidth, behavior: "smooth" });
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [vehicles]);
+
   if (!vehicles.length) return null;
 
   return (
-    <div className="bg-white dark:bg-gray-900 py-6 px-4 overflow-x-auto whitespace-nowrap scrollbar-hide scroll-smooth snap-x snap-mandatory">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Available Vehicles</h2>
-      <div className="flex gap-4">
-        {vehicles.map((vehicle) => (
-          <Link
-            key={vehicle._id}
-            to={`/vehicle/${vehicle._id}`}
-            className="min-w-[200px] snap-start bg-gray-100 dark:bg-gray-700 rounded-lg shadow-md hover:scale-105 transition-transform duration-300"
-          >
-            <img
-              src={`${SERVER_URL}${vehicle.image}`}
-              alt={vehicle.title}
-              onError={(e) => (e.target.src = placeholder)}
-              className="w-full h-32 object-cover rounded-t-lg"
-            />
-            <div className="p-2 text-sm">
-              <h3 className="font-semibold text-gray-800 dark:text-white truncate">{vehicle.title}</h3>
-              <p className="text-gray-600 dark:text-gray-300">₹{vehicle.pricePerDay} / day</p>
-            </div>
-          </Link>
-        ))}
+    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
+      <div className=" py-16 px-6 overflow-hidden max-w-7xl mx-auto">
+        <h2 className="text-2xl text-center font-bold mb-10 text-gray-800 dark:text-white">
+          Available Vehicles
+        </h2>
+        <div
+          ref={scrollRef}
+          className="flex gap-4 overflow-x-auto whitespace-nowrap scrollbar-hide"
+        >
+          {vehicles.map((vehicle) => (
+            <Link
+              key={vehicle._id}
+              to={`/vehicles/${vehicle._id}/book`}
+              className="min-w-[200px] bg-orange-300 dark:bg-gray-700 rounded-lg shadow-md hover:scale-105 transition-transform"
+            >
+              <img
+                src={
+                  vehicle.image
+                    ? `${SERVER_URL}${vehicle.image}`
+                    : "/placeholder.png"
+                }
+                alt={vehicle.title}
+                className="w-full h-32 object-cover rounded-t-lg "
+              />
+              <div className="p-2 text-sm">
+                <h3 className="font-semibold text-gray-800 dark:text-white truncate">
+                  {vehicle.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  ₹{vehicle.pricePerDay} / day
+                </p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
