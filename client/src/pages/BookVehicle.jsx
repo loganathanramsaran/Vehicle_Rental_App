@@ -17,11 +17,11 @@ function BookVehicle() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`${process.env.VITE_SERVER_URL}/api/vehicles/${id}`);
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`);
         setVehicle(res.data);
 
         const bookingsRes = await axios.get(
-          `${process.env.VITE_SERVER_URL}/api/bookings/vehicle/${id}`
+          `${import.meta.env.VITE_SERVER_URL}/api/bookings/vehicle/${id}`
         );
         const activeBookings = bookingsRes.data.filter(
           (b) => b.status !== "cancelled"
@@ -94,7 +94,7 @@ function BookVehicle() {
 
     try {
       const { data: order } = await axios.post(
-        `${process.env.VITE_SERVER_URL}/api/payment/orders`,
+        `${import.meta.env.VITE_SERVER_URL}/api/payment/orders`,
         { amount: totalPrice * 100 },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -109,14 +109,14 @@ function BookVehicle() {
         handler: async function (response) {
           try {
             const verifyRes = await axios.post(
-              `${process.env.VITE_SERVER_URL}/api/payment/verify`,
+              `${import.meta.env.VITE_SERVER_URL}/api/payment/verify`,
               { ...response, vehicleId: id, amount: totalPrice * 100 },
               { headers: { Authorization: `Bearer ${token}` } }
             );
 
             if (verifyRes.data.success) {
               await axios.post(
-                `${process.env.VITE_SERVER_URL}/api/bookings`,
+                `${import.meta.env.VITE_SERVER_URL}/api/bookings`,
                 {
                   vehicle: id,
                   startDate,

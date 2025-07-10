@@ -12,7 +12,7 @@ function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${process.env.VITE_SERVER_URL}/api/feedback`, form);
+      await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/feedback`, form);
       toast.success("Feedback sent successfully!");
       setForm({ name: "", email: "", message: "" });
     } catch (err) {

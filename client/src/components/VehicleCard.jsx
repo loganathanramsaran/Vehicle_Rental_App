@@ -6,7 +6,7 @@ function VehicleCard({ vehicle }) {
   const imageSrc = vehicle.image?.startsWith("http")
     ? vehicle.image
     : vehicle.image
-    ? `${process.env.VITE_SERVER_URL}${vehicle.image}` 
+    ? `${import.meta.env.VITE_SERVER_URL}${vehicle.image}` 
     : placeholderImage;
 
   return (

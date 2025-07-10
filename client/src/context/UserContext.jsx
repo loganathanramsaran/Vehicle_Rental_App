@@ -6,19 +6,30 @@ export const UserContext = createContext();
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get("http://localhost:5000/api/user/me", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setUser(res.data.user);
-    } catch (err) {
-      console.error("Failed to fetch user", err);
-      setUser(null);
-    }
-  };
+const fetchUser = async () => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    console.warn("⚠️ No token found in localStorage");
+    setUser(null);
+    return;
+  }
+
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/user/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    setUser(res.data.user); // ✅ check your backend returns `{ user }`
+  } catch (err) {
+    console.error("❌ Failed to fetch user", err.response?.data || err.message);
+    setUser(null);
+    // Optionally: remove malformed/expired token
+    localStorage.removeItem("token");
+  }
+};
 
   useEffect(() => {
     fetchUser();

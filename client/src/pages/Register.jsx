@@ -32,7 +32,7 @@ function Register() {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${process.env.VITE_SERVER_URL}/api/auth/send-otp`, {
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/send-otp`, {
         email: form.email,
         name: form.name,
       });
@@ -50,7 +50,7 @@ function Register() {
     setError("");
     setLoading(true);
     try {
-      await axios.post(`${process.env.VITE_SERVER_URL}/api/auth/register`, form);
+      await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/register`, form);
       alert("Registration successful! You can now log in.");
       navigate("/login");
     } catch (err) {

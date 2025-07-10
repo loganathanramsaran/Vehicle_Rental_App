@@ -16,7 +16,7 @@ function AdminBookings() {
           return;
         }
 
-        const res = await axios.get(`${process.env.VITE_SERVER_URL}/api/bookings`, {
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/bookings`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -41,7 +41,7 @@ function AdminBookings() {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `${process.env.VITE_SERVER_URL}/api/bookings/${bookingId}/cancel`,
+        `${import.meta.env.VITE_SERVER_URL}/api/bookings/${bookingId}/cancel`,
         {},
         {
           headers: {
@@ -90,7 +90,7 @@ function AdminBookings() {
                     src={
                       booking.vehicle.image.startsWith("http")
                         ? booking.vehicle.image
-                        : `${process.env.VITE_SERVER_URL}${booking.vehicle.image}`
+                        : `${import.meta.env.VITE_SERVER_URL}${booking.vehicle.image}`
                     }
                     alt={booking.vehicle.title}
                     className="w-full h-40 object-cover rounded-lg mb-3"

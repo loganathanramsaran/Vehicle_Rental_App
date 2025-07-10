@@ -43,7 +43,7 @@ function AddVehicle() {
     }
 
     try {
-      await axios.post(`${process.env.VITE_SERVER_URL}/api/vehicles`, formData, {
+      await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/vehicles`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -11,14 +11,18 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post(`${process.env.VITE_SERVER_URL}/api/auth/login`, form);
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/login`,
+        form
+      );
       localStorage.setItem("token", res.data.token);
       navigate("/");
     } catch (err) {
@@ -37,9 +41,15 @@ function Login() {
       linkText="Don't have an account? Register here"
       linkTo="/register"
     >
-      <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">Login to Your Account</h2>
+      <h2 className="text-2xl font-bold text-orange-600 text-center mb-6">
+        Login to Your Account
+      </h2>
 
-      {error && <p className="bg-red-100 text-red-600 px-4 py-2 rounded mb-4 text-sm">{error}</p>}
+      {error && (
+        <p className="bg-red-100 text-red-600 px-4 py-2 rounded mb-4 text-sm">
+          {error}
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <input

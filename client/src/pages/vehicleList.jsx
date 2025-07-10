@@ -18,7 +18,7 @@ function VehicleList() {
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
-        const res = await axios.get(`${process.env.VITE_SERVER_URL}/api/vehicles`);
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles`);
         setVehicles(res.data);
       } catch (err) {
         console.error("Failed to fetch vehicles:", err);

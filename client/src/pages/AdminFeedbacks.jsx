@@ -8,7 +8,7 @@ function AdminFeedbacks() {
     const fetchFeedbacks = async () => {
       const token = localStorage.getItem("token");
       try {
-        const res = await axios.get(`${process.env.VITE_SERVER_URL}/api/feedback`, {
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/feedback`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setFeedbacks(res.data);
