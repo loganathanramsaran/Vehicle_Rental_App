@@ -6,14 +6,26 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 
-
+// Multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/vehicles"),
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
-
 const upload = multer({ storage });
 
+// ✅ GET /api/vehicles/available - all available vehicles
+// MUST BE ABOVE "/:id"
+router.get("/available", async (req, res) => {
+  try {
+    const vehicles = await Vehicle.find({ available: true });
+    res.json(vehicles);
+  } catch (err) {
+    console.error("Error fetching available vehicles:", err.message);
+    res.status(500).json({ error: "Failed to fetch available vehicles" });
+  }
+});
+
+// 🔐 POST /api/vehicles - Create vehicle
 router.post("/", verifyToken, requireAdmin, upload.single("image"), async (req, res) => {
   const data = {
     ...req.body,
@@ -28,8 +40,7 @@ router.post("/", verifyToken, requireAdmin, upload.single("image"), async (req, 
   }
 });
 
-
-// GET /api/vehicles - All vehicles with average rating
+// 📦 GET /api/vehicles - All vehicles with average ratings
 router.get("/", async (req, res) => {
   try {
     const vehicles = await Vehicle.find().lean();
@@ -57,7 +68,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// GET /api/vehicles/:id - Single vehicle
+// 🔍 GET /api/vehicles/:id - Single vehicle (MUST BE LAST)
 router.get("/:id", async (req, res) => {
   try {
     const vehicle = await Vehicle.findById(req.params.id);
@@ -69,7 +80,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// DELETE /api/vehicles/:id - Delete vehicle (admin only)
+// ❌ DELETE /api/vehicles/:id
 router.delete("/:id", verifyToken, requireAdmin, async (req, res) => {
   try {
     const deleted = await Vehicle.findByIdAndDelete(req.params.id);
@@ -80,11 +91,10 @@ router.delete("/:id", verifyToken, requireAdmin, async (req, res) => {
   }
 });
 
-// PUT /api/vehicles/:id - Update vehicle (admin only, optionally with image)
+// ✏️ PUT /api/vehicles/:id
 router.put("/:id", verifyToken, requireAdmin, upload.single("image"), async (req, res) => {
   try {
     const updates = { ...req.body };
-
     if (req.file) {
       updates.image = `/uploads/vehicles/${req.file.filename}`;
     }

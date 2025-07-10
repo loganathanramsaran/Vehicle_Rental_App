@@ -20,8 +20,9 @@ import EditVehicle from "./pages/EditVehicle";
 import Profile from "./pages/Profile";
 import LandingPage from "./pages/LandingPage";
 import VehicleDetails from "./pages/VehicleDetails";
-import MainLayout from "./components/MainLayout"; // ✅ import layout
+import MainLayout from "./components/MainLayout"; 
 import AdminFeedbacks from "./pages/AdminFeedbacks";
+import MiniVehicleCarousel from "./components/MiniVehicleCarousel";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/services" element={<MainLayout><Services /> </MainLayout>} />
         <Route path="/contact" element={<MainLayout><Contact /> </MainLayout>} />
         <Route path="/vehicle/:id" element={<VehicleDetails />} />
+        <Route path="/" element={<MiniVehicleCarousel />} />
 
         
         {/* Protected Routes with MainLayout */}

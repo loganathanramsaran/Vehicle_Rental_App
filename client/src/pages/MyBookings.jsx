@@ -25,7 +25,7 @@ function MyBookings() {
             },
           }
         );
-        setBookings(res.data);
+        setBookings(res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       } catch (err) {
         console.error("Failed to fetch bookings:", err);
       } finally {
@@ -65,12 +65,13 @@ function MyBookings() {
       setDeletingId(null);
     }
   };
+  
 
   if (loading) return <p className="p-4 text-gray-600">Loading bookings...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 dark:text-white p-6">
-      <h1 className="text-3xl dark:text-orange-600 font-bold mt-2 mb-5 border-b-2 dark:border-yellow-500 pb-6 text-center">
+    <div className="min-h-screen bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 dark:text-white p-6">
+      <h1 className="text-3xl text-orange-600 dark:text-orange-400 font-bold mt-2 mb-5 border-b-2 border-orange-600 dark:border-yellow-500 pb-6 text-center">
         My Bookings
       </h1>
 

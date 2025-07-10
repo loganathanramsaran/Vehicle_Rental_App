@@ -1,4 +1,3 @@
-// src/pages/About.jsx
 function About() {
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 mx-auto">

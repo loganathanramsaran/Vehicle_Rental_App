@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserPlus, Car, CalendarCheck } from "lucide-react";
+import { UserPlus, Car, CalendarCheck, ViewIcon } from "lucide-react";
 
 const allSteps = [
   {
@@ -22,7 +22,14 @@ const allSteps = [
     icon: <CalendarCheck className="w-10 h-10 text-orange-500 mb-3" />,
     title: "Book & Go",
     text: "Confirm your booking and start your journey hassle-free.",
-    path: "/add-vehicle",
+    path: "/dashboard",
+  },
+  {
+    key: "bookings",
+    icon: <ViewIcon className="w-10 h-10 text-orange-500 mb-3" />,
+    title: "My-Bookings",
+    text: "View your booking and start your journey hassle-free.",
+    path: "/my-bookings",
   },
 ];
 
