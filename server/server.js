@@ -4,30 +4,41 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 
-// Load environment variables
 dotenv.config();
-
-// Initialize app
 const app = express();
 
-// Middleware
-app.use(
-  cors({
-    origin: [process.env.CLIENT_URL],
-    credentials: true,
-  })
-);
-app.use(express.json());
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://vehiclerentalapk.netlify.app"
+];
 
-// 🔥 Serve uploaded files (avatars, etc.)
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// ✅ Manual CORS headers (for Render)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
 
-// Health check route
-app.get("/", (req, res) => {
-  res.send("🚗 Vehicle Rental API is running...");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
 });
 
-// Routes
+// ✅ Still keep cors() middleware for safety
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+
+app.use(express.json());
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// ✅ Routes
 const authRoutes = require("./routes/authRoutes");
 const vehicleRoutes = require("./routes/vehicleRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
@@ -35,6 +46,10 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const userRoutes = require("./routes/userRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const reminderJob = require("./reminderJob");
+
+app.get("/", (req, res) => {
+  res.send("🚗 Vehicle Rental API is running...");
+});
 
 app.use("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
@@ -44,16 +59,13 @@ app.use("/api/user", userRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/feedback", require("./routes/feedbackRoutes"));
 
-// Start reminder job
 reminderJob();
 
-// Error handler middleware
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
   res.status(500).json({ error: "Something went wrong!" });
 });
 
-// MongoDB connection
 mongoose.set("strictQuery", false);
 const PORT = process.env.PORT || 5000;
 

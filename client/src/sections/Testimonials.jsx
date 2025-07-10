@@ -7,7 +7,7 @@ const Testimonials = () => {
 
   const fetchReviews = async () => {
     try {
-      const res = await axios.get(`${process.env.VITE_SERVER_URL}/api/reviews/all`);
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/reviews/all`);
       setReviews(res.data);
     } catch (err) {
       console.error("Failed to load testimonials", err);
