@@ -25,7 +25,9 @@ function MyBookings() {
             },
           }
         );
-        setBookings(res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
+        setBookings(
+          res.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        );
       } catch (err) {
         console.error("Failed to fetch bookings:", err);
       } finally {
@@ -65,7 +67,6 @@ function MyBookings() {
       setDeletingId(null);
     }
   };
-  
 
   if (loading) return <p className="p-4 text-gray-600">Loading bookings...</p>;
 
@@ -139,12 +140,18 @@ function MyBookings() {
                   </td>
                 </div>
                 <div className="flex flex-col items-center ">
-                  <Link
-                    to={`/vehicle/${booking.vehicle._id}`}
-                    className="text-blue-500 underline"
-                  >
-                    View Vehicle
-                  </Link>
+                  {booking.vehicle ? (
+                    <Link
+                      to={`/vehicle/${booking.vehicle._id}`}
+                      className="text-blue-500 underline"
+                    >
+                      View Vehicle
+                    </Link>
+                  ) : (
+                    <span className="text-gray-400 italic">
+                      Vehicle Unavailable
+                    </span>
+                  )}
 
                   {booking.status !== "cancelled" && (
                     <button

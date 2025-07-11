@@ -43,6 +43,7 @@ function BookVehicle() {
   }, [id]);
 
   useEffect(() => {
+    window.scrollTo(0,0);
     console.log("📆 Booked Ranges:", bookedRanges);
   }, [bookedRanges]);
 
@@ -195,17 +196,17 @@ function BookVehicle() {
   const totalPrice = totalDays * (vehicle?.pricePerDay || 0);
 
   return (
-    <div className="min-h-screen px-4 py-8 bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
+    <div className="min-h-screen py-8 bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
       <div className="max-w-4xl mx-auto">
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700shadow p-6 rounded mb-8"
+          className="bg-gradient-to-r from-orange-200 via-orange-400 to-orange-200 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700shadow p-6 rounded mb-8"
         >
           <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
             Book Vehicle
           </h2>
 
-          <div className="p-5 flex items-center justify-evenly ">
+          <div className="py-5 flex flex-wrap items-center justify-evenly max-md:justify-around ">
             <div>
               <p className="font-semibold dark:text-gray-200">
                 {vehicle.title}
@@ -222,7 +223,7 @@ function BookVehicle() {
                   : "/placeholder.png"
               }
               alt={vehicle.title}
-              className="w-1/3 h-36 object-cover "
+              className=" h-36 object-cover "
             />
           </div>{" "}
           <label className="block mb-2 text-sm dark:text-gray-300">
