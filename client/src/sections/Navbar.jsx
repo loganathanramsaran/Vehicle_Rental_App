@@ -63,11 +63,11 @@ function Navbar() {
 
   return (
     <header className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700  text-white sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-6 max-md:px-2 flex justify-between items-center">
+      <div className="max-w-7xl h-14 mx-auto px-6 max-md:px-2 flex justify-between items-center">
         {/* Brand */}
         <div className="flex items-center gap-4">
           <Link to={"/"}>
-                    <img src="/logo.png" className=" h-16 "></img>
+                    <img src="/logomain.png" className=" w-28  "></img>
 
           </Link>
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden  px-1 hover:text-orange-500 hover:bg-white text-gray-800 dark:text-white  dark:hover:bg-gray-200 dark:hover:text-orange-500">
