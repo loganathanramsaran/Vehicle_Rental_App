@@ -20,7 +20,7 @@ const Testimonials = () => {
 
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 min-h-screen">
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-6xl mx-auto px-4 pb-20">
         <h2 className="text-3xl sm:text-4xl font-bold text-center text-orange-600 mb-10">
           What Our Customers Say
         </h2>
