@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-import { navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export const UserContext = createContext();
 
@@ -36,7 +36,7 @@ useEffect(() => {
   const token = localStorage.getItem("token");
   if (!token) {
     console.warn("No token found in localStorage");
-    navigate("/login");
+    Navigate("/login");
     return;
   }
 
