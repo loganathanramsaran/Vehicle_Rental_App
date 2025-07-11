@@ -77,6 +77,6 @@ VITE_SERVER_URL=https://vehicle-rental-app-v5vx.onrender.com
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/your-username/vehicle-rental-app.git
+git clone [https://github.com/your-username/vehicle-rental-app](https://github.com/loganathanramsaran/Vehicle_Rental_App).git
 cd vehicle-rental-app
 
