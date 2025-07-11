@@ -56,7 +56,7 @@ vehicle-rental-app/
 ---
 ## 🖼️ Screenshot
 
-![Homepage Screenshot](./homepage.PNG)
+![Homepage Screenshot](./homepage.png)
 
 
 ---
