@@ -5,6 +5,7 @@ Welcome to **Go Rent**, a modern and responsive vehicle rental web application b
 ---
 
 ## Disclaimer: Admin - is the first registered user
+<br>
 
 ## 🌍 Live Demo
 
