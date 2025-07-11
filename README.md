@@ -50,21 +50,20 @@ vehicle-rental-app/
 ├── server/ # Express backend
 ├── uploads/ # Vehicle image uploads
 ├── .env # Environment variables
-
-
+```
 ---
 
 ## ⚙️ Environment Variables
 
 ### 📦 Backend (`/server/.env`)
-
+```
 PORT=5000
 MONGODB_URI=your_mongodb_uri
 JWT_SECRET=your_jwt_secret
 RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 BASE_URL=https://vehicle-rental-app-v5vx.onrender.com
-
+```
 
 ### 💻 Frontend (`/client/.env`)
 
