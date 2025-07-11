@@ -56,7 +56,7 @@ function MiniVehicleCarousel() {
             <Link
               key={vehicle._id}
               to={`/vehicles/${vehicle._id}/book`}
-              className="min-w-[200px] bg-orange-300 dark:bg-gray-700 rounded-lg shadow-md hover:scale-105 transition-transform"
+              className="min-w-60 bg-orange-300 dark:bg-gray-700 rounded-lg shadow-md hover:scale-105 transition-transform"
             >
               <img
                 src={
@@ -65,7 +65,7 @@ function MiniVehicleCarousel() {
                     : "/placeholder.png"
                 }
                 alt={vehicle.title}
-                className="w-full h-32 object-cover rounded-t-lg "
+                className="w-full h-36 object-cover rounded-t-lg "
               />
               <div className="p-2 text-sm">
                 <h3 className="font-semibold text-gray-800 dark:text-white truncate">

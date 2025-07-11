@@ -86,7 +86,7 @@ function VehicleList() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 p-4 lg:flex">
+    <div className="min-h-screen bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 p-4 lg:flex">
       {/* Sidebar (Desktop) */}
       <div className="hidden lg:block w-64 pr-6 sticky top-4 h-fit">
         <div className="bg-white dark:bg-gray-700 p-4 shadow rounded space-y-4">
@@ -275,8 +275,8 @@ function VehicleList() {
       )}
 
       {/* Vehicle List */}
-      <div className="flex-1">
-        <h1 className="text-3xl dark:text-orange-600 font-bold mt-2 mb-5 border-b-2 dark:border-yellow-500 pb-6 text-center">
+      <div className="flex-1 flex flex-col max-h-screen">
+        <h1 className="text-3xl sticky top-0 z-10 dark:text-orange-600 font-bold mt-2 mb-5 border-b-2 dark:border-yellow-500 pb-6 text-center">
           Available Vehicles
         </h1>
         {error && (
@@ -293,7 +293,7 @@ function VehicleList() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 overflow-y-auto">
           {filteredVehicles.length > 0 ? (
             filteredVehicles.map((vehicle) => (
               <VehicleCard key={vehicle._id} vehicle={vehicle} />

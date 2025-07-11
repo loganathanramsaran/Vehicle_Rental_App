@@ -66,8 +66,11 @@ function Navbar() {
       <div className="max-w-7xl mx-auto px-6 max-md:px-2 flex justify-between items-center">
         {/* Brand */}
         <div className="flex items-center gap-4">
-          <img src="/logo.png" className="w-20"></img>
-          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden bg-orange-300 px-1 hover:text-orange-500 hover:bg-white text-gray-800 dark:text-white dark:bg-gray-700 dark:hover:bg-gray-200 dark:hover:text-orange-500">
+          <Link to={"/"}>
+                    <img src="/logo.png" className=" h-16 "></img>
+
+          </Link>
+          <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="md:hidden  px-1 hover:text-orange-500 hover:bg-white text-gray-800 dark:text-white  dark:hover:bg-gray-200 dark:hover:text-orange-500">
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
