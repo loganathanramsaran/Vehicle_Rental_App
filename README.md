@@ -6,7 +6,9 @@ Welcome to **Go Rent**, a modern and responsive vehicle rental web application b
 
 ## 🌍 Live Demo
 
-🔗 **[Visit Go Rent on Render](https://vehicle-rental-app-v5vx.onrender.com)**  
+🔗 **[Visit Back-End](https://vehicle-rental-app-v5vx.onrender.com)** 
+🔗 **[Visit Front-End](https://vehiclerentalapk.netlify.app/)** 
+
 📂 Frontend and Backend hosted using Render (Multer-based image upload supported)
 
 ---
@@ -44,9 +46,55 @@ Welcome to **Go Rent**, a modern and responsive vehicle rental web application b
 ---
 
 ## 📂 Folder Structure
+```
 vehicle-rental-app/
 ├── client/ # React frontend
 ├── server/ # Express backend
 ├── uploads/ # Vehicle image uploads
 ├── .env # Environment variables
+```
+---
+## 🖼️ Screenshot
 
+![Homepage Screenshot](./homepage.png)
+
+
+---
+
+## 🚀 Getting Started
+
+## 📦 Installation
+
+###Clone the Repo
+
+```bash
+git clone https://github.com/loganathanramsaran/Vehicle_Rental_App.git
+cd Vehicle_Rental_App
+
+##Setup Backend
+cd server
+npm install
+
+Create a .env file inside /server:
+PORT=5000
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+BASE_URL=https://vehicle-rental-app-v5vx.onrender.com
+CLIENT_URL=https://vehiclerentalapk.netlify.app
+
+Create a .env file inside /client:
+VITE_SERVER_URL=https://vehicle-rental-app-v5vx.onrender.com
+VITE_RAZORPAY_KEY_ID=your_razorpay_key_id
+
+
+#Then start the backend:
+cd ../client
+npm run dev
+
+##Setup Frontend
+cd ../client
+npm install
+npm start
+---
