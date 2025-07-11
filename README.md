@@ -2,10 +2,9 @@
 
 Welcome to **Go Rent**, a modern and responsive vehicle rental web application built using the **MERN stack** (MongoDB, Express.js, React.js, Node.js). Users can search, book, and pay for vehicles, while admins manage listings and bookings efficiently.
 
----
-
 ## Disclaimer: Admin - is the first registered user
 <br>
+---
 
 ## 🌍 Live Demo
 
