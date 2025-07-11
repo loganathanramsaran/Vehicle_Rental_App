@@ -6,7 +6,9 @@ Welcome to **Go Rent**, a modern and responsive vehicle rental web application b
 
 ## 🌍 Live Demo
 
-🔗 **[Visit Go Rent on Render](https://vehicle-rental-app-v5vx.onrender.com)**  
+🔗 **[Visit Back-End](https://vehicle-rental-app-v5vx.onrender.com)** 
+🔗 **[Visit Front-End](https://vehiclerentalapk.netlify.app/)** 
+
 📂 Frontend and Backend hosted using Render (Multer-based image upload supported)
 
 ---
