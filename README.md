@@ -65,6 +65,8 @@ JWT_SECRET=your_jwt_secret
 RAZORPAY_KEY_ID=your_razorpay_key_id
 RAZORPAY_KEY_SECRET=your_razorpay_key_secret
 BASE_URL=https://vehicle-rental-app-v5vx.onrender.com
+CLIENT_URL=https://vehiclerentalapk.netlify.app
+
 ```
 
 ### 💻 Frontend (`/client/.env`)
