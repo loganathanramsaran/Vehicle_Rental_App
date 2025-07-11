@@ -44,4 +44,9 @@ Welcome to **Go Rent**, a modern and responsive vehicle rental web application b
 ---
 
 ## 📂 Folder Structure
+vehicle-rental-app/
+├── client/ # React frontend
+├── server/ # Express backend
+├── uploads/ # Vehicle image uploads
+├── .env # Environment variables
 
