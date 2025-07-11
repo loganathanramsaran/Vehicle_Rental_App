@@ -11,7 +11,7 @@ function About() {
           fleet bookings, our system is designed to simplify every step of the
           process.
         </p>
-        <div className="flex flex-col gap-4 max-w-2xl mx-auto mt-10">
+        <div className="flex flex-col gap-8 max-w-2xl mx-auto mt-10">
           <div className="bg-green-300 dark:bg-green-800 p-4 rounded shadow">
             <h3 className="font-semibold text-lg mb-2">For Customers</h3>
             <p>
@@ -24,6 +24,12 @@ function About() {
             <p>
               Manage your vehicles and view all bookings from a single
               dashboard.
+            </p>
+          </div>
+          <div className="bg-gray-300 dark:bg-gray-800 p-4 rounded shadow">
+            <h3 className="font-semibold text-lg mb-2">More Features</h3>
+            <p>
+              More features add will be later, site is under construction
             </p>
           </div>
         </div>
