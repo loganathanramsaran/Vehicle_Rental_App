@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
 
 export const UserContext = createContext();
 
@@ -32,16 +31,9 @@ const fetchUser = async () => {
   }
 };
 
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    console.warn("No token found in localStorage");
-    Navigate("/login");
-    return;
-  }
-
-  // Fetch user or protected data
-}, []);
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser, fetchUser }}>
