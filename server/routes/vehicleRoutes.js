@@ -13,23 +13,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// GET /api/vehicles/available?page=1&limit=4
+// ✅ GET /api/vehicles/available - all available vehicles
+// MUST BE ABOVE "/:id"
 router.get("/available", async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 4;
-    const skip = (page - 1) * limit;
-
-    const vehicles = await Vehicle.find({ available: true })
-      .skip(skip)
-      .limit(limit);
-
-    const total = await Vehicle.countDocuments({ available: true });
-
-    res.json({
-      vehicles,
-      hasMore: skip + limit < total
-    });
+    const vehicles = await Vehicle.find({ available: true });
+    res.json(vehicles);
   } catch (err) {
     console.error("Error fetching available vehicles:", err.message);
     res.status(500).json({ error: "Failed to fetch available vehicles" });

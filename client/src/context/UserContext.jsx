@@ -31,9 +31,16 @@ const fetchUser = async () => {
   }
 };
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.warn("No token found in localStorage");
+    navigate("/login");
+    return;
+  }
+
+  // Fetch user or protected data
+}, []);
 
   return (
     <UserContext.Provider value={{ user, setUser, fetchUser }}>
