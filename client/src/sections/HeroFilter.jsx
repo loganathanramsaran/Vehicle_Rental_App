@@ -11,62 +11,60 @@ function HeroFilter({ onResults }) {
   const [vehicles, setVehicles] = useState([]);
   const [resultsCount, setResultsCount] = useState(0);
 
-
   const fetchVehicles = async () => {
     try {
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles`);
+      const res = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/vehicles`
+      );
       setVehicles(res.data);
     } catch (err) {
       console.error("Error fetching vehicles:", err);
     }
   };
 
-const handleSearch = () => {
-  if (!startDate || !endDate) return onResults([]);
+  const handleSearch = () => {
+    if (!startDate || !endDate) return onResults([]);
 
-  const availableVehicles = vehicles.filter((vehicle) => {
-    if (typeFilter && vehicle.type !== typeFilter) return false;
-    if (!vehicle.bookings || vehicle.bookings.length === 0) return true;
+    const availableVehicles = vehicles.filter((vehicle) => {
+      if (typeFilter && vehicle.type !== typeFilter) return false;
+      if (!vehicle.bookings || vehicle.bookings.length === 0) return true;
 
-    const hasConflict = vehicle.bookings.some((booking) => {
-      const status = booking.status?.toLowerCase();
-      if (status !== "confirmed") return false;
+      const hasConflict = vehicle.bookings.some((booking) => {
+        const status = booking.status?.toLowerCase();
+        if (status !== "confirmed") return false;
 
-      const bookedStart = new Date(booking.startDate);
-      const bookedEnd = new Date(booking.endDate);
+        const bookedStart = new Date(booking.startDate);
+        const bookedEnd = new Date(booking.endDate);
 
-      const sDate = new Date(startDate.setHours(0, 0, 0, 0));
-      const eDate = new Date(endDate.setHours(23, 59, 59, 999));
+        const sDate = new Date(startDate.setHours(0, 0, 0, 0));
+        const eDate = new Date(endDate.setHours(23, 59, 59, 999));
 
-      return sDate <= bookedEnd && eDate >= bookedStart;
+        return sDate <= bookedEnd && eDate >= bookedStart;
+      });
+
+      return !hasConflict;
     });
 
-    return !hasConflict;
-  });
+    // Sorting
+    if (sortOption === "priceLow") {
+      availableVehicles.sort((a, b) => a.pricePerDay - b.pricePerDay);
+    } else if (sortOption === "priceHigh") {
+      availableVehicles.sort((a, b) => b.pricePerDay - a.pricePerDay);
+    } else if (sortOption === "rating") {
+      availableVehicles.sort((a, b) => b.rating - a.rating);
+    }
 
-  // Sorting
-  if (sortOption === "priceLow") {
-    availableVehicles.sort((a, b) => a.pricePerDay - b.pricePerDay);
-  } else if (sortOption === "priceHigh") {
-    availableVehicles.sort((a, b) => b.pricePerDay - a.pricePerDay);
-  } else if (sortOption === "rating") {
-    availableVehicles.sort((a, b) => b.rating - a.rating);
-  }
-
-  setResultsCount(availableVehicles.length); // 👈 set count here
-  onResults(availableVehicles);
-};
-
-
+    setResultsCount(availableVehicles.length); // 👈 set count here
+    onResults(availableVehicles);
+  };
 
   useEffect(() => {
     fetchVehicles();
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto py-6 max-md:w-full">
-      <div className="flex justify-evenly px-10 py-10 rounded-lg flex-wrap bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
-        
+    <div className=" relative max-w-5xl mx-auto p-6  ">
+      <div className="border-2 border-orange-400 flex justify-evenly p-8 pb-10 rounded-lg flex-wrap bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
         {/* Start Date */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -146,13 +144,13 @@ const handleSearch = () => {
             Search
           </button>
         </div>
-        {resultsCount > 0 && (
-  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
-    {resultsCount} vehicle{resultsCount > 1 ? "s" : ""} found
-  </p>
-)}
-
       </div>
+              {resultsCount > 0 && (
+          <p className="absolute right-12 bottom-3 rounded-lg text-xs border-2 border-orange-400 bg-orange-300 dark:bg-gray-600 px-1 py-1 text-gray-700 dark:text-gray-300 mt-2">
+            {resultsCount} vehicle{resultsCount > 1 ? "s" : ""} found
+          </p>
+        )}
+
     </div>
   );
 }
