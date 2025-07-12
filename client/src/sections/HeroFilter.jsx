@@ -7,7 +7,10 @@ function HeroFilter({ onResults }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [sortOption, setSortOption] = useState("");
+  const [typeFilter, setTypeFilter] = useState(""); // NEW
   const [vehicles, setVehicles] = useState([]);
+  const [resultsCount, setResultsCount] = useState(0);
+
 
   const fetchVehicles = async () => {
     try {
@@ -18,40 +21,52 @@ function HeroFilter({ onResults }) {
     }
   };
 
-  const handleSearch = () => {
-    if (!startDate || !endDate) return onResults([]);
+const handleSearch = () => {
+  if (!startDate || !endDate) return onResults([]);
 
-    const availableVehicles = vehicles.filter((vehicle) => {
-      if (!vehicle.bookings || vehicle.bookings.length === 0) return true;
+  const availableVehicles = vehicles.filter((vehicle) => {
+    if (typeFilter && vehicle.type !== typeFilter) return false;
+    if (!vehicle.bookings || vehicle.bookings.length === 0) return true;
 
-      const hasConflict = vehicle.bookings.some((booking) => {
-        const bookedStart = new Date(booking.startDate);
-        const bookedEnd = new Date(booking.endDate);
-        return startDate <= bookedEnd && endDate >= bookedStart;
-      });
+    const hasConflict = vehicle.bookings.some((booking) => {
+      const status = booking.status?.toLowerCase();
+      if (status !== "confirmed") return false;
 
-      return !hasConflict;
+      const bookedStart = new Date(booking.startDate);
+      const bookedEnd = new Date(booking.endDate);
+
+      const sDate = new Date(startDate.setHours(0, 0, 0, 0));
+      const eDate = new Date(endDate.setHours(23, 59, 59, 999));
+
+      return sDate <= bookedEnd && eDate >= bookedStart;
     });
 
-    // Sort
-    if (sortOption === "priceLow") {
-      availableVehicles.sort((a, b) => a.pricePerDay - b.pricePerDay);
-    } else if (sortOption === "priceHigh") {
-      availableVehicles.sort((a, b) => b.pricePerDay - a.pricePerDay);
-    } else if (sortOption === "rating") {
-      availableVehicles.sort((a, b) => b.rating - a.rating);
-    }
+    return !hasConflict;
+  });
 
-    onResults(availableVehicles);
-  };
+  // Sorting
+  if (sortOption === "priceLow") {
+    availableVehicles.sort((a, b) => a.pricePerDay - b.pricePerDay);
+  } else if (sortOption === "priceHigh") {
+    availableVehicles.sort((a, b) => b.pricePerDay - a.pricePerDay);
+  } else if (sortOption === "rating") {
+    availableVehicles.sort((a, b) => b.rating - a.rating);
+  }
+
+  setResultsCount(availableVehicles.length); // 👈 set count here
+  onResults(availableVehicles);
+};
+
+
 
   useEffect(() => {
     fetchVehicles();
   }, []);
 
   return (
-    <div className="w-3/4 max-md:w-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="max-w-5xl mx-auto py-6 max-md:w-full">
+      <div className="flex justify-evenly px-10 py-10 rounded-lg flex-wrap bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
+        
         {/* Start Date */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -85,6 +100,26 @@ function HeroFilter({ onResults }) {
           />
         </div>
 
+        {/* Vehicle Type */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Vehicle Type
+          </label>
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className=" border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
+          >
+            <option value="">All</option>
+            <option value="SUV">SUV</option>
+            <option value="Sedan">Sedan</option>
+            <option value="Bike">Bike</option>
+            <option value="Hatchback">Hatchback</option>
+            <option value="Truck">Truck</option>
+            <option value="Van">Van</option>
+          </select>
+        </div>
+
         {/* Sort Option */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -93,7 +128,7 @@ function HeroFilter({ onResults }) {
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value)}
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
+            className=" border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
           >
             <option value="">Select</option>
             <option value="priceLow">Price: Low to High</option>
@@ -111,6 +146,12 @@ function HeroFilter({ onResults }) {
             Search
           </button>
         </div>
+        {resultsCount > 0 && (
+  <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
+    {resultsCount} vehicle{resultsCount > 1 ? "s" : ""} found
+  </p>
+)}
+
       </div>
     </div>
   );

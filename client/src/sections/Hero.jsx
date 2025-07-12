@@ -23,9 +23,9 @@ function Hero() {
 
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 mx-auto">
-      <div className="max-w-7xl mx-auto my-auto lg:pt-12 px-6 max-sm:px-0 max-md:mx-auto max-md:text-center grid grid-cols-2 gap-10 max-md:grid-cols-1 items-center">
+      <div className="max-w-7xl mx-auto py-10 lg:pt-12 px-6 max-sm:px-0 max-md:mx-auto max-md:text-center grid grid-cols-2 gap-10 max-md:grid-cols-1 items-center">
         {/* Left Text Area */}
-        <div className="space-y-6 h-[430px] max-sm:px-3 bg-gradient-to-l from-orange-500 max-md:from-white max-md:via-orange-300 max-md:to-white dark:from-gray-900 rounded-e-full max-md:rounded max-md:h-auto py-10">
+        <div className=" h-[430px] max-sm:px-3 bg-gradient-to-l from-orange-500 max-md:from-white max-md:via-orange-300 max-md:to-white dark:from-gray-900 rounded-e-full max-md:rounded max-md:h-auto py-10 ">
           <h1 className="text-4xl sm:text-5xl  font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
             Accompany your <br />
             <span className="text-orange-500">journey</span> with comfort
@@ -34,7 +34,7 @@ function Hero() {
             Car rent services for various terrain with guaranteed quality
           </p>
 
-          <div className="flex items-center max-md:justify-center gap-4 mb-10">
+          <div className="flex items-center max-md:justify-center gap-4 pt-10">
             <Link
               to="/services"
               className="bg-orange-500 text-white px-6 py-3 rounded-full font-medium hover:bg-orange-600 transition"
@@ -49,8 +49,6 @@ function Hero() {
             </Link>
           </div>
 
-          {/* Filter Bar */}
-          <HeroFilter onResults={(vehicles) => setResults(vehicles)} />
         </div>
 
         {/* Right Image Swiper */}
@@ -74,6 +72,10 @@ function Hero() {
           </Swiper>
         </div>
       </div>
+
+                {/* Filter Bar */}
+          <HeroFilter onResults={(vehicles) => setResults(vehicles)} />
+
 
       {/* Filtered Results Section */}
       {results.length > 0 && (

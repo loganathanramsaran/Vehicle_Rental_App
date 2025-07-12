@@ -5,12 +5,15 @@ function MiniVehicleCard({ vehicle }) {
 
   return (
     <div className="min-w-[250px] max-w-[250px] bg-orange-100 dark:bg-gray-800 shadow-md rounded-lg overflow-hidden flex-shrink-0">
-      <img
-        src={vehicle.image || "/placeholder.png"}
-        alt={vehicle.title}
-        className="w-full h-32 object-cover"
-        onError={(e) => (e.target.src = placeholderImage)}
-      />
+              <img
+                src={
+                  vehicle.image
+                    ? `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
+                    : "/placeholder.png"
+                }
+                alt={vehicle.title}
+                className="w-full h-36 object-cover rounded-t-lg "
+              />
 
       <div className="p-3">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white truncate">

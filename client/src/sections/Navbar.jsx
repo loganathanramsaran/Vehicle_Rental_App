@@ -63,7 +63,7 @@ function Navbar() {
 
   return (
     <header className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700  text-white sticky top-0 z-50">
-      <div className="max-w-7xl h-14 mx-auto px-6 max-md:px-2 flex justify-between items-center">
+      <div className="max-w-7xl h-20 mx-auto px-6 max-md:px-2 flex justify-between items-center">
         {/* Brand */}
         <div className="flex items-center gap-4">
           <Link to={"/"}>

@@ -44,13 +44,13 @@ function MiniVehicleCarousel() {
 
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
-      <div className=" py-16 px-6 overflow-hidden max-w-7xl mx-auto">
+      <div className=" py-16 px-10 overflow-hidden max-w-7xl mx-auto">
         <h2 className="text-2xl text-center font-bold mb-10 text-gray-800 dark:text-white">
           Available Vehicles
         </h2>
         <div
           ref={scrollRef}
-          className="flex gap-4 overflow-x-auto whitespace-nowrap scrollbar-hide"
+          className="flex gap-10 overflow-x-auto whitespace-nowrap scrollbar-hide"
         >
           {vehicles.map((vehicle) => (
             <Link
@@ -65,7 +65,7 @@ function MiniVehicleCarousel() {
                     : "/placeholder.png"
                 }
                 alt={vehicle.title}
-                className="w-full h-36 object-cover rounded-t-lg "
+                className="h-36 w-full object-cover rounded-t-lg "
               />
               <div className="p-2 text-sm">
                 <h3 className="font-semibold text-gray-800 dark:text-white truncate">
