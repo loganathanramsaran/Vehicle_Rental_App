@@ -87,7 +87,7 @@ const Features = () => {
           </Link>
         ))}
       </div>
-      <div className="flex justify-center items-center mt-8">
+      <div className="flex justify-center items-center mt-16">
         <Link to={"/dashboard"}>
           <button className="flex animate-bounce items-center text-orange-500 hover:text-white hover:bg-orange-500 bg-orange-100 px-2 py-1 rounded-full">
             <strong>More Features</strong>
