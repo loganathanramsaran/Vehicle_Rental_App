@@ -10,11 +10,11 @@ function VehicleCard({ vehicle }) {
     : placeholderImage;
 
   return (
-    <div className="bg-white dark:bg-gray-700 shadow rounded p-4 hover:shadow-lg transition">
+    <div className="bg-gradient-to-tr from-orange-200 dark:from-gray-600 via-white dark:via-gray-400 to-orange-200 shadow rounded p-4 hover:shadow-lg transition">
       <img
         src={imageSrc}
         alt={vehicle.title}
-        className="h-32 object-cover rounded mb-3"
+        className="h-36 w-fit mix-blend-multiply justify-center object-cover rounded mb-3"
         onError={(e) => {
           e.target.onerror = null;
           e.target.src = placeholderImage;

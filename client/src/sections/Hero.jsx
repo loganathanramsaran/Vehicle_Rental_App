@@ -23,7 +23,7 @@ function Hero() {
 
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 mx-auto">
-      <div className="max-w-7xl mx-auto py-10 lg:pt-12 px-6 max-sm:px-0 max-md:mx-auto max-md:text-center grid grid-cols-2 gap-10 max-md:grid-cols-1 items-center">
+      <div className="max-w-7xl mx-auto py-10 lg:pt-12 px-8 max-sm:px-0 max-md:mx-auto max-md:text-center grid grid-cols-2 gap-10 max-md:grid-cols-1 items-center">
         {/* Left Text Area */}
         <div className=" h-[430px] max-sm:px-3 bg-gradient-to-l from-orange-500 max-md:from-white max-md:via-orange-300 max-md:to-white dark:from-gray-900 rounded-e-full max-md:rounded max-md:h-auto py-10 ">
           <h1 className="text-4xl sm:text-5xl  font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">

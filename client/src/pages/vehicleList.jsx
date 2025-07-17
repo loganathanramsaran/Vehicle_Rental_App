@@ -86,7 +86,8 @@ function VehicleList() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 p-4 lg:flex">
+    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
+    <div className="min-h-screen max-w-7xl mx-auto p-4 lg:flex">
       {/* Sidebar (Desktop) */}
       <div className="hidden lg:block w-64 pr-6 sticky top-4 h-fit">
         <div className="bg-white dark:bg-gray-700 p-4 shadow rounded space-y-4">
@@ -293,7 +294,7 @@ function VehicleList() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 overflow-y-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 overflow-y-auto">
           {filteredVehicles.length > 0 ? (
             filteredVehicles.map((vehicle) => (
               <VehicleCard key={vehicle._id} vehicle={vehicle} />
@@ -306,6 +307,7 @@ function VehicleList() {
         </div>
       </div>
     </div>
+    </section>
   );
 }
 
