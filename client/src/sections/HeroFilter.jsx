@@ -64,7 +64,7 @@ function HeroFilter({ onResults }) {
 
   return (
     <div className=" relative max-w-5xl mx-auto p-6  ">
-      <div className="border-2 border-orange-400 flex justify-evenly p-8 pb-10 rounded-lg flex-wrap bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
+      <div className="border-2 border-orange-300 flex justify-evenly p-8 pb-10 rounded-lg flex-wrap bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
         {/* Start Date */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -146,7 +146,7 @@ function HeroFilter({ onResults }) {
         </div>
       </div>
               {resultsCount > 0 && (
-          <p className="absolute right-12 bottom-3 rounded-lg text-xs border-2 border-orange-400 bg-orange-300 dark:bg-gray-600 px-1 py-1 text-gray-700 dark:text-gray-300 mt-2">
+          <p className="absolute right-12 bottom-3 rounded-lg text-xs border-2 border-orange-300 bg-orange-300 dark:bg-gray-600 px-1 py-1 text-gray-700 dark:text-gray-300 mt-2">
             {resultsCount} vehicle{resultsCount > 1 ? "s" : ""} found
           </p>
         )}
