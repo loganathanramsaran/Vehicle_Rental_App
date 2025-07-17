@@ -277,7 +277,7 @@ function VehicleList() {
 
       {/* Vehicle List */}
       <div className="flex-1 flex flex-col max-h-screen">
-        <h1 className="text-3xl sticky top-0 z-10 dark:text-orange-600 font-bold mt-2 mb-5 border-b-2 dark:border-yellow-500 pb-6 text-center">
+        <h1 className="text-3xl sticky top-0 z-10 dark:text-orange-600 font-bold mt-2  pb-6 text-center">
           Available Vehicles
         </h1>
         {error && (

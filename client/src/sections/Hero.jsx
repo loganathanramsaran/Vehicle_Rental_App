@@ -26,7 +26,7 @@ function Hero() {
       <div className="max-w-7xl mx-auto py-10 lg:pt-12 px-8 max-sm:px-0 max-md:mx-auto max-md:text-center grid grid-cols-2 gap-10 max-md:grid-cols-1 items-center">
         {/* Left Text Area */}
         <div className=" h-[430px] max-sm:px-3 bg-gradient-to-l from-orange-500 max-md:from-white max-md:via-orange-300 max-md:to-white dark:from-gray-900 rounded-e-full max-md:rounded max-md:h-auto py-10 ">
-          <h1 className="text-4xl sm:text-5xl  font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
+          <h1 className="animate-fade-in-up text-4xl sm:text-5xl  font-extrabold text-gray-900 dark:text-white mb-6 leading-tight">
             Accompany your <br />
             <span className="text-orange-500">journey</span> with comfort
           </h1>
@@ -43,12 +43,11 @@ function Hero() {
             </Link>
             <Link
               to="/vehicles"
-              className="text-gray-800 flex gap-2 dark:text-white font-medium hover:underline hover:text-blue-700 dark:hover:bg-gray-700 transition"
+              className="animate-pulse text-gray-800 flex gap-2 dark:text-white font-medium hover:underline hover:text-blue-700 dark:hover:bg-gray-700 transition"
             >
               Browse Vehicles <ArrowRightCircle className="w-5" />
             </Link>
           </div>
-
         </div>
 
         {/* Right Image Swiper */}
@@ -73,9 +72,12 @@ function Hero() {
         </div>
       </div>
 
-                {/* Filter Bar */}
-          <HeroFilter onResults={(vehicles) => setResults(vehicles)} />
+      <div className="animate-bounce text-xl font-bold text-center mt-8 dark:text-white">
+        Rent Your Dream Vehicle Today!
+      </div>
 
+      {/* Filter Bar */}
+      <HeroFilter onResults={(vehicles) => setResults(vehicles)} />
 
       {/* Filtered Results Section */}
       {results.length > 0 && (

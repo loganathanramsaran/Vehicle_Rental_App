@@ -43,7 +43,7 @@ function BookVehicle() {
   }, [id]);
 
   useEffect(() => {
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
     console.log("📆 Booked Ranges:", bookedRanges);
   }, [bookedRanges]);
 
@@ -200,12 +200,11 @@ function BookVehicle() {
       <div className="max-w-4xl mx-auto">
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="bg-gradient-to-r from-orange-200 via-orange-400 to-orange-200 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700shadow p-6 rounded mb-8"
+          className="bg-gradient-to-r from-orange-100 via-orange-300 to-orange100 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700shadow p-6 rounded mb-8"
         >
           <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
             Book Vehicle
           </h2>
-
           <div className="py-5 flex flex-wrap items-center justify-evenly max-md:justify-around ">
             <div>
               <p className="font-semibold dark:text-gray-200">
@@ -223,39 +222,45 @@ function BookVehicle() {
                   : "/placeholder.png"
               }
               alt={vehicle.title}
-              className=" h-36 object-cover "
+              className=" h-36 rounded object-cover "
             />
           </div>{" "}
-          <label className="block mb-2 text-sm dark:text-gray-300">
-            Start Date
-          </label>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            minDate={new Date()}
-            excludeDateIntervals={bookedRanges}
-            dayClassName={dayClassName}
-            // filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6} // Optional: disable weekends
-            className="w-full border px-3 py-2 rounded mb-4"
-          />
-          <label className="block mb-2 text-sm dark:text-gray-300">
-            End Date
-          </label>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate || new Date()}
-            excludeDateIntervals={bookedRanges}
-            dayClassName={dayClassName}
-            // filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6} // Optional: disable weekends
-            className="w-full border px-3 py-2 rounded mb-4"
-          />
+          <div className="flex justify-evenly">
+            <div>
+              <label className="block mb-2 text-sm dark:text-gray-300">
+                Start Date
+              </label>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                minDate={new Date()}
+                excludeDateIntervals={bookedRanges}
+                dayClassName={dayClassName}
+                // filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6} // Optional: disable weekends
+                className="w-full border px-3 py-2 rounded mb-4"
+              />
+            </div>
+            <div>
+              <label className="block mb-2 text-sm dark:text-gray-300">
+                End Date
+              </label>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate || new Date()}
+                excludeDateIntervals={bookedRanges}
+                dayClassName={dayClassName}
+                // filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6} // Optional: disable weekends
+                className="w-full border px-3 py-2 rounded mb-4"
+              />
+            </div>
+          </div>
           {startDate && endDate && (
             <div className="mb-4 text-center text-sm text-gray-700 dark:text-gray-300">
               <p>

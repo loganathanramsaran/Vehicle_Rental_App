@@ -142,7 +142,8 @@ function Profile() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white dark:bg-gray-700 rounded shadow">
+    <section className="min-h-screen bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 p-4">
+    <div className="max-w-md mx-auto mt-10 p-6 bg-gradient-to-r from-orange-100 via-orange-300 to-orange-100 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 rounded shadow">
       <h2 className="text-xl font-bold mb-4">My Profile</h2>
       {message && <p className="text-green-600 mb-4">{message}</p>}
 
@@ -282,6 +283,7 @@ function Profile() {
         </form>
       )}
     </div>
+    </section>
   );
 }
 
