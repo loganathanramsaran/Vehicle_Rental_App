@@ -40,7 +40,8 @@ function PaymentHistory() {
   if (payments.length === 0) return <p className="p-6 text-center text-gray-500">No payments found.</p>;
 
   return (
-    <div className="min-h-screen px-4 py-8 bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 dark:text-white">
+    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
+          <div className="min-h-screen max-w-7xl mx-auto px-4 py-8 dark:text-white">
       <h1 className="text-3xl font-bold text-center text-orange-600 dark:text-orange-400 mb-6">
         Booking & Payment History
       </h1>
@@ -105,6 +106,8 @@ function PaymentHistory() {
         </div>
       </div>
     </div>
+
+    </section>
   );
 }
 

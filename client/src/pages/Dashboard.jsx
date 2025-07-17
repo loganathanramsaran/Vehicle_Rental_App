@@ -36,100 +36,102 @@ function Dashboard() {
   );
 
   return (
-    <div className="min-h-screen overflow-auto scroll-hidden bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 p-10">
-      {/* Profile Card */}
-      <div className=" max-w-7xl mx-auto justify-evenly bg-yellow-100 dark:bg-gray-700 border-2 border-yellow-400 rounded-xl p-6 flex flex-col md:flex-row items-center mb-8">
-        <div className="w-28 h-28 rounded-full border-green-500 border-2 overflow-hidden">
-          {user.avatar ? (
-            <img
-              src={`${SERVER_URL}${user.avatar}`}
-              alt="avatar"
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
-              No Avatar
-            </div>
-          )}
+    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
+      <div className="min-h-screen max-w-7xl mx-auto overflow-auto scroll-hidden p-10">
+        {/* Profile Card */}
+        <div className=" max-w-7xl mx-auto justify-evenly bg-yellow-100 dark:bg-gray-700 border-2 border-yellow-400 rounded-xl p-6 flex flex-col md:flex-row items-center mb-8">
+          <div className="w-28 h-28 rounded-full border-green-500 border-2 overflow-hidden">
+            {user.avatar ? (
+              <img
+                src={`${SERVER_URL}${user.avatar}`}
+                alt="avatar"
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500">
+                No Avatar
+              </div>
+            )}
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text- dark:text-white mb-1">
+              Welcome, {user.name} 👋
+            </h2>
+            <p className="text-gray-600 dark:text-slate-100">
+              <strong>Email:</strong> {user.email}
+            </p>
+            <span
+              className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
+                role === "Admin"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : "bg-blue-100 text-blue-800"
+              }`}
+            >
+              {role}
+            </span>
+          </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-bold text- dark:text-white mb-1">
-            Welcome, {user.name} 👋
-          </h2>
-          <p className="text-gray-600 dark:text-slate-100">
-            <strong>Email:</strong> {user.email}
-          </p>
-          <span
-            className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
-              role === "Admin"
-                ? "bg-yellow-100 text-yellow-800"
-                : "bg-blue-100 text-blue-800"
-            }`}
-          >
-            {role}
-          </span>
-        </div>
-      </div>
 
-      {/* Action Grid */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {user.isAdmin ? (
-          <>
-            <ActionCard
-              to="/add-vehicle"
-              label="Add Vehicle"
-              icon={addVehicle}
-              color="bg-yellow-500 hover:bg-yellow-600"
-            />
-            <ActionCard
-              to="/admin/vehicles"
-              label="Manage Vehicles"
-              icon={manageVehicle}
-              color="bg-blue-500 hover:bg-blue-600"
-            />
-            <ActionCard
-              to="/admin/bookings"
-              label="View All Bookings"
-              icon={viewAllBookings}
-              color="bg-purple-500 hover:bg-purple-600"
-            />
-            <ActionCard
-              to="/admin/feedback"
-              label="User Feedbacks"
-              icon={feedbacks}
-              color="bg-pink-500 hover:bg-pink-600"
-            />
-          </>
-        ) : (
-          <>
-            <ActionCard
-              to="/vehicles"
-              label="Browse Vehicles"
-              icon={browseVehicles}
-              color="bg-yellow-500 hover:bg-yellow-600"
-            />
-            <ActionCard
-              to="/my-bookings"
-              label="My Bookings"
-              icon={myBookings}
-              color="bg-blue-500 hover:bg-blue-600"
-            />
-            <ActionCard
-              to="/paymenthistory"
-              label="Bookings & Payment History"
-              icon={myBookings}
-              color="bg-purple-500 hover:bg-purple-600"
-            />
-          </>
-        )}
-        <ActionCard
-          to="/profile"
-          label="Edit Profile"
-          icon={editProfile}
-          color="bg-green-500 hover:bg-green-600"
-        />
+        {/* Action Grid */}
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {user.isAdmin ? (
+            <>
+              <ActionCard
+                to="/add-vehicle"
+                label="Add Vehicle"
+                icon={addVehicle}
+                color="bg-yellow-500 hover:bg-yellow-600"
+              />
+              <ActionCard
+                to="/admin/vehicles"
+                label="Manage Vehicles"
+                icon={manageVehicle}
+                color="bg-blue-500 hover:bg-blue-600"
+              />
+              <ActionCard
+                to="/admin/bookings"
+                label="View All Bookings"
+                icon={viewAllBookings}
+                color="bg-purple-500 hover:bg-purple-600"
+              />
+              <ActionCard
+                to="/admin/feedback"
+                label="User Feedbacks"
+                icon={feedbacks}
+                color="bg-pink-500 hover:bg-pink-600"
+              />
+            </>
+          ) : (
+            <>
+              <ActionCard
+                to="/vehicles"
+                label="Browse Vehicles"
+                icon={browseVehicles}
+                color="bg-yellow-500 hover:bg-yellow-600"
+              />
+              <ActionCard
+                to="/my-bookings"
+                label="My Bookings"
+                icon={myBookings}
+                color="bg-blue-500 hover:bg-blue-600"
+              />
+              <ActionCard
+                to="/paymenthistory"
+                label="Bookings & Payment History"
+                icon={myBookings}
+                color="bg-purple-500 hover:bg-purple-600"
+              />
+            </>
+          )}
+          <ActionCard
+            to="/profile"
+            label="Edit Profile"
+            icon={editProfile}
+            color="bg-green-500 hover:bg-green-600"
+          />
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 

@@ -90,7 +90,7 @@ function VehicleList() {
     <div className="min-h-screen max-w-7xl mx-auto p-4 lg:flex">
       {/* Sidebar (Desktop) */}
       <div className="hidden lg:block w-64 pr-6 sticky top-4 h-fit">
-        <div className="bg-white dark:bg-gray-700 p-4 shadow rounded space-y-4">
+        <div className=" dark:bg-gray-700 p-4 shadow rounded space-y-3">
           <input
             type="text"
             placeholder="Search"
