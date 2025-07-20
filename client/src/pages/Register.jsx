@@ -21,8 +21,21 @@ function Register() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    let newValue = value;
+
+    if (name === "aadhar") {
+      newValue = value
+        .replace(/\D/g, "") // Remove non-digits
+        .slice(0, 12) // Limit to 12 digits
+        .replace(/(.{4})/g, "$1 ") // Add space after every 4 digits
+        .trim(); // Remove trailing space
+    }
+
+    setForm({ ...form, [name]: newValue });
+  };
 
   const sendOtp = async () => {
     setError("");
@@ -32,10 +45,13 @@ function Register() {
 
     try {
       setLoading(true);
-      const res = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/send-otp`, {
-        email: form.email,
-        name: form.name,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/send-otp`,
+        {
+          email: form.email,
+          name: form.name,
+        }
+      );
       alert("OTP sent to your email");
       setStep(2); // go to next step
     } catch (err) {
@@ -50,7 +66,10 @@ function Register() {
     setError("");
     setLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/auth/register`, form);
+      await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/api/auth/register`,
+        form
+      );
       alert("Registration successful! You can now log in.");
       navigate("/login");
     } catch (err) {
@@ -70,7 +89,9 @@ function Register() {
       side="right"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <h2 className="text-xl font-bold text-orange-600 text-center">Register</h2>
+        <h2 className="text-xl font-bold text-orange-600 text-center">
+          Register
+        </h2>
 
         {error && (
           <p className="bg-red-100 text-red-700 px-3 py-2 rounded">{error}</p>
@@ -120,8 +141,9 @@ function Register() {
               <input
                 name="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
+                placeholder="Password (6+ characters)"
                 value={form.password}
+                minLength={6}
                 onChange={handleChange}
                 className="w-full border px-3 py-2 rounded"
                 required
@@ -138,7 +160,7 @@ function Register() {
             <input
               name="address"
               type="text"
-              placeholder="Address"
+              placeholder="Address (Street, City, State)"
               value={form.address}
               onChange={handleChange}
               className="w-full border px-3 py-2 rounded"
@@ -148,10 +170,9 @@ function Register() {
             <input
               name="aadhar"
               type="text"
-              placeholder="Aadhaar Number"
+              placeholder="1111 1111 1111 (Not original Aadhar Number)"
               value={form.aadhar}
               maxLength={14}
-              pattern="\d{4}\s?\d{4}\s?\d{4}"
               onChange={handleChange}
               className="w-full border px-3 py-2 rounded"
               required
