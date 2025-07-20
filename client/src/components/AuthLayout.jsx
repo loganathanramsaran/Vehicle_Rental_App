@@ -14,7 +14,7 @@ function AuthLayout({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-100 to-orange-400 flex flex-col items-center justify-center">
-      <h1 className="text-3xl font-extrabold">
+      <h1 className="text-3xl text-center md:text-xl font-extrabold">
         Welcome To Our <span className="text-orange-600">Vehicle Rental</span>{" "}
         Application
       </h1>
