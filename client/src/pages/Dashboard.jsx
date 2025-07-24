@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
@@ -12,15 +12,20 @@ import feedbacks from "../assets/feedback.png";
 
 function Dashboard() {
   const { user, fetchUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) navigate("/login");
-    else fetchUser();
+    if (!token) {
+      navigate("/login");
+    } else {
+      fetchUser().finally(() => setLoading(false));
+    }
   }, []);
 
+  if (loading) return <div className="min-h-screen flex justify-center items-center text-xl dark:text-white">Loading...</div>;
   if (!user) return null;
 
   const role = user.isAdmin ? "Admin" : "User";
@@ -37,11 +42,11 @@ function Dashboard() {
 
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
-      <div className="min-h-screen max-w-7xl mx-auto overflow-auto scroll-hidden p-10">
+      <div className="min-h-screen max-w-7xl mx-auto p-6">
         {/* Profile Card */}
-        <div className=" max-w-7xl mx-auto justify-evenly bg-yellow-100 dark:bg-gray-700 border-2 border-yellow-400 rounded-xl p-6 flex flex-col md:flex-row items-center mb-8">
-          <div className="w-28 h-28 rounded-full border-green-500 border-2 overflow-hidden">
-            {user.avatar ? (
+        <div className="bg-yellow-100 dark:bg-gray-700 border-2 border-yellow-400 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6 mb-8">
+          <div className="w-28 h-28 rounded-full border-2 border-green-500 overflow-hidden">
+            {user?.avatar ? (
               <img
                 src={`${SERVER_URL}${user.avatar}`}
                 alt="avatar"
@@ -54,11 +59,11 @@ function Dashboard() {
             )}
           </div>
           <div>
-            <h2 className="text-2xl font-bold text- dark:text-white mb-1">
-              Welcome, {user.name} 👋
+            <h2 className="text-2xl font-bold dark:text-white mb-1">
+              Welcome, {user?.name || "User"} 👋
             </h2>
-            <p className="text-gray-600 dark:text-slate-100">
-              <strong>Email:</strong> {user.email}
+            <p className="text-gray-700 dark:text-slate-100">
+              <strong>Email:</strong> {user?.email}
             </p>
             <span
               className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
@@ -74,7 +79,7 @@ function Dashboard() {
 
         {/* Action Grid */}
         <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {user.isAdmin ? (
+          {user?.isAdmin ? (
             <>
               <ActionCard
                 to="/add-vehicle"

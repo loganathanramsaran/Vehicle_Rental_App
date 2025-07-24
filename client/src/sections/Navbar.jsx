@@ -109,7 +109,7 @@ function Navbar() {
             <div className="relative">
               <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-2 focus:outline-none ">
                 <img
-                  src={user.avatar ? `${SERVER_URL}${user.avatar}` : "https://via.placeholder.com/30"}
+                  src={user.avatar ? `${SERVER_URL}${user.avatar}` : "/placeholder.png"}
                   alt="avatar"
                   className="w-8 h-8 rounded-full bg-orange-300 object-cover border"
                 />

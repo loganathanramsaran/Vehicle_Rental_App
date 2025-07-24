@@ -16,22 +16,25 @@ function Register() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [step, setStep] = useState(1); // 1 = Email step, 2 = OTP + full form
+  const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     let newValue = value;
 
     if (name === "aadhar") {
       newValue = value
-        .replace(/\D/g, "") // Remove non-digits
-        .slice(0, 12) // Limit to 12 digits
+        .replace(/\D/g, "")       // Remove non-digits
+        .slice(0, 12)             // Limit to 12 digits
         .replace(/(.{4})/g, "$1 ") // Add space after every 4 digits
-        .trim(); // Remove trailing space
+        .trim();
+    }
+
+    if (name === "mobile") {
+      newValue = value.replace(/\D/g, "").slice(0, 10); // Only digits, max 10
     }
 
     setForm({ ...form, [name]: newValue });
@@ -45,15 +48,15 @@ function Register() {
 
     try {
       setLoading(true);
-      const res = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_SERVER_URL}/api/auth/send-otp`,
         {
           email: form.email,
           name: form.name,
         }
       );
-      alert("OTP sent to your email");
-      setStep(2); // go to next step
+      alert("OTP sent to your email.");
+      setStep(2);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to send OTP.");
     } finally {
@@ -94,7 +97,9 @@ function Register() {
         </h2>
 
         {error && (
-          <p className="bg-red-100 text-red-700 px-3 py-2 rounded">{error}</p>
+          <p className="bg-red-100 text-red-700 px-3 py-2 rounded text-sm">
+            {error}
+          </p>
         )}
 
         <input
@@ -141,7 +146,7 @@ function Register() {
               <input
                 name="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Password (6+ characters)"
+                placeholder="Password (min 6 characters)"
                 value={form.password}
                 minLength={6}
                 onChange={handleChange}
@@ -170,7 +175,7 @@ function Register() {
             <input
               name="aadhar"
               type="text"
-              placeholder="1111 1111 1111 (Not original Aadhar Number)"
+              placeholder="1111 1111 1111 (Not original Aadhar)"
               value={form.aadhar}
               maxLength={14}
               onChange={handleChange}
@@ -184,7 +189,6 @@ function Register() {
               placeholder="Mobile Number"
               value={form.mobile}
               pattern="[6-9]{1}[0-9]{9}"
-              maxLength={10}
               onChange={handleChange}
               className="w-full border px-3 py-2 rounded"
               required
@@ -193,7 +197,9 @@ function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-orange-600 text-white py-2 rounded hover:bg-orange-700"
+              className={`w-full text-white py-2 rounded ${
+                loading ? "bg-orange-400" : "bg-orange-600 hover:bg-orange-700"
+              }`}
             >
               {loading ? "Registering..." : "Register"}
             </button>

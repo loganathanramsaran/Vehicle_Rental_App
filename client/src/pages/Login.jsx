@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import AuthLayout from "../components/AuthLayout";
+import { toast } from "react-toastify";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -14,9 +15,24 @@ function Login() {
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      toast.error("Please enter a valid email address");
+      return false;
+    }
+    if (form.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    if (!validateForm()) return;
+
     setLoading(true);
     try {
       const res = await axios.post(
@@ -24,9 +40,12 @@ function Login() {
         form
       );
       localStorage.setItem("token", res.data.token);
+      toast.success("Login successful!");
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.error || "Login failed");
+      const msg = err.response?.data?.error || "Login failed";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -57,8 +76,9 @@ function Login() {
           type="email"
           placeholder="you@example.com"
           autoComplete="email"
-          className="w-full border border-gray-300 px-4 py-2 rounded "
+          className="w-full border border-gray-300 px-4 py-2 rounded"
           onChange={handleChange}
+          value={form.email}
           required
         />
 
@@ -68,15 +88,17 @@ function Login() {
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
             autoComplete="current-password"
-            className="w-full border border-gray-300 px-4 py-2 rounded "
+            className="w-full border border-gray-300 px-4 py-2 rounded"
             onChange={handleChange}
+            value={form.password}
             required
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-            tabIndex={-1}
+            tabIndex={0}
+            aria-label="Toggle password visibility"
           >
             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>

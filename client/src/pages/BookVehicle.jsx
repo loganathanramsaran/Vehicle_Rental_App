@@ -4,6 +4,8 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ReviewSection from "../components/ReviewSection";
 
 function BookVehicle() {
@@ -17,17 +19,11 @@ function BookVehicle() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`
-        );
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`);
         setVehicle(res.data);
 
-        const bookingsRes = await axios.get(
-          `${import.meta.env.VITE_SERVER_URL}/api/bookings/vehicle/${id}`
-        );
-        const activeBookings = bookingsRes.data.filter(
-          (b) => b.status !== "cancelled"
-        );
+        const bookingsRes = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/bookings/vehicle/${id}`);
+        const activeBookings = bookingsRes.data.filter((b) => b.status !== "cancelled");
 
         const ranges = activeBookings.map((b) => ({
           start: new Date(b.startDate),
@@ -36,16 +32,13 @@ function BookVehicle() {
         setBookedRanges(ranges);
       } catch (err) {
         console.error("Fetch error:", err);
+        toast.error("Failed to load vehicle or bookings");
       }
     };
 
     fetchData();
-  }, [id]);
-
-  useEffect(() => {
     window.scrollTo(0, 0);
-    console.log("📆 Booked Ranges:", bookedRanges);
-  }, [bookedRanges]);
+  }, [id]);
 
   const isDateBooked = (date) => {
     return bookedRanges.some(
@@ -64,6 +57,25 @@ function BookVehicle() {
     return true;
   };
 
+  const validateBooking = () => {
+    if (!startDate || !endDate) {
+      toast.error("Please select both start and end dates.");
+      return false;
+    }
+
+    if (endDate <= startDate) {
+      toast.error("End date must be after start date.");
+      return false;
+    }
+
+    if (!isRangeAvailable(startDate, endDate)) {
+      toast.error("Selected date range includes already booked dates.");
+      return false;
+    }
+
+    return true;
+  };
+
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
       const script = document.createElement("script");
@@ -75,15 +87,13 @@ function BookVehicle() {
   };
 
   const handlePayment = async () => {
-    if (!startDate || !endDate) return alert("Please select both dates");
-    if (startDate > endDate) return alert("Start date must be before end date");
-
-    if (!isRangeAvailable(startDate, endDate)) {
-      return alert("Selected range contains already booked dates");
-    }
+    if (!validateBooking()) return;
 
     const token = localStorage.getItem("token");
-    if (!token) return alert("Login required");
+    if (!token) {
+      toast.error("You must be logged in to book.");
+      return;
+    }
 
     const decoded = jwtDecode(token);
     const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
@@ -91,7 +101,7 @@ function BookVehicle() {
 
     const res = await loadRazorpayScript();
     if (!res) {
-      alert("Razorpay SDK failed to load.");
+      toast.error("Razorpay SDK failed to load.");
       return;
     }
 
@@ -128,21 +138,17 @@ function BookVehicle() {
                   razorpayOrderId: response.razorpay_order_id,
                   razorpayPaymentId: response.razorpay_payment_id,
                 },
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
+                { headers: { Authorization: `Bearer ${token}` } }
               );
 
-              alert("✅ Payment successful! Booking confirmed.");
+              toast.success("✅ Payment successful! Booking confirmed.");
               navigate("/my-bookings");
             } else {
-              alert("Payment verification failed.");
+              toast.error("Payment verification failed.");
             }
           } catch (err) {
             console.error("Verification error:", err);
-            alert("Something went wrong during booking.");
+            toast.error("Something went wrong during booking.");
           }
         },
         prefill: {
@@ -156,7 +162,7 @@ function BookVehicle() {
       paymentObject.open();
     } catch (err) {
       console.error("Payment error:", err);
-      alert("Something went wrong during payment.");
+      toast.error("Something went wrong during payment.");
     }
   };
 
@@ -169,13 +175,6 @@ function BookVehicle() {
       const e = new Date(end).setHours(0, 0, 0, 0);
       return normalized >= s && normalized <= e;
     });
-
-    if (isBooked) {
-      const el = document.querySelector(
-        `[aria-label="${normalized.toDateString()}"]`
-      );
-      if (el) el.setAttribute("title", "Booked");
-    }
 
     return isBooked ? "booked-day" : "available-day";
   };
@@ -200,16 +199,15 @@ function BookVehicle() {
       <div className="max-w-4xl mx-auto">
         <form
           onSubmit={(e) => e.preventDefault()}
-          className="bg-gradient-to-r from-orange-100 via-orange-300 to-orange100 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700shadow p-6 rounded mb-8"
+          className="bg-gradient-to-r from-orange-100 via-orange-300 to-orange100 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 shadow p-6 rounded mb-8"
         >
           <h2 className="text-2xl font-bold mb-4 text-center text-gray-800 dark:text-white">
             Book Vehicle
           </h2>
+
           <div className="py-5 flex flex-wrap items-center justify-evenly max-md:justify-around ">
             <div>
-              <p className="font-semibold dark:text-gray-200">
-                {vehicle.title}
-              </p>
+              <p className="font-semibold dark:text-gray-200">{vehicle.title}</p>
               <p className="text-center text-gray-600 dark:text-gray-400 mb-4">
                 ₹{vehicle.pricePerDay}/day
               </p>
@@ -222,14 +220,13 @@ function BookVehicle() {
                   : "/placeholder.png"
               }
               alt={vehicle.title}
-              className=" h-36 rounded object-cover "
+              className="h-36 rounded object-cover"
             />
-          </div>{" "}
+          </div>
+
           <div className="flex justify-evenly">
             <div>
-              <label className="block mb-2 text-sm dark:text-gray-300">
-                Start Date
-              </label>
+              <label className="block mb-2 text-sm dark:text-gray-300">Start Date</label>
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
@@ -239,14 +236,11 @@ function BookVehicle() {
                 minDate={new Date()}
                 excludeDateIntervals={bookedRanges}
                 dayClassName={dayClassName}
-                // filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6} // Optional: disable weekends
                 className="w-full border px-3 py-2 rounded mb-4"
               />
             </div>
             <div>
-              <label className="block mb-2 text-sm dark:text-gray-300">
-                End Date
-              </label>
+              <label className="block mb-2 text-sm dark:text-gray-300">End Date</label>
               <DatePicker
                 selected={endDate}
                 onChange={(date) => setEndDate(date)}
@@ -256,29 +250,28 @@ function BookVehicle() {
                 minDate={startDate || new Date()}
                 excludeDateIntervals={bookedRanges}
                 dayClassName={dayClassName}
-                // filterDate={(date) => date.getDay() !== 0 && date.getDay() !== 6} // Optional: disable weekends
                 className="w-full border px-3 py-2 rounded mb-4"
               />
             </div>
           </div>
+
           {startDate && endDate && (
             <div className="mb-4 text-center text-sm text-gray-700 dark:text-gray-300">
               <p>
                 Selected:{" "}
                 <span className="font-medium">
-                  {startDate.toLocaleDateString()} →{" "}
-                  {endDate.toLocaleDateString()}
+                  {startDate.toLocaleDateString()} → {endDate.toLocaleDateString()}
                 </span>
               </p>
               <p>
-                Total Days: <span className="font-medium">{totalDays}</span>,
-                Total Price:{" "}
+                Total Days: <span className="font-medium">{totalDays}</span>, Total Price:{" "}
                 <span className="font-semibold text-green-600 dark:text-green-400">
                   ₹{totalPrice}
                 </span>
               </p>
             </div>
           )}
+
           <div className="flex items-center gap-6 mb-4">
             <span className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
               <span className="w-4 h-4 bg-green-100 rounded border border-green-400 inline-block"></span>{" "}
@@ -289,15 +282,16 @@ function BookVehicle() {
               Booked
             </span>
           </div>
+
           <button
             onClick={handlePayment}
             className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition"
           >
             Pay & Confirm Booking
           </button>
+
           <p className="mt-2 text-gray-700 text-sm text-center">
-            Please wait a moment for Confirm Your Booking after payment
-            successful..!
+            Please wait a moment to confirm your booking after payment is successful.
           </p>
         </form>
       </div>
