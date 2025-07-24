@@ -14,6 +14,7 @@ function AdminVehicleList() {
     const fetchVehicles = async () => {
       const token = localStorage.getItem("token");
       if (!token) return navigate("/login");
+
       const decoded = jwtDecode(token);
       if (!decoded.isAdmin) return navigate("/dashboard");
 
@@ -25,6 +26,7 @@ function AdminVehicleList() {
         setFiltered(res.data);
       } catch (err) {
         console.error("Failed to fetch vehicles", err);
+        alert("Failed to load vehicles");
       }
     };
 
@@ -34,7 +36,7 @@ function AdminVehicleList() {
   useEffect(() => {
     let results = vehicles;
 
-    if (search) {
+    if (search.trim()) {
       results = results.filter((v) =>
         v.title.toLowerCase().includes(search.toLowerCase())
       );
@@ -56,6 +58,7 @@ function AdminVehicleList() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setVehicles((prev) => prev.filter((v) => v._id !== id));
+      alert("Vehicle deleted successfully.");
     } catch (err) {
       console.error("Delete failed", err);
       alert("Failed to delete vehicle");
@@ -69,18 +72,18 @@ function AdminVehicleList() {
           Admin - Manage Vehicles
         </h1>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title..."
-            className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-green-300 dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            className="w-full sm:w-1/2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-orange-300 dark:bg-gray-800 dark:text-white dark:border-gray-600"
           />
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="w-full sm:w-1/4 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-green-300 dark:bg-gray-800 dark:text-white dark:border-gray-600"
+            className="w-full sm:w-1/4 px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-orange-300 dark:bg-gray-800 dark:text-white dark:border-gray-600"
           >
             <option value="All">All Types</option>
             <option value="SUV">SUV</option>
@@ -92,8 +95,14 @@ function AdminVehicleList() {
           </select>
         </div>
 
+        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+          Showing {filtered.length} vehicle{filtered.length !== 1 ? "s" : ""}
+        </p>
+
         {filtered.length === 0 ? (
-          <p className="text-center text-gray-600 dark:text-gray-400">No vehicles found.</p>
+          <p className="text-center text-gray-600 dark:text-gray-400 mt-10">
+            No vehicles found.
+          </p>
         ) : (
           <div className="overflow-x-auto rounded-lg shadow">
             <table className="min-w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
@@ -110,10 +119,12 @@ function AdminVehicleList() {
                   <tr
                     key={vehicle._id}
                     className={`border-t dark:border-gray-700 ${
-                      index % 2 === 0 ? "bg-orange-100 dark:bg-gray-700" : "bg-orange-200 dark:bg-gray-800"
-                    } hover:bg-orange-400 dark:hover:bg-gray-500 transition`}
+                      index % 2 === 0
+                        ? "bg-orange-100 dark:bg-gray-700"
+                        : "bg-orange-200 dark:bg-gray-800"
+                    } hover:bg-orange-400 dark:hover:bg-gray-600 transition`}
                   >
-                    <td className="px-6 py-3">{vehicle.title}</td>
+                    <td className="px-6 py-3 truncate max-w-xs">{vehicle.title}</td>
                     <td className="px-6 py-3">{vehicle.type}</td>
                     <td className="px-6 py-3">₹{vehicle.pricePerDay}</td>
                     <td className="px-6 py-3 text-center space-x-2">
