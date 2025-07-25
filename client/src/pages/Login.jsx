@@ -114,6 +114,13 @@ function Login() {
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+      <div className="mt-6 text-sm text-gray-600 dark:text-gray-300 bg-yellow-100 dark:bg-yellow-900 border border-yellow-400 dark:border-yellow-700 p-4 rounded-md">
+  <p>
+    ⚠️ <strong>Note:</strong> The <span className="font-medium">first registered user</span> will automatically become an <span className="text-green-700 font-semibold">Admin</span>. 
+    All others will be registered as <span className="text-blue-700 font-semibold">Users</span> by default.
+  </p>
+</div>
+
     </AuthLayout>
   );
 }

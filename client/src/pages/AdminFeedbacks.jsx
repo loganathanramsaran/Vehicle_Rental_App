@@ -31,7 +31,7 @@ function AdminFeedbacks() {
         ) : (
           <div className="space-y-4 bg-orange-300 dark:bg-gray-800 dark:text-white">
             {feedbacks.map((f) => (
-              <div key={f._id} className="border p-4 rounded shadow-sm">
+              <div key={f._id} className=" p-3 rounded shadow-sm">
                 <p>
                   <strong>Name:</strong> {f.name}
                 </p>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Star, StarOff } from "lucide-react";
+import toast from "react-hot-toast";
 
 function ReviewSection({ vehicleId }) {
   const [reviews, setReviews] = useState([]);
@@ -27,13 +28,22 @@ function ReviewSection({ vehicleId }) {
   }, [vehicleId]);
 
   const handleStarClick = (index) => {
-    setNewReview({ ...newReview, rating: index });
+    setNewReview((prev) => ({ ...prev, rating: index }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    if (!token) return alert("Login required");
+    if (!token) return toast.error("Login required to submit review");
+
+    // Basic form validation
+    if (newReview.rating < 1 || newReview.rating > 5) {
+      return toast.error("Rating must be between 1 and 5 stars");
+    }
+
+    if (!newReview.comment.trim()) {
+      return toast.error("Please write a comment before submitting");
+    }
 
     try {
       const res = await axios.post(
@@ -41,7 +51,7 @@ function ReviewSection({ vehicleId }) {
         {
           vehicle: vehicleId,
           rating: newReview.rating,
-          comment: newReview.comment,
+          comment: newReview.comment.trim(),
         },
         {
           headers: {
@@ -49,6 +59,8 @@ function ReviewSection({ vehicleId }) {
           },
         }
       );
+
+      toast.success("Review submitted!");
       setReviews((prev) => [...prev, res.data.review]);
       setNewReview({ rating: 5, comment: "" });
       setHoverRating(0);
@@ -80,10 +92,9 @@ function ReviewSection({ vehicleId }) {
           {reviews.map((r) => (
             <div key={r._id} className="border-b pb-2">
               <div>{renderStars(r.rating)}</div>
-              <p className="mt-1 text-gray-700">{r.comment}</p>
-              <p className="text-sm text-gray-500">
-                by {r.user?.name || "User"} on{" "}
-                {new Date(r.createdAt).toLocaleDateString()}
+              <p className="mt-1 text-gray-700 dark:text-gray-200">{r.comment}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                by {r.user?.name || "User"} on {new Date(r.createdAt).toLocaleDateString()}
               </p>
             </div>
           ))}
@@ -103,7 +114,7 @@ function ReviewSection({ vehicleId }) {
               onMouseLeave={() => setHoverRating(0)}
             >
               <Star
-                className={`w-6 h-6 ${
+                className={`w-6 h-6 transition ${
                   i <= (hoverRating || newReview.rating)
                     ? "text-yellow-500"
                     : "text-gray-300"
@@ -121,7 +132,7 @@ function ReviewSection({ vehicleId }) {
             setNewReview({ ...newReview, comment: e.target.value })
           }
           placeholder="Write your review..."
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border dark:border-gray-600 px-3 py-2 rounded dark:bg-gray-900 dark:text-white"
           rows={3}
           required
         />

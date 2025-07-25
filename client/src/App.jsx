@@ -25,6 +25,7 @@ import VehicleDetails from "./pages/VehicleDetails";
 import MainLayout from "./components/MainLayout"; 
 import AdminFeedbacks from "./pages/AdminFeedbacks";
 import MiniVehicleCarousel from "./components/MiniVehicleCarousel";
+import AdminUserList from "./pages/AdminUserList"; // New Page
 
 function App() {
   return (
@@ -40,7 +41,6 @@ function App() {
         <Route path="/vehicle/:id" element={<VehicleDetails />} />
         <Route path="/" element={<MiniVehicleCarousel />} />
 
-        
         {/* Protected Routes with MainLayout */}
         <Route
           path="/dashboard"
@@ -123,11 +123,21 @@ function App() {
           }
         />
         <Route
-          path="admin/feedback"
+          path="/admin/feedback"
           element={
             <ProtectedRoute adminOnly={true}>
               <MainLayout>
                 <AdminFeedbacks />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute adminOnly={true}>
+              <MainLayout>
+                <AdminUserList />
               </MainLayout>
             </ProtectedRoute>
           }

@@ -46,6 +46,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const userRoutes = require("./routes/userRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const reminderJob = require("./reminderJob");
+const adminRoutes = require("./routes/adminRoutes");
 
 app.get("/", (req, res) => {
   res.send("🚗 Vehicle Rental API is running...");
@@ -58,6 +59,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/feedback", require("./routes/feedbackRoutes"));
+app.use("/api/admin", adminRoutes);
 
 reminderJob();
 

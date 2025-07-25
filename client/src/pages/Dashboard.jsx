@@ -1,3 +1,4 @@
+// Dashboard.jsx
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
@@ -9,6 +10,7 @@ import addVehicle from "../assets/addVehicle.png";
 import manageVehicle from "../assets/manageVehicle.png";
 import viewAllBookings from "../assets/viewAllBookings.png";
 import feedbacks from "../assets/feedback.png";
+import manageUsers from "../assets/manageUsers.png"; // 👈 NEW ICON (add this icon in your assets folder)
 
 function Dashboard() {
   const { user, fetchUser } = useContext(UserContext);
@@ -105,6 +107,12 @@ function Dashboard() {
                 icon={feedbacks}
                 color="bg-pink-500 hover:bg-pink-600"
               />
+              <ActionCard
+                to="/admin/users"
+                label="Manage Users"
+                icon={manageUsers}
+                color="bg-green-500 hover:bg-green-600"
+              />
             </>
           ) : (
             <>
@@ -132,7 +140,7 @@ function Dashboard() {
             to="/profile"
             label="Edit Profile"
             icon={editProfile}
-            color="bg-green-500 hover:bg-green-600"
+            color="bg-teal-500 hover:bg-teal-600"
           />
         </div>
       </div>
