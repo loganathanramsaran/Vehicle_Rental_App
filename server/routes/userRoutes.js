@@ -78,25 +78,39 @@ router.delete("/me", verifyToken, async (req, res) => {
 });
 
 
+
+// 1️⃣ Send OTP for Password Change
 router.post("/send-password-otp", verifyToken, async (req, res) => {
-  console.log("✅ Inside send-password-otp route");
+  try {
+    console.log("✅ Inside send-password-otp route");
 
-  const user = await User.findById(req.user.id);
-  if (!user) {
-    console.log("❌ User not found with ID:", req.user.id);
-    return res.status(404).json({ error: "User not found" });
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      console.log("❌ User not found with ID:", req.user.id);
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.passwordOtp = otp;
+    user.passwordOtpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    await user.save();
+
+    console.log("📧 Sending OTP to:", user.email);
+    await sendEmail({
+      to: user.email,
+      subject: "Your Password Reset OTP - Vehicle Rental",
+      html: `<p>Hi ${user.name},</p><p>Your OTP to reset your password is: <strong>${otp}</strong></p><p>This OTP is valid for 10 minutes.</p>`,
+    });
+
+    console.log(`📨 OTP sent to ${user.email}: ${otp}`);
+    res.json({ message: "OTP sent successfully" });
+  } catch (err) {
+    console.error("❌ Error in send-password-otp:", err);
+    res.status(500).json({ error: "Failed to send OTP" });
   }
-
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  user.passwordOtp = otp;
-  user.passwordOtpExpires = Date.now() + 10 * 60 * 1000;
-  await user.save();
-   await sendEmail(user.email, "Your Password Reset OTP", `Your OTP is: ${otp}`);
-  console.log(`📨 OTP for ${user.email}: ${otp}`);
-  res.json({ message: "OTP sent successfully" });
 });
 
-// 2️⃣ CHANGE PASSWORD using OTP
+// 2️⃣ Change Password using OTP
 router.put("/change-password", verifyToken, async (req, res) => {
   try {
     const { otp, newPassword } = req.body;
@@ -121,14 +135,13 @@ router.put("/change-password", verifyToken, async (req, res) => {
     user.password = newPassword;
     user.passwordOtp = undefined;
     user.passwordOtpExpires = undefined;
-
     await user.save();
+
     res.json({ message: "Password updated successfully" });
   } catch (err) {
     console.error("❌ Error updating password:", err);
     res.status(500).json({ error: "Failed to update password" });
   }
 });
-
 
 module.exports = router;

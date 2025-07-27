@@ -152,6 +152,7 @@ function Register() {
                 onChange={handleChange}
                 className="w-full border px-3 py-2 rounded"
                 required
+                autoComplete="new-password"
               />
               <button
                 type="button"

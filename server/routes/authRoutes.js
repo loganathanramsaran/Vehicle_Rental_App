@@ -37,7 +37,10 @@ router.post("/send-otp", async (req, res) => {
 // Register
 router.post("/register", async (req, res) => {
   try {
+    console.log("📦 Register body:", req.body);
+
     const { name, email, password, otp, address, aadhar, mobile } = req.body;
+
     if (!name || !email || !password || !otp || !address || !aadhar || !mobile) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -59,14 +62,14 @@ router.post("/register", async (req, res) => {
       address,
       aadhar,
       mobile,
-      isAdmin: isFirstUser
+      isAdmin: isFirstUser,
     });
 
     await EmailOTP.deleteOne({ email });
 
     res.status(201).json({ message: "User registered", user });
   } catch (err) {
-    console.error("Register error:", err);
+    console.error("❌ Register error:", err);
     res.status(500).json({ error: "Registration failed" });
   }
 });
