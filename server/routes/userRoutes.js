@@ -77,53 +77,58 @@ router.delete("/me", verifyToken, async (req, res) => {
   res.json({ message: "Account deleted" });
 });
 
-// POST /api/user/request-password-otp
-router.post("/request-password-otp", verifyToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    const otp = crypto.randomInt(100000, 999999).toString();
-    const expiry = Date.now() + 10 * 60 * 1000; // 10 minutes
 
-    user.passwordOtp = otp;
-    user.passwordOtpExpires = expiry;
-    await user.save();
+router.post("/send-password-otp", verifyToken, async (req, res) => {
+  console.log("✅ Inside send-password-otp route");
 
-    await sendEmail({
-      to: user.email,
-      subject: "OTP for Password Change",
-      html: `<p>Your OTP for changing password is <b>${otp}</b>. It is valid for 10 minutes.</p>`
-    });
-
-    res.json({ message: "OTP sent to your email" });
-  } catch (err) {
-    console.error("OTP send error:", err);
-    res.status(500).json({ error: "Failed to send OTP" });
-  }
-});
-
-// PUT /api/user/change-password
-router.put("/change-password", verifyToken, async (req, res) => {
-  const { otp, newPassword } = req.body;
   const user = await User.findById(req.user.id);
-
-  if (!user || !user.passwordOtp || !user.passwordOtpExpires) {
-    return res.status(400).json({ error: "No OTP request found" });
+  if (!user) {
+    console.log("❌ User not found with ID:", req.user.id);
+    return res.status(404).json({ error: "User not found" });
   }
 
-  if (Date.now() > user.passwordOtpExpires) {
-    return res.status(400).json({ error: "OTP expired" });
-  }
-
-  if (user.passwordOtp !== otp) {
-    return res.status(400).json({ error: "Invalid OTP" });
-  }
-
-  user.password = newPassword;
-  user.passwordOtp = undefined;
-  user.passwordOtpExpires = undefined;
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+  user.passwordOtp = otp;
+  user.passwordOtpExpires = Date.now() + 10 * 60 * 1000;
   await user.save();
-
-  res.json({ message: "Password updated successfully" });
+   await sendEmail(user.email, "Your Password Reset OTP", `Your OTP is: ${otp}`);
+  console.log(`📨 OTP for ${user.email}: ${otp}`);
+  res.json({ message: "OTP sent successfully" });
 });
+
+// 2️⃣ CHANGE PASSWORD using OTP
+router.put("/change-password", verifyToken, async (req, res) => {
+  try {
+    const { otp, newPassword } = req.body;
+
+    if (!otp || !newPassword) {
+      return res.status(400).json({ error: "OTP and new password are required" });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user || !user.passwordOtp || !user.passwordOtpExpires) {
+      return res.status(400).json({ error: "No OTP request found" });
+    }
+
+    if (Date.now() > user.passwordOtpExpires) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
+
+    if (user.passwordOtp !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    user.password = newPassword;
+    user.passwordOtp = undefined;
+    user.passwordOtpExpires = undefined;
+
+    await user.save();
+    res.json({ message: "Password updated successfully" });
+  } catch (err) {
+    console.error("❌ Error updating password:", err);
+    res.status(500).json({ error: "Failed to update password" });
+  }
+});
+
 
 module.exports = router;

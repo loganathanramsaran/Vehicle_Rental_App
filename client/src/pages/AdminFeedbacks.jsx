@@ -29,17 +29,17 @@ function AdminFeedbacks() {
         {feedbacks.length === 0 ? (
           <p>No feedbacks yet.</p>
         ) : (
-          <div className="space-y-4 bg-orange-300 dark:bg-gray-800 dark:text-white">
+          <div className="grid grid-cols-2 max-md:grid-cols-1 gap-10 ">
             {feedbacks.map((f) => (
-              <div key={f._id} className=" p-3 rounded shadow-sm">
+              <div key={f._id} className=" p-3 bg-gradient-to-r from-orange-100 via-orange-200 to-orange-200 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 dark:text-white rounded shadow-sm">
                 <p>
-                  <strong>Name:</strong> {f.name}
+                  <strong className="text-red-500">Name:</strong> {f.name}
                 </p>
                 <p>
-                  <strong>Email:</strong> {f.email}
+                  <strong className="text-green-600">Email:</strong> {f.email}
                 </p>
                 <p>
-                  <strong>Message:</strong> {f.message}
+                  <strong className="text-blue-600">Message:</strong> {f.message}
                 </p>
                 <p className="text-xs text-gray-500">
                   {new Date(f.createdAt).toLocaleString()}

@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
+  passwordOtp: String,
+passwordOtpExpires: Date,
+
   mobile: {
     type: String,
     required: [true, "Mobile number is required"],

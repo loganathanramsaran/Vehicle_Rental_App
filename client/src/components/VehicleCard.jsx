@@ -10,7 +10,7 @@ function VehicleCard({ vehicle }) {
     : placeholderImage;
 
   return (
-    <div className="bg-gradient-to-tr from-orange-200 dark:from-gray-600 via-white dark:via-gray-400 to-orange-200 shadow rounded p-4 hover:shadow-lg transition">
+    <div className="bg-gradient-to-tr from-orange-200 dark:from-gray-700 via-white dark:via-gray-400 to-orange-200 dark:to-gray-400 shadow rounded p-4 hover:shadow-lg transition">
       <img
         src={imageSrc}
         alt={vehicle.title}

@@ -15,9 +15,9 @@ const LandingPage = () => {
       <Navbar />
       <main>
         <Hero />
-        <Features />
-        <MiniVehicleCarousel />
         <HowItWorks />
+        <MiniVehicleCarousel />
+        <Features />
         <Testimonials />
         <About />
         <Services />
