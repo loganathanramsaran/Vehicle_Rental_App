@@ -72,7 +72,7 @@ function Hero() {
         </div>
       </div>
 
-      <div className="animate-bounce text-xl font-bold text-center mt-8 text-orange-700 dark:text-white">
+      <div className="animate-bounce text-xl font-bold text-center mt-8 text-gray-700 dark:text-white">
         Rent Your Dream Vehicle Today!
       </div>
 

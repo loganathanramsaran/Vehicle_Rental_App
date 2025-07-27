@@ -1,186 +1,137 @@
-import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 function EditVehicle() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [vehicle, setVehicle] = useState(null);
+
   const [form, setForm] = useState({
     title: "",
-    type: "",
-    make: "",
+    type: "SUV",
     model: "",
     year: "",
     pricePerDay: "",
     location: "",
+    brand: "",
+    fuelType: "",
+    transmission: "",
+    seats: "",
+    available: true,
     image: "",
   });
 
-  const vehicleTypes = ["SUV", "Sedan", "Bike", "Hatchback", "Truck", "Van"];
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    axios
-      .get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        setVehicle(res.data);
+    const fetchVehicle = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`);
         setForm(res.data);
-      })
-      .catch((err) => {
-        console.error("Failed to load vehicle:", err);
-        alert("Vehicle not found");
-        navigate("/admin/vehicles");
-      });
-  }, [id, navigate]);
+      } catch (err) {
+        toast.error("Failed to fetch vehicle details");
+      }
+    };
+    fetchVehicle();
+  }, [id]);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setForm({ ...form, image: res.data.image });
+      toast.success("Image uploaded");
+    } catch (err) {
+      console.error("Image upload failed", err);
+      toast.error("Failed to upload image");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation
-    if (
-      !form.title ||
-      !form.type ||
-      !form.make ||
-      !form.model ||
-      !form.year ||
-      !form.pricePerDay ||
-      !form.location ||
-      !form.image
-    ) {
-      alert("All fields are required.");
-      return;
-    }
-
-    if (form.year < 1990 || form.year > new Date().getFullYear()) {
-      alert("Please enter a valid year.");
-      return;
-    }
-
-    if (form.pricePerDay <= 0) {
-      alert("Price per day must be greater than 0.");
-      return;
-    }
-
-    const token = localStorage.getItem("token");
-
     try {
-      await axios.put(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`, form, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      alert("Vehicle updated!");
+      const res = await axios.put(
+        `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`,
+        form,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      toast.success("Vehicle updated successfully");
       navigate("/admin/vehicles");
     } catch (err) {
-      console.error("Update failed:", err);
-      alert("Failed to update vehicle");
+      console.error(err);
+      toast.error("Update failed");
     }
   };
 
-  if (!vehicle) return <p className="p-4">Loading...</p>;
+  const imageSrc = form.image?.startsWith("http")
+    ? form.image
+    : form.image
+    ? `${import.meta.env.VITE_SERVER_URL}${form.image}`
+    : "/placeholder.png";
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4 py-10">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-lg p-6 rounded w-full max-w-lg space-y-4"
-      >
-        <h2 className="text-2xl font-bold text-orange-600">Edit Vehicle</h2>
-
-        <input
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          placeholder="Title"
-          className="w-full border px-3 py-2 rounded"
-        />
-
-        <select
-          name="type"
-          value={form.type}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-        >
-          <option value="">Select Type</option>
-          {vehicleTypes.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">Edit Vehicle</h1>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input name="title" value={form.title} onChange={handleChange} placeholder="Title" className="w-full border px-3 py-2 rounded" required />
+        <select name="type" value={form.type} onChange={handleChange} className="w-full border px-3 py-2 rounded" required>
+          {["SUV", "Sedan", "Bike", "Hatchback", "Truck", "Van"].map((opt) => (
+            <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
-
-        <input
-          name="make"
-          value={form.make}
-          onChange={handleChange}
-          placeholder="Make"
-          className="w-full border px-3 py-2 rounded"
-        />
-
-        <input
-          name="model"
-          value={form.model}
-          onChange={handleChange}
-          placeholder="Model"
-          className="w-full border px-3 py-2 rounded"
-        />
-
-        <input
-          name="year"
-          value={form.year}
-          onChange={handleChange}
-          placeholder="Year"
-          type="number"
-          className="w-full border px-3 py-2 rounded"
-        />
-
-        <input
-          name="pricePerDay"
-          value={form.pricePerDay}
-          onChange={handleChange}
-          placeholder="Price Per Day"
-          type="number"
-          className="w-full border px-3 py-2 rounded"
-        />
-
-        <input
-          name="location"
-          value={form.location}
-          onChange={handleChange}
-          placeholder="Location"
-          className="w-full border px-3 py-2 rounded"
-        />
-
-        <input
-          name="image"
-          value={form.image}
-          onChange={handleChange}
-          placeholder="Image URL"
-          className="w-full border px-3 py-2 rounded"
-        />
+        <input name="model" value={form.model} onChange={handleChange} placeholder="Model" className="w-full border px-3 py-2 rounded" />
+        <input name="year" value={form.year} onChange={handleChange} placeholder="Year" type="number" className="w-full border px-3 py-2 rounded" />
+        <input name="pricePerDay" value={form.pricePerDay} onChange={handleChange} placeholder="Price Per Day" type="number" className="w-full border px-3 py-2 rounded" required />
+        <input name="location" value={form.location} onChange={handleChange} placeholder="Location" className="w-full border px-3 py-2 rounded" required />
+        <input name="brand" value={form.brand} onChange={handleChange} placeholder="Brand" className="w-full border px-3 py-2 rounded" />
+        <input name="fuelType" value={form.fuelType} onChange={handleChange} placeholder="Fuel Type" className="w-full border px-3 py-2 rounded" />
+        <input name="transmission" value={form.transmission} onChange={handleChange} placeholder="Transmission" className="w-full border px-3 py-2 rounded" />
+        <input name="seats" value={form.seats} onChange={handleChange} placeholder="Seats" type="number" className="w-full border px-3 py-2 rounded" />
+        <label className="flex items-center space-x-2">
+          <input type="checkbox" name="available" checked={form.available} onChange={handleChange} />
+          <span>Available</span>
+        </label>
 
         {/* Image Preview */}
         {form.image && (
-          <div className="mt-2">
-            <img
-              src={form.image}
-              alt="Vehicle Preview"
-              className="h-40 w-full object-cover rounded"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "/placeholder.png"; // Fallback image
-              }}
-            />
-          </div>
+          <img
+            src={imageSrc}
+            alt="Preview"
+            className="h-40 w-fit rounded mb-2 border"
+          />
         )}
 
-        <button className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+        {/* Image Upload */}
+        <input type="file" accept="image/*" onChange={handleImageUpload} className="block w-full border px-3 py-2 rounded" />
+
+        <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
           Update Vehicle
         </button>
       </form>

@@ -85,8 +85,8 @@ function MyBookings() {
               key={booking._id}
               className={`shadow p-4 rounded ${
                 booking.status === "cancelled"
-                  ? "bg-red-200 dark:bg-gray-700 text-gray-700 dark:text-gray-500"
-                  : "bg-green-200 dark:bg-gray-600 dark:text-white"
+                  ? "bg-gradient-to-r from-red-100 via-red-200 to-red-100 dark:from-gray-700 text-gray-700 dark:text-gray-500"
+                  : "bg-gradient-to-r from-orange-200 via-orange-400 to-orange-200 dark:from-gray-500 dark:text-white"
               }`}
             >
               <div className="flex max-sm:flex-col justify-evenly items-center">

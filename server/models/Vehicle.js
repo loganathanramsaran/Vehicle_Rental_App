@@ -9,11 +9,14 @@ const vehicleSchema = new mongoose.Schema(
       trim: true,
       enum: ["SUV", "Sedan", "Bike", "Hatchback", "Truck", "Van"],
     },
-    make: { type: String, trim: true },
     model: { type: String, trim: true },
     year: { type: Number },
     pricePerDay: { type: Number, required: true },
-    location: { type: String, trim: true },
+    location: {
+      type: String,
+      required: [true, "Location is required"],
+      trim: true,
+    },
     available: { type: Boolean, default: true },
     image: { type: String, trim: true }, // Image URL
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

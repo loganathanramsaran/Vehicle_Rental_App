@@ -25,7 +25,7 @@ const Testimonials = () => {
           What Our Customers Say
         </h2>
 
-        <div className="flex flex-col gap-4 max-w-2xl mx-auto">
+        <div className="grid grid-cols-2 gap-10 max-sm:grid-cols-1">
           {reviews.length === 0 ? (
             <p className="text-gray-600 dark:text-gray-300 col-span-full text-center">
               No testimonials yet.

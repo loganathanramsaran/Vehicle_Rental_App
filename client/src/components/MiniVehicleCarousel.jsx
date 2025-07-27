@@ -44,7 +44,7 @@ function MiniVehicleCarousel() {
 
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
-      <div className=" py-16 max-sm:px-0 overflow-hidden max-w-7xl px-4 mx-auto">
+      <div className=" py-16 max-sm:px-0 overflow-hidden max-w-6xl mx-auto">
         <h2 className="text-2xl text-center font-bold mb-10 text-gray-800 dark:text-white">
           Available Vehicles
         </h2>

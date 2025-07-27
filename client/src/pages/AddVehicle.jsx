@@ -6,7 +6,6 @@ function AddVehicle() {
   const [form, setForm] = useState({
     title: "",
     type: "",
-    make: "",
     model: "",
     year: "",
     pricePerDay: "",
@@ -26,10 +25,13 @@ function AddVehicle() {
     const errs = {};
     if (!form.title.trim()) errs.title = "Title is required.";
     if (!form.type) errs.type = "Type is required.";
-    if (!form.make.trim()) errs.make = "Make is required.";
     if (!form.model.trim()) errs.model = "Model is required.";
     if (!form.brand.trim()) errs.brand = "Brand is required.";
-    if (!form.location.trim()) errs.location = "Location is required.";
+    if (!form.location.trim()) {
+      errs.location = "Location is required.";
+    } else if (!/[a-zA-Z]/.test(form.location)) {
+      errs.location = "Location must contain letters.";
+    }
 
     if (!form.pricePerDay || Number(form.pricePerDay) <= 0) {
       errs.pricePerDay = "Enter a valid price.";
@@ -40,7 +42,11 @@ function AddVehicle() {
     }
 
     const currentYear = new Date().getFullYear();
-    if (!form.year || Number(form.year) < 1990 || Number(form.year) > currentYear) {
+    if (
+      !form.year ||
+      Number(form.year) < 1990 ||
+      Number(form.year) > currentYear
+    ) {
       errs.year = `Enter a valid year between 1990 and ${currentYear}.`;
     }
 
@@ -56,7 +62,7 @@ function AddVehicle() {
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (file) setImageFile(file);
   };
 
@@ -71,17 +77,21 @@ function AddVehicle() {
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, value);
+      formData.append(key, String(value ?? ""));
     });
     formData.append("image", imageFile);
 
     try {
       setSubmitting(true);
-      await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/vehicles`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.post(
+        `${import.meta.env.VITE_SERVER_URL}/api/vehicles`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       alert("Vehicle added successfully!");
       navigate("/vehicles");
     } catch (err) {
@@ -103,13 +113,26 @@ function AddVehicle() {
 
         {/* Title */}
         <div>
-          <input name="title" onChange={handleChange} value={form.title} placeholder="Vehicle Title" className="w-full border px-3 py-2 rounded" />
-          {errors.title && <p className="text-red-600 text-sm">{errors.title}</p>}
+          <input
+            name="title"
+            onChange={handleChange}
+            value={form.title}
+            placeholder="Vehicle Title"
+            className="w-full border px-3 py-2 rounded"
+          />
+          {errors.title && (
+            <p className="text-red-600 text-sm">{errors.title}</p>
+          )}
         </div>
 
         {/* Type */}
         <div>
-          <select name="type" onChange={handleChange} value={form.type} className="w-full border px-3 py-2 rounded">
+          <select
+            name="type"
+            onChange={handleChange}
+            value={form.type}
+            className="w-full border px-3 py-2 rounded"
+          >
             <option value="">Select Type</option>
             <option value="SUV">SUV</option>
             <option value="Sedan">Sedan</option>
@@ -121,80 +144,156 @@ function AddVehicle() {
           {errors.type && <p className="text-red-600 text-sm">{errors.type}</p>}
         </div>
 
-        {/* Make */}
-        <div>
-          <input name="make" onChange={handleChange} value={form.make} placeholder="Make" className="w-full border px-3 py-2 rounded" />
-          {errors.make && <p className="text-red-600 text-sm">{errors.make}</p>}
-        </div>
-
         {/* Model */}
         <div>
-          <input name="model" onChange={handleChange} value={form.model} placeholder="Model" className="w-full border px-3 py-2 rounded" />
-          {errors.model && <p className="text-red-600 text-sm">{errors.model}</p>}
+          <input
+            name="model"
+            onChange={handleChange}
+            value={form.model}
+            placeholder="Model"
+            className="w-full border px-3 py-2 rounded"
+          />
+          {errors.model && (
+            <p className="text-red-600 text-sm">{errors.model}</p>
+          )}
         </div>
 
         {/* Brand */}
         <div>
-          <input name="brand" onChange={handleChange} value={form.brand} placeholder="Brand" className="w-full border px-3 py-2 rounded" />
-          {errors.brand && <p className="text-red-600 text-sm">{errors.brand}</p>}
+          <input
+            name="brand"
+            onChange={handleChange}
+            value={form.brand}
+            placeholder="Brand"
+            className="w-full border px-3 py-2 rounded"
+          />
+          {errors.brand && (
+            <p className="text-red-600 text-sm">{errors.brand}</p>
+          )}
         </div>
 
         {/* Fuel Type */}
         <div>
-          <select name="fuelType" onChange={handleChange} value={form.fuelType} className="w-full border px-3 py-2 rounded">
+          <select
+            name="fuelType"
+            onChange={handleChange}
+            value={form.fuelType}
+            className="w-full border px-3 py-2 rounded"
+          >
             <option value="">Select Fuel Type</option>
             <option value="Petrol">Petrol</option>
             <option value="Diesel">Diesel</option>
             <option value="Electric">Electric</option>
             <option value="Hybrid">Hybrid</option>
           </select>
-          {errors.fuelType && <p className="text-red-600 text-sm">{errors.fuelType}</p>}
+          {errors.fuelType && (
+            <p className="text-red-600 text-sm">{errors.fuelType}</p>
+          )}
         </div>
 
         {/* Transmission */}
         <div>
-          <select name="transmission" onChange={handleChange} value={form.transmission} className="w-full border px-3 py-2 rounded">
+          <select
+            name="transmission"
+            onChange={handleChange}
+            value={form.transmission}
+            className="w-full border px-3 py-2 rounded"
+          >
             <option value="">Select Transmission</option>
             <option value="Manual">Manual</option>
             <option value="Automatic">Automatic</option>
           </select>
-          {errors.transmission && <p className="text-red-600 text-sm">{errors.transmission}</p>}
+          {errors.transmission && (
+            <p className="text-red-600 text-sm">{errors.transmission}</p>
+          )}
         </div>
 
         {/* Seats */}
         <div>
-          <input name="seats" type="number" onChange={handleChange} value={form.seats} placeholder="Number of Seats" className="w-full border px-3 py-2 rounded" />
-          {errors.seats && <p className="text-red-600 text-sm">{errors.seats}</p>}
+          <input
+            name="seats"
+            type="number"
+            onChange={handleChange}
+            value={form.seats}
+            placeholder="Number of Seats"
+            className="w-full border px-3 py-2 rounded"
+          />
+          {errors.seats && (
+            <p className="text-red-600 text-sm">{errors.seats}</p>
+          )}
         </div>
 
         {/* Year */}
         <div>
-          <input name="year" type="number" onChange={handleChange} value={form.year} placeholder="Year" className="w-full border px-3 py-2 rounded" />
+          <input
+            name="year"
+            type="number"
+            onChange={handleChange}
+            value={form.year}
+            placeholder="Year"
+            className="w-full border px-3 py-2 rounded"
+          />
           {errors.year && <p className="text-red-600 text-sm">{errors.year}</p>}
-          <p className="text-xs text-gray-500">Year must be between 1990 and {new Date().getFullYear()}.</p>
+          <p className="text-xs text-gray-500">
+            Year must be between 1990 and {new Date().getFullYear()}.
+          </p>
         </div>
 
         {/* Price */}
         <div>
-          <input name="pricePerDay" type="number" onChange={handleChange} value={form.pricePerDay} placeholder="Price per Day" className="w-full border px-3 py-2 rounded" />
-          {errors.pricePerDay && <p className="text-red-600 text-sm">{errors.pricePerDay}</p>}
+          <input
+            name="pricePerDay"
+            type="number"
+            onChange={handleChange}
+            value={form.pricePerDay}
+            placeholder="Price per Day"
+            className="w-full border px-3 py-2 rounded"
+          />
+          {errors.pricePerDay && (
+            <p className="text-red-600 text-sm">{errors.pricePerDay}</p>
+          )}
         </div>
 
         {/* Location */}
         <div>
-          <input name="location" onChange={handleChange} value={form.location} placeholder="Location" className="w-full border px-3 py-2 rounded" />
-          {errors.location && <p className="text-red-600 text-sm">{errors.location}</p>}
+          <input
+            name="location"
+            value={form.location}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^[a-zA-Z\s]*$/.test(value)) {
+                setForm({ ...form, location: value });
+              }
+            }}
+            placeholder="Location"
+            className="w-full border px-3 py-2 rounded"
+          />
+
+          {errors.location && (
+            <p className="text-red-600 text-sm">{errors.location}</p>
+          )}
         </div>
 
         {/* Image Upload */}
         <div>
-          <input type="file" accept="image/*" onChange={handleImageChange} className="w-full border px-3 py-2 rounded" />
-          {errors.image && <p className="text-red-600 text-sm">{errors.image}</p>}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full border px-3 py-2 rounded"
+          />
+          {errors.image && (
+            <p className="text-red-600 text-sm">{errors.image}</p>
+          )}
         </div>
 
         {/* Image Preview */}
         {imageFile && (
-          <img src={URL.createObjectURL(imageFile)} alt="Preview" className="h-32 w-auto object-contain rounded border" />
+          <img
+            src={URL.createObjectURL(imageFile)}
+            alt="Preview"
+            className="h-32 w-auto object-contain rounded border"
+          />
         )}
 
         <button

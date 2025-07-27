@@ -109,6 +109,7 @@ function AdminVehicleList() {
               <thead>
                 <tr className="bg-gradient-to-r from-orange-300 via-orange-600 to-orange-300 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 text-white dark:text-gray-200 text-left">
                   <th className="px-6 py-3">Title</th>
+                  <th className="px-6 py-3">Image</th>
                   <th className="px-6 py-3">Type</th>
                   <th className="px-6 py-3">Price / Day</th>
                   <th className="px-6 py-3 text-center">Actions</th>
@@ -125,6 +126,16 @@ function AdminVehicleList() {
                     } hover:bg-orange-400 dark:hover:bg-gray-600 transition`}
                   >
                     <td className="px-6 py-3 truncate max-w-xs">{vehicle.title}</td>
+                    <td className="px-6 py-3 truncate max-w-xs">
+                      <img
+                        src={vehicle.image?.startsWith("http")
+                          ? vehicle.image
+                          : `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`}
+                        alt={vehicle.title}
+                        className="h-20 w-fit rounded max-md:hidden"
+                        onError={(e) => (e.target.src = "/placeholder.png")}
+                      />
+                    </td>
                     <td className="px-6 py-3">{vehicle.type}</td>
                     <td className="px-6 py-3">₹{vehicle.pricePerDay}</td>
                     <td className="px-6 py-3 text-center space-x-2">

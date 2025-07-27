@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 function VehicleCard({ vehicle }) {
-  const placeholderImage = "No Image Available";
+  const placeholderImage = "/placeholder.png"; // Path to your placeholder image
 
   const imageSrc = vehicle.image?.startsWith("http")
     ? vehicle.image
