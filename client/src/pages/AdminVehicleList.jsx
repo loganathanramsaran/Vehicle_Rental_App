@@ -132,7 +132,7 @@ function AdminVehicleList() {
                           ? vehicle.image
                           : `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`}
                         alt={vehicle.title}
-                        className="h-20 w-fit rounded max-md:hidden"
+                        className="h-20 w-fit rounded max-md:hidden mix-blend-multiply"
                         onError={(e) => (e.target.src = "/placeholder.png")}
                       />
                     </td>

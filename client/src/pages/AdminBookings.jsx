@@ -93,7 +93,7 @@ function AdminBookings() {
                         : `${import.meta.env.VITE_SERVER_URL}${booking.vehicle.image}`
                     }
                     alt={booking.vehicle.title}
-                    className="w-full h-40 object-cover rounded-lg mb-3"
+                    className="w-fit h-36 object-cover mix-blend-multiply rounded-lg mb-3"
                     onError={(e) => (e.target.src = "/placeholder.png")}
                   />
                 ) : (
