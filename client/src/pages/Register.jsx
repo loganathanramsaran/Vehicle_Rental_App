@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import AuthLayout from "../components/AuthLayout";
 
 function Register() {
@@ -210,7 +210,6 @@ function Register() {
           )}
         </form>
       </AuthLayout>
-      <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 }

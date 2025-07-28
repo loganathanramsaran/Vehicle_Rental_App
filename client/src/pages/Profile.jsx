@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
-import toast from "react-hot-toast";
+import { toast} from "react-toastify";
 
 function Profile() {
   const [profile, setProfile] = useState({ name: "", email: "", avatar: "" });
@@ -48,8 +48,24 @@ function Profile() {
     fetchProfile();
   }, [SERVER_URL]);
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    let newValue = value;
+
+    if (name === "aadhar") {
+      newValue = value
+        .replace(/\D/g, "")
+        .slice(0, 12)
+        .replace(/(.{4})/g, "$1 ")
+        .trim();
+    }
+
+    if (name === "mobile") {
+      newValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+
+    setForm({ ...form, [name]: newValue });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -93,13 +109,14 @@ function Profile() {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete your account?")) return;
+    if (!window.confirm("Are you sure you want to delete your account?"))
+      return;
     try {
       await axios.delete(`${SERVER_URL}/api/user/me`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      localStorage.removeItem("token");
-      toast.success("Account deleted");
+  localStorage.removeItem("token");
+      toast.success("Account deleted successfully");
       navigate("/register");
     } catch (err) {
       console.error("Delete error", err);
@@ -199,7 +216,9 @@ function Profile() {
 
         {/* Profile Form */}
         <div className="lg:col-span-2">
-          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-orange-600">My Profile</h2>
+          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-orange-600">
+            My Profile
+          </h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -223,37 +242,46 @@ function Profile() {
               </div>
               <div>
                 <label className="block font-medium">Address</label>
-                <input
-                  name="address"
-                  value={form.address}
-                  onChange={handleChange}
-                  className="w-full border px-3 py-2 rounded dark:bg-slate-800 dark:text-white"
-                  required
-                />
+              <input
+                name="address"
+                type="text"
+                placeholder="Full Address (Street, City, State, Pincode)"
+                value={form.address}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded"
+                required
+                minLength={10}
+                title="Address must include both letters and numbers, min 10 characters"
+              />
               </div>
               <div>
                 <label className="block font-medium">Aadhaar</label>
-                <input
-                  name="aadhar"
-                  value={form.aadhar}
-                  onChange={handleChange}
-                  className="w-full border px-3 py-2 rounded dark:bg-slate-800 dark:text-white"
-                  maxLength={14}
-                  pattern="\d{4}\s?\d{4}\s?\d{4}"
-                  required
-                />
+              <input
+                name="aadhar"
+                type="text"
+                placeholder="1111 2222 3333"
+                value={form.aadhar}
+                maxLength={14}
+                onChange={handleChange}
+                pattern="\d{4}\s\d{4}\s\d{4}"
+                title="Enter a valid 12-digit Aadhar number in format 1111 2222 3333"
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
               </div>
               <div>
                 <label className="block font-medium">Mobile</label>
-                <input
-                  name="mobile"
-                  value={form.mobile}
-                  onChange={handleChange}
-                  className="w-full border px-3 py-2 rounded dark:bg-slate-800 dark:text-white"
-                  maxLength={10}
-                  pattern="[6-9]{1}[0-9]{9}"
-                  required
-                />
+              <input
+                name="mobile"
+                type="tel"
+                placeholder="Mobile Number"
+                value={form.mobile}
+                pattern="[6-9]{1}[0-9]{9}"
+                title="Enter a valid 10-digit mobile number starting with 6-9"
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded"
+                required
+              />
               </div>
             </div>
           </form>

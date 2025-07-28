@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Menu, X, Bell, Moon, Sun, ChevronDown } from "lucide-react";
 import { UserContext } from "../context/UserContext";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 
 function Navbar() {
   const { user, setUser, fetchUser } = useContext(UserContext);
