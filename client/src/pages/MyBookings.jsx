@@ -122,12 +122,6 @@ export default function MyBookings() {
                       </span>
                     </p>
                     <p className="text-sm text-gray-600">
-                      Payment ID:{" "}
-                      <span className="font-mono text-gray-800">
-                        {booking.payment?.razorpayPaymentId || "N/A"}
-                      </span>
-                    </p>
-                    <p className="text-sm text-gray-600">
                       Booking Status:{" "}
                       <span
                         className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${

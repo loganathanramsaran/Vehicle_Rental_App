@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const { verifyToken } = require("../middleware/auth");
 const Payment = require("../models/payment");
 const Booking = require("../models/Booking");
+const { createOrder } = require("../controllers/paymentController");
 
 const router = express.Router();
 
@@ -13,23 +14,7 @@ const razorpay = new Razorpay({
 });
 
 // Create order
-router.post("/orders", verifyToken, async (req, res) => {
-  const { amount } = req.body;
-  if (!amount) return res.status(400).json({ message: "Amount is required" });
-
-  try {
-    const options = {
-      amount: amount * 100, // Razorpay needs amount in paise
-      currency: "INR",
-      receipt: `receipt_${Date.now()}`,
-    };
-    const order = await razorpay.orders.create(options);
-    res.json(order);
-  } catch (err) {
-    console.error("Create order error:", err);
-    res.status(500).json({ message: "Failed to create Razorpay order" });
-  }
-});
+router.post("/orders", verifyToken, createOrder);
 
 // Verify and create Payment + Booking
 router.post("/verify", verifyToken, async (req, res) => {

@@ -40,7 +40,8 @@ function AdminBookings() {
   };
 
   return (
-    <div className="p-6">
+    <section>
+    <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-semibold mb-6">All Bookings</h1>
 
       {loading ? (
@@ -101,6 +102,7 @@ function AdminBookings() {
         </div>
       )}
     </div>
+    </section>
   );
 }
 

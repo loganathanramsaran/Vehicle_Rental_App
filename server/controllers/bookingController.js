@@ -5,7 +5,10 @@ const Vehicle = require("../models/Vehicle");
 const getMyBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ user: req.user.id })
-      .populate("vehicle")
+      .populate({
+        path: "vehicle",
+        populate: { path: "owner", select: "name email" },
+      })
       .populate("payment")
       .sort({ createdAt: -1 });
 
@@ -16,18 +19,46 @@ const getMyBookings = async (req, res) => {
   }
 };
 
+const createBooking = async (req, res) => {
+  const {
+    vehicle,
+    startDate,
+    endDate,
+    totalPrice,
+    razorpayOrderId,
+    razorpayPaymentId,
+  } = req.body;
+  const userId = req.user.id;
+
+  try {
+    const newBooking = await Booking.create({
+      user: userId,
+      vehicle,
+      startDate,
+      endDate,
+      totalPrice,
+      razorpayOrderId,
+      razorpayPaymentId,
+      status: "confirmed",
+    });
+
+    res.status(201).json(newBooking);
+  } catch (err) {
+    res.status(500).json({ error: "Booking creation failed." });
+  }
+};
+
 // GET /api/bookings/booked-dates/:vehicleId
 const getBookedDates = async (req, res) => {
   try {
     const bookings = await Booking.find({ vehicle: req.params.vehicleId });
-    const bookedDates = bookings.map((b) => ({
-      startDate: b.startDate,
-      endDate: b.endDate,
+    const dateRanges = bookings.map((b) => ({
+      start: b.startDate,
+      end: b.endDate,
     }));
-    res.json({ bookedDates });
+    res.json(dateRanges);
   } catch (err) {
-    console.error("Booked dates error:", err);
-    res.status(500).json({ error: "Failed to fetch booked dates" });
+    res.status(500).json({ message: "Error fetching booked dates" });
   }
 };
 
@@ -98,11 +129,24 @@ const getAllBookingsForAdmin = async (req, res) => {
   }
 };
 
+const getBookingsByVehicleId = async (req, res) => {
+  try {
+    const bookings = await Booking.find({
+      vehicle: req.params.vehicleId,
+      status: "confirmed", // Only show confirmed bookings
+    });
+    res.status(200).json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch bookings for vehicle" });
+  }
+};
 
 module.exports = {
   getMyBookings,
+  createBooking,
   getBookedDates,
   cancelBooking,
   deleteBooking,
-    getAllBookingsForAdmin
+  getAllBookingsForAdmin,
+  getBookingsByVehicleId,
 };

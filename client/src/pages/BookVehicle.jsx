@@ -1,226 +1,260 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { UserContext } from "../context/UserContext";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "./BookedDate.css"; // Include custom styles
 
 function BookVehicle() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(UserContext);
 
   const [vehicle, setVehicle] = useState(null);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [totalDays, setTotalDays] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [bookedRanges, setBookedRanges] = useState([]);
-
-  const totalAmount = totalDays * (vehicle?.rentPerDay || 0);
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [bookedDates, setBookedDates] = useState([]);
 
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`
-        );
-        setVehicle(data);
-      } catch (err) {
-        console.error("Vehicle fetch error:", err);
-        toast.error("Vehicle not found.");
+        const res = await axios.get(`/api/vehicles/${id}`);
+        setVehicle(res.data);
+        setLoading(false);
+      } catch (error) {
+        toast.error("Vehicle not found");
+        setLoading(false);
+      }
+    };
+
+    const fetchUser = () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        setUser(payload);
       }
     };
 
     const fetchBookedDates = async () => {
       try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_SERVER_URL}/api/bookings/booked-dates/${id}`
-        );
-        const ranges = data.bookedDates.map(({ startDate, endDate }) => ({
-          start: new Date(startDate),
-          end: new Date(endDate),
-        }));
-        setBookedRanges(ranges);
-      } catch (err) {
-        console.error("Booked dates fetch error:", err);
+        const res = await axios.get(`/api/bookings/booked-dates/${id}`);
+        const dates = [];
+
+        res.data.forEach(({ startDate, endDate }) => {
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+
+          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            dates.push(new Date(d.getTime())); // clone to avoid mutation
+          }
+        });
+
+        setBookedDates(dates);
+      } catch (error) {
+        console.error("Failed to fetch booked dates");
       }
     };
 
     fetchVehicle();
+    fetchUser();
     fetchBookedDates();
   }, [id]);
 
-  useEffect(() => {
-    if (startDate && endDate) {
-      const diffTime = endDate.getTime() - startDate.getTime();
-      const days = Math.ceil(diffTime / (1000 * 3600 * 24));
-      setTotalDays(days > 0 ? days : 0);
-    } else {
-      setTotalDays(0);
+  const isRangeOverlapping = (start, end) => {
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      if (
+        bookedDates.some(
+          (b) => b.toDateString() === new Date(d).toDateString()
+        )
+      ) {
+        return true;
+      }
     }
-  }, [startDate, endDate]);
-
-  const isDateBooked = (date) => {
-    return bookedRanges.some(
-      (range) => date >= range.start && date <= range.end
-    );
+    return false;
   };
 
-  const validateBooking = () => {
-    if (!startDate || !endDate) {
-      toast.error("Please select both start and end dates.");
-      return false;
-    }
-    if (endDate <= startDate) {
-      toast.error("End date must be after start date.");
-      return false;
-    }
-    if (
-      bookedRanges.some(
-        (range) =>
-          (startDate >= range.start && startDate <= range.end) ||
-          (endDate >= range.start && endDate <= range.end) ||
-          (startDate <= range.start && endDate >= range.end)
-      )
-    ) {
-      toast.error("Selected dates overlap with existing bookings.");
-      return false;
-    }
-    return true;
+  const calculateDays = () => {
+    if (!startDate || !endDate) return 0;
+    const timeDiff = Math.abs(endDate - startDate);
+    return Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
   };
+
+  const totalAmount = calculateDays() * (vehicle?.rentPerDay || 0);
 
   const handlePayment = async () => {
-    if (!validateBooking()) return;
+    if (!startDate || !endDate) {
+      toast.warn("Please select both start and end dates");
+      return;
+    }
 
-    setLoading(true);
-    const token = localStorage.getItem("token");
+    if (isRangeOverlapping(startDate, endDate)) {
+      toast.error("Selected range includes booked dates. Please choose again.");
+      return;
+    }
+
     try {
+      const token = localStorage.getItem("token");
+
       const { data: order } = await axios.post(
         "/api/payment/orders",
         { amount: totalAmount },
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: order.amount,
-        currency: "INR",
+        currency: order.currency,
+        name: "Vehicle Rental",
+        description: "Vehicle booking payment",
         order_id: order.id,
         handler: async function (response) {
-          try {
-            const verifyRes = await axios.post(
-              "/api/payment/verify",
-              {
-                ...response,
-                vehicleId: id,
-                amount: totalAmount,
-                startDate,
-                endDate,
+          const verifyRes = await axios.post(
+            "/api/payment/verify",
+            {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              vehicleId: vehicle._id,
+              startDate,
+              endDate,
+              amount: totalAmount,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
               },
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
-
-            if (verifyRes.data.success) {
-              toast.success("Booking successful!");
-              navigate("/my-bookings");
-            } else {
-              toast.error("Booking verification failed.");
             }
-          } catch (err) {
-            console.error("Verification error:", err);
-            toast.error("Payment verification failed.");
-          } finally {
-            setLoading(false);
+          );
+
+          if (verifyRes.data.success) {
+            toast.success("Booking successful!");
+            navigate("/my-bookings");
+          } else {
+            toast.error("Payment verification failed!");
           }
         },
         prefill: {
-          name: user?.name || "",
-          email: user?.email || "",
+          name: user.name,
+          email: user.email,
         },
-        theme: { color: "#2E86DE" },
+        theme: {
+          color: "#2563eb",
+        },
       };
 
       const rzp = new window.Razorpay(options);
       rzp.open();
-    } catch (err) {
-      console.error("Payment error:", err);
-      toast.error("Payment initiation failed.");
-      setLoading(false);
+    } catch (error) {
+      console.error("Payment failed", error);
+      toast.error("Payment initiation failed!");
     }
   };
 
-  if (!vehicle) {
-    return (
-      <div className="text-center mt-20 text-xl text-gray-700">
-        Loading vehicle details...
-      </div>
-    );
-  }
+  if (loading) return <div className="p-6 text-lg">Loading...</div>;
+  if (!vehicle) return <div className="p-6 text-red-600">Vehicle not found</div>;
 
   return (
-    <section className="bg-gray-50 min-h-screen py-10 px-4">
-      <ToastContainer />
-      <div className="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold text-center mb-6">
-          Book {vehicle.name}
-        </h2>
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow mt-6">
+      <h2 className="text-2xl font-bold mb-4">{vehicle.name}</h2>
+      <img
+        src={
+          vehicle.image?.startsWith("http")
+            ? vehicle.image
+            : `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
+        }
+        alt={vehicle.name}
+        className="w-full h-64 object-cover rounded mb-4"
+      />
+      <p className="text-gray-700 mb-2">{vehicle.description}</p>
+      <p className="text-gray-800 font-semibold">₹{vehicle.rentPerDay} / day</p>
 
-        <img
-          src={
-            vehicle.image?.startsWith("http")
-              ? vehicle.image
-              : `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
-          }
-          alt={vehicle.name}
-          className="w-fit object-cover rounded-lg mb-6"
-        />
-
-        <div className="grid sm:grid-cols-2 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">Start Date</label>
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              minDate={new Date()}
-              excludeDateIntervals={bookedRanges}
-              className="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-400"
-              placeholderText="Select start date"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">End Date</label>
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              minDate={startDate || new Date()}
-              excludeDateIntervals={bookedRanges}
-              className="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-blue-400"
-              placeholderText="Select end date"
-            />
-          </div>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block font-medium">Start Date</label>
+          <DatePicker
+            selected={startDate}
+            onChange={(date) => setStartDate(date)}
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+            minDate={new Date()}
+            excludeDates={bookedDates}
+            dayClassName={(date) =>
+              bookedDates.some(
+                (booked) => booked.toDateString() === date.toDateString()
+              )
+                ? "booked-date"
+                : undefined
+            }
+            className="w-full p-2 border rounded"
+          />
         </div>
-
-        <div className="mb-6 text-lg text-center">
-          Total Rent:{" "}
-          <span className="font-bold text-blue-600">
-            ₹{totalAmount.toFixed(2)}
-          </span>
+        <div>
+          <label className="block font-medium">End Date</label>
+          <DatePicker
+            selected={endDate}
+            onChange={(date) => {
+              let validEnd = new Date(date);
+              for (
+                let d = new Date(startDate);
+                d <= validEnd;
+                d.setDate(d.getDate() + 1)
+              ) {
+                if (
+                  bookedDates.some(
+                    (b) => b.toDateString() === d.toDateString()
+                  )
+                ) {
+                  validEnd = new Date(d);
+                  validEnd.setDate(validEnd.getDate() - 1);
+                  toast.warn("End date adjusted to avoid booked dates.");
+                  break;
+                }
+              }
+              setEndDate(validEnd);
+            }}
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+            minDate={startDate || new Date()}
+            excludeDates={bookedDates}
+            dayClassName={(date) =>
+              bookedDates.some(
+                (booked) => booked.toDateString() === date.toDateString()
+              )
+                ? "booked-date"
+                : undefined
+            }
+            className="w-full p-2 border rounded"
+          />
         </div>
-
-        <button
-          onClick={handlePayment}
-          disabled={loading}
-          className={`w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded transition duration-300 ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-        >
-          {loading ? "Processing..." : "Proceed to Pay"}
-        </button>
       </div>
-    </section>
+
+      <div className="mt-6">
+        <p className="text-lg font-semibold">
+          Total Days: {calculateDays()} | Total: ₹{totalAmount}
+        </p>
+      </div>
+
+      <button
+        onClick={handlePayment}
+        className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+      >
+        Pay & Book
+      </button>
+
+      {/* Legend */}
+      <div className="mt-4 text-sm text-gray-600">
+        <span className="inline-block w-3 h-3 bg-red-400 rounded-full mr-2"></span>
+        Booked Dates
+      </div>
+    </div>
   );
 }
 
