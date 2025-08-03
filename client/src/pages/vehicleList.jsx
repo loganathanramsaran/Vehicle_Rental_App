@@ -1,312 +1,189 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
 import axios from "axios";
+import { X } from "lucide-react";
 import VehicleCard from "../components/VehicleCard";
 
 function VehicleList() {
   const [vehicles, setVehicles] = useState([]);
+  const [filtered, setFiltered] = useState([]);
   const [error, setError] = useState("");
-  const [sortOption, setSortOption] = useState("");
-  const [filterDates, setFilterDates] = useState({ start: "", end: "" });
+
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
+  const [type, setType] = useState("");
+  const [location, setLocation] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [minRating, setMinRating] = useState(0);
-  const [showMobileFilter, setShowMobileFilter] = useState(false);
+  const [sort, setSort] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    const fetchVehicles = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles`);
-        setVehicles(res.data);
-      } catch (err) {
-        console.error("Failed to fetch vehicles:", err);
-        setError("Failed to load vehicles. Please try again later.");
-      }
-    };
-
-    fetchVehicles();
-  }, []);
-
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-  };
-
-  const handleDateChange = (e) => {
-    setFilterDates({ ...filterDates, [e.target.name]: e.target.value });
-  };
-
-  const handleClearFilters = () => {
-    setSortOption("");
-    setFilterDates({ start: "", end: "" });
-    setSearch("");
-    setTypeFilter("");
-    setLocationFilter("");
-    setMaxPrice("");
-    setMinRating(0);
-  };
-
-  const sortedVehicles = [...vehicles].sort((a, b) => {
-    if (sortOption === "priceLowHigh") return a.pricePerDay - b.pricePerDay;
-    if (sortOption === "priceHighLow") return b.pricePerDay - a.pricePerDay;
-    if (sortOption === "yearNewOld") return b.year - a.year;
-    if (sortOption === "yearOldNew") return a.year - b.year;
-    if (sortOption === "ratingHighLow") {
-      const aRating = typeof a.averageRating === "number" ? a.averageRating : 0;
-      const bRating = typeof b.averageRating === "number" ? b.averageRating : 0;
-      return bRating - aRating;
+useEffect(() => {
+  const fetchVehicles = async () => {
+    try {
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles`);
+      setVehicles(res.data); // or setFiltered(res.data) if using filtered array
+    } catch (err) {
+      console.error("Failed to fetch vehicles:", err);
     }
-    return 0;
-  });
+  };
 
-  const filteredVehicles = sortedVehicles.filter((v) => {
-    const matchesSearch =
-      v.title.toLowerCase().includes(search.toLowerCase()) ||
-      v.make.toLowerCase().includes(search.toLowerCase()) ||
-      v.model.toLowerCase().includes(search.toLowerCase());
+  fetchVehicles();
+}, []);
+  useEffect(() => {
+    let filteredList = [...vehicles];
 
-    const matchesType = typeFilter ? v.type === typeFilter : true;
-    const matchesLocation = locationFilter
-      ? v.location.toLowerCase().includes(locationFilter.toLowerCase())
-      : true;
-    const matchesPrice = maxPrice ? v.pricePerDay <= maxPrice : true;
-    const matchesAvailability = v.available;
-    const matchesRating =
-      typeof v.averageRating === "number" ? v.averageRating >= minRating : true;
+    if (search.trim()) {
+      filteredList = filteredList.filter((v) =>
+        v.name.toLowerCase().includes(search.toLowerCase())
+      );
+    }
 
-    return (
-      matchesSearch &&
-      matchesType &&
-      matchesLocation &&
-      matchesPrice &&
-      matchesAvailability &&
-      matchesRating
-    );
-  });
+    if (type) {
+      filteredList = filteredList.filter((v) => v.type === type);
+    }
+
+    if (location) {
+      filteredList = filteredList.filter((v) =>
+        v.description?.toLowerCase().includes(location.toLowerCase())
+      );
+    }
+
+    if (maxPrice) {
+      filteredList = filteredList.filter((v) => v.rentPerDay <= parseFloat(maxPrice));
+    }
+
+    if (minRating) {
+      filteredList = filteredList.filter(
+        (v) => (v.averageRating || 0) >= parseFloat(minRating)
+      );
+    }
+
+    if (sort === "priceLowHigh") {
+      filteredList.sort((a, b) => a.rentPerDay - b.rentPerDay);
+    } else if (sort === "priceHighLow") {
+      filteredList.sort((a, b) => b.rentPerDay - a.rentPerDay);
+    } else if (sort === "ratingHighLow") {
+      filteredList.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+    }
+
+    setFiltered(filteredList);
+  }, [vehicles, search, type, location, maxPrice, minRating, sort]);
 
   return (
-    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
-    <div className="min-h-screen max-w-7xl mx-auto p-4 lg:flex">
-      {/* Sidebar (Desktop) */}
-      <div className="hidden lg:block w-64 pr-6 sticky top-4 h-fit">
-        <div className=" dark:bg-gray-700 p-4 shadow rounded space-y-3">
-          <input
-            type="text"
-            placeholder="Search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          />
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          >
-            <option value="">All Types</option>
-            <option value="SUV">SUV</option>
-            <option value="Sedan">Sedan</option>
-            <option value="Bike">Bike</option>
-            <option value="Hatchback">Hatchback</option>
-            <option value="Truck">Truck</option>
-            <option value="Van">Van</option>
-          </select>
-          <input
-            type="text"
-            placeholder="Location"
-            value={locationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
-            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          />
-          <input
-            type="number"
-            placeholder="Max Price"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          />
-          <label className="text-sm font-medium dark:text-yellow-400 ">Min Rating</label>
-          <select
-            value={minRating}
-            onChange={(e) => setMinRating(parseFloat(e.target.value))}
-            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          >
-            <option value={0}>All</option>
-            <option value={4}>4 ★ & up</option>
-            <option value={3}>3 ★ & up</option>
-            <option value={2}>2 ★ & up</option>
-            <option value={1}>1 ★ & up</option>
-          </select>
-          <input
-            type="date"
-            name="start"
-            value={filterDates.start}
-            onChange={handleDateChange}
-            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          />
-          <input
-            type="date"
-            name="end"
-            value={filterDates.end}
-            onChange={handleDateChange}
-            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          />
-          <select
-            onChange={handleSortChange}
-            value={sortOption}
-            className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-          >
-            <option value="">-- Sort By --</option>
-            <option value="priceLowHigh">Price: Low to High</option>
-            <option value="priceHighLow">Price: High to Low</option>
-            <option value="yearNewOld">Year: New to Old</option>
-            <option value="yearOldNew">Year: Old to New</option>
-            <option value="ratingHighLow">Rating: High to Low</option>
-          </select>
+    <section className="min-h-screen bg-gradient-to-r from-white via-orange-50 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
+      <div className="max-w-7xl mx-auto p-4">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-orange-600 dark:text-orange-400">
+            Explore Vehicles
+          </h1>
           <button
-            onClick={handleClearFilters}
-            className="bg-red-500 text-white px-4 py-2 rounded w-full hover:bg-red-600 transition"
+            onClick={() => setShowFilters(true)}
+            className="lg:hidden bg-blue-500 text-white px-4 py-2 rounded"
           >
-            Clear Filters
+            Filters
           </button>
+        </div>
+
+        {/* Filter Sidebar */}
+        <div className="lg:flex">
+          <div className="w-full lg:w-64 lg:mr-6 space-y-4 mb-6 lg:mb-0">
+            <div className="bg-white dark:bg-gray-700 p-4 rounded-xl shadow space-y-4 border dark:border-gray-600">
+              <input
+                type="text"
+                placeholder="Search by name"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
+              />
+              <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
+              >
+                <option value="">All Types</option>
+                <option value="Car">Car</option>
+                <option value="Bike">Bike</option>
+                <option value="Truck">Truck</option>
+                <option value="Hatchback">Hatchback</option>
+                <option value="Van">Van</option>
+              </select>
+              <input
+                type="text"
+                placeholder="Location (in description)"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
+              />
+              <input
+                type="number"
+                placeholder="Max Price"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
+              />
+              <label className="text-sm font-medium dark:text-yellow-300">Min Rating</label>
+              <select
+                value={minRating}
+                onChange={(e) => setMinRating(parseFloat(e.target.value))}
+                className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
+              >
+                <option value={0}>All</option>
+                <option value={4}>4★ & up</option>
+                <option value={3}>3★ & up</option>
+                <option value={2}>2★ & up</option>
+              </select>
+              <label className="text-sm font-medium dark:text-yellow-300">Sort</label>
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
+              >
+                <option value="">None</option>
+                <option value="priceLowHigh">Price: Low to High</option>
+                <option value="priceHighLow">Price: High to Low</option>
+                <option value="ratingHighLow">Rating: High to Low</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Vehicle Grid */}
+          <div className="flex-1">
+            {error ? (
+              <p className="text-center text-red-500">{error}</p>
+            ) : filtered.length === 0 ? (
+              <p className="text-center text-gray-500 mt-10">No vehicles found.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filtered.map((v) => (
+                  <VehicleCard key={v._id} vehicle={v} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
-      {showMobileFilter && (
+      {/* Mobile filter drawer */}
+      {showFilters && (
         <>
           <div
-            className="fixed inset-0 bg-black bg-opacity-40 z-40"
-            onClick={() => setShowMobileFilter(false)}
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setShowFilters(false)}
           />
-          <div className="fixed top-0 left-0 w-80 h-full bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600 shadow-lg z-50 p-4 space-y-4 overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
+          <div className="fixed top-0 left-0 w-80 h-full bg-white dark:bg-gray-800 z-50 p-4 space-y-4 overflow-y-auto shadow-xl">
+            <div className="flex justify-between items-center">
               <h2 className="text-lg font-semibold">Filters</h2>
               <button
-                onClick={() => setShowMobileFilter(false)}
+                onClick={() => setShowFilters(false)}
                 className="text-gray-600 hover:text-red-500"
               >
                 <X size={24} />
               </button>
             </div>
-
-            <input
-              type="text"
-              placeholder="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-            />
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-            >
-              <option value="">All Types</option>
-              <option value="SUV">SUV</option>
-              <option value="Sedan">Sedan</option>
-              <option value="Bike">Bike</option>
-              <option value="Hatchback">Hatchback</option>
-              <option value="Truck">Truck</option>
-              <option value="Van">Van</option>
-            </select>
-            <input
-              type="text"
-              placeholder="Location"
-              value={locationFilter}
-              onChange={(e) => setLocationFilter(e.target.value)}
-              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-            />
-            <input
-              type="number"
-              placeholder="Max Price"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-            />
-            <label className="text-sm font-medium mt-2">Min Rating</label>
-            <select
-              value={minRating}
-              onChange={(e) => setMinRating(parseFloat(e.target.value))}
-              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-            >
-              <option value={0}>All</option>
-              <option value={4}>4 ★ & up</option>
-              <option value={3}>3 ★ & up</option>
-              <option value={2}>2 ★ & up</option>
-              <option value={1}>1 ★ & up</option>
-            </select>
-            <input
-              type="date"
-              name="start"
-              value={filterDates.start}
-              onChange={handleDateChange}
-              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-            />
-            <input
-              type="date"
-              name="end"
-              value={filterDates.end}
-              onChange={handleDateChange}
-              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-            />
-            <select
-              onChange={handleSortChange}
-              value={sortOption}
-              className="p-2 border rounded w-full dark:bg-gray-800 dark:text-white dark:border-gray-600"
-            >
-              <option value="">-- Sort By --</option>
-              <option value="priceLowHigh">Price: Low to High</option>
-              <option value="priceHighLow">Price: High to Low</option>
-              <option value="yearNewOld">Year: New to Old</option>
-              <option value="yearOldNew">Year: Old to New</option>
-              <option value="ratingHighLow">Rating: High to Low</option>
-            </select>
-            <button
-              onClick={() => {
-                handleClearFilters();
-                setShowMobileFilter(false);
-              }}
-              className="bg-red-500 text-white px-4 py-2 rounded w-full hover:bg-red-600 transition"
-            >
-              Clear Filters
-            </button>
+            {/* You can reuse the same filters as in the desktop version here */}
+            {/* Or extract them into a reusable component if needed */}
           </div>
         </>
       )}
-
-      {/* Vehicle List */}
-      <div className="flex-1 flex flex-col max-h-screen ">
-        <h1 className="text-3xl sticky top-0 z-10 dark:text-orange-600 font-bold mt-2  pb-6 text-center">
-          Available Vehicles
-        </h1>
-        {error && (
-          <p className="text-center text-red-500 font-medium mb-4">{error}</p>
-        )}
-
-        {/* Mobile Filter Button */}
-        <div className="lg:hidden mb-4 w-full">
-          <button
-            onClick={() => setShowMobileFilter(true)}
-            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-700 transition"
-          >
-            Filter
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 overflow-y-auto">
-          {filteredVehicles.length > 0 ? (
-            filteredVehicles.map((vehicle) => (
-              <VehicleCard key={vehicle._id} vehicle={vehicle} />
-            ))
-          ) : (
-            <p className="text-center text-gray-600 col-span-full">
-              No vehicles match your criteria.
-            </p>
-          )}
-        </div>
-      </div>
-    </div>
     </section>
   );
 }

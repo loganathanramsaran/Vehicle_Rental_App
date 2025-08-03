@@ -7,7 +7,7 @@ import Footer from "../sections/Footer";
 import About from "../pages/About";
 import Services from "../pages/Services";
 import Contact from "../pages/Contact";
-import MiniVehicleCarousel from "../components/MiniVehicleCarousel";
+// import MiniVehicleCarousel from "../components/MiniVehicleCarousel";
 
 const LandingPage = () => {
   return (
@@ -16,7 +16,7 @@ const LandingPage = () => {
       <main>
         <Hero />
         <HowItWorks />
-        <MiniVehicleCarousel />
+        {/* <MiniVehicleCarousel /> */}
         <Features />
         <Testimonials />
         <About />

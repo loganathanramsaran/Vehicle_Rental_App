@@ -1,4 +1,3 @@
-// Dashboard.jsx
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
@@ -10,7 +9,8 @@ import addVehicle from "../assets/addVehicle.png";
 import manageVehicle from "../assets/manageVehicle.png";
 import viewAllBookings from "../assets/viewAllBookings.png";
 import feedbacks from "../assets/feedback.png";
-import manageUsers from "../assets/manageUsers.png"; // 👈 NEW ICON (add this icon in your assets folder)
+import manageUsers from "../assets/manageUsers.png";
+import vehicleApprovals from "../assets/approvals.png"; // 🆕 Add icon
 
 function Dashboard() {
   const { user, fetchUser } = useContext(UserContext);
@@ -84,20 +84,20 @@ function Dashboard() {
           {user?.isAdmin ? (
             <>
               <ActionCard
-                to="/add-vehicle"
-                label="Add Vehicle"
-                icon={addVehicle}
-                color="bg-yellow-500 hover:bg-yellow-600"
+                to="/admin/approvals"
+                label="Vehicle Approvals"
+                icon={vehicleApprovals}
+                color="bg-red-500 hover:bg-red-600"
               />
               <ActionCard
                 to="/admin/vehicles"
-                label="Manage Vehicles"
+                label="Manage All Vehicles"
                 icon={manageVehicle}
                 color="bg-blue-500 hover:bg-blue-600"
               />
               <ActionCard
                 to="/admin/bookings"
-                label="View All Bookings"
+                label="All Bookings"
                 icon={viewAllBookings}
                 color="bg-purple-500 hover:bg-purple-600"
               />
@@ -130,9 +130,21 @@ function Dashboard() {
               />
               <ActionCard
                 to="/paymenthistory"
-                label="Bookings & Payment History"
+                label="Payment History"
                 icon={myBookings}
                 color="bg-purple-500 hover:bg-purple-600"
+              />
+              <ActionCard
+                to="/my/list-vehicle"
+                label="List My Vehicle"
+                icon={addVehicle}
+                color="bg-orange-500 hover:bg-orange-600"
+              />
+              <ActionCard
+                to="/my-vehicles"
+                label="My Listed Vehicles"
+                icon={manageVehicle}
+                color="bg-green-500 hover:bg-green-600"
               />
             </>
           )}

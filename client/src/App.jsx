@@ -23,7 +23,10 @@ import VehicleDetails from "./pages/VehicleDetails";
 import MainLayout from "./components/MainLayout";
 import AdminFeedbacks from "./pages/AdminFeedbacks";
 import MiniVehicleCarousel from "./components/MiniVehicleCarousel";
-import AdminUserList from "./pages/AdminUserList"; // New Page
+import AdminUserList from "./pages/AdminUserList";
+import AdminVehicleApprovals from "./pages/AdminVehicleApprovals";
+import MyListedVehicles from "./pages/MyListedVehicles";
+import ListMyVehicle from "./pages/ListMyVehicle";
 
 function App() {
   return (
@@ -85,7 +88,7 @@ function App() {
           <Route
             path="/add-vehicle"
             element={
-              <ProtectedRoute adminOnly={true}>
+              <ProtectedRoute adminOnly={false}>
                 <MainLayout>
                   <AddVehicle />
                 </MainLayout>
@@ -133,9 +136,9 @@ function App() {
             }
           />
           <Route
-            path="/vehicles/edit/:id"
+            path="/edit-vehicle/:id"
             element={
-              <ProtectedRoute adminOnly={true}>
+              <ProtectedRoute >
                 <MainLayout>
                   <EditVehicle />
                 </MainLayout>
@@ -188,6 +191,36 @@ function App() {
               <ProtectedRoute>
                 <MainLayout>
                   <VehicleDetails />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/approvals"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <MainLayout>
+                  <AdminVehicleApprovals />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-vehicles"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <MyListedVehicles />
+                </MainLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my/list-vehicle"
+            element={
+              <ProtectedRoute>
+                <MainLayout>
+                  <ListMyVehicle />
                 </MainLayout>
               </ProtectedRoute>
             }

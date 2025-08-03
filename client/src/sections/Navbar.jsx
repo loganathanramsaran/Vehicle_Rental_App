@@ -41,31 +41,33 @@ function Navbar() {
   const staticLinks = [
     { to: "/", label: "Home" },
     { to: "/about", label: "About" },
-    { to: "/services", label: "Services" },
     { to: "/contact", label: "Contact" },
     ...(user ? [] : [{ to: "/login", label: "Login" }]),
   ];
 
-  const userLinks = [
-    { to: "/dashboard", label: "Dashboard" },
-    { to: "/vehicles", label: "Browse Vehicles" },
-    { to: "/my-bookings", label: "My Bookings" },
-  ];
+const userLinks = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/vehicles", label: "Browse Vehicles" },
+  { to: "/my-bookings", label: "My Bookings" },
+  { to: "/paymenthistory", label: "Payment History" },
+  { to: "/my/list-vehicle", label: "List My Vehicle" },
+  { to: "/my-vehicles", label: "My Listed Vehicles" },
+];
 
-  const adminLinks = [
-    { to: "/dashboard", label: "Dashboard" },
-    { to: "/add-vehicle", label: "Add Vehicle" },
-    { to: "/vehicles", label: "All Vehicles" },
-    { to: "/admin/vehicles", label: "Manage Vehicles" },
-    { to: "/admin/bookings", label: "All Bookings" },
-    { to: "/admin/feedback", label: "Feedbacks" },
-  ];
+const adminLinks = [
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/vehicles", label: "All Vehicles" },
+  { to: "/admin/approvals", label: "Vehicle Approvals" },
+  { to: "/admin/bookings", label: "All Bookings" },
+  { to: "/admin/feedback", label: "Feedbacks" },
+  { to: "/admin/users", label: "Manage Users" },
+];
 
   const roleLinks = user?.isAdmin ? adminLinks : user ? userLinks : [];
 
   return (
     <header className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700  text-white sticky top-0 z-50">
-      <div className="max-w-7xl h-20 mx-auto px-4 max-md:px-2 flex justify-between items-center">
+      <div className="max-w-7xl h-20 mx-auto  max-md:px-2 flex justify-between items-center">
         {/* Brand */}
         <div className="flex items-center gap-4">
           <Link to={"/"}>
@@ -80,7 +82,7 @@ function Navbar() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-4 font-medium">
+        <nav className="hidden md:flex items-center space-x-3 font-medium">
           {[...staticLinks, ...roleLinks].map((link) => (
             <Link
               key={link.to}

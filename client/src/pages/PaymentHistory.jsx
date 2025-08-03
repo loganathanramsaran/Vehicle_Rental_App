@@ -1,113 +1,72 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import InvoiceTemplate from "../components/InvoiceTemplate";
-import { jwtDecode } from "jwt-decode";
 
 function PaymentHistory() {
   const [payments, setPayments] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPayments = async () => {
       try {
         const token = localStorage.getItem("token");
-        if (!token) throw new Error("Unauthorized");
-
-        const decoded = jwtDecode(token);
-        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/bookings/mine`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await axios.get("/api/payment/mine", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-
-        const withPayments = res.data
-          .filter((b) => b.payment && b.payment.razorpayPaymentId)
-          .sort((a, b) => new Date(b.payment.createdAt) - new Date(a.payment.createdAt));
-
-        setPayments(withPayments);
+        setPayments(res.data);
       } catch (err) {
         console.error("Failed to load payments:", err);
-        setError("Could not load payment history");
-      } finally {
-        setLoading(false);
+        setError("Failed to load payments");
       }
     };
 
     fetchPayments();
   }, []);
 
-  if (loading) return <p className="p-6 text-center text-gray-500">Loading payment history...</p>;
-  if (error) return <p className="p-6 text-center text-red-500">{error}</p>;
-  if (payments.length === 0) return <p className="p-6 text-center text-gray-500">No payments found.</p>;
-
   return (
-    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
-          <div className="min-h-screen max-w-7xl mx-auto px-4 py-8 dark:text-white">
-      <h1 className="text-3xl font-bold text-center text-orange-600 dark:text-orange-400 mb-6">
-        Booking & Payment History
-      </h1>
+    <div className="max-w-4xl mx-auto px-4 py-8">
+      <h2 className="text-2xl font-semibold mb-6">Payment History</h2>
 
-      <div className="overflow-x-auto">
-        <div className="max-h-[400px] overflow-y-auto rounded-lg shadow-md border border-orange-300 dark:border-gray-700">
-          <table className="min-w-full table-auto bg-white dark:bg-gray-800">
-            <thead className="sticky top-0 bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 z-10 text-sm text-gray-700 dark:text-gray-200 uppercase">
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      {payments.length === 0 ? (
+        <p>No payments found.</p>
+      ) : (
+        <div className="overflow-x-auto rounded shadow">
+          <table className="min-w-full bg-white border border-gray-200">
+            <thead className="bg-gray-100 text-left">
               <tr>
-                <th className="p-3 text-left">Vehicle</th>
-                <th className="p-3 text-left">Start</th>
-                <th className="p-3 text-left">End</th>
-                <th className="p-3 text-left">Amount</th>
-                <th className="p-3 text-left">Payment ID</th>
-                <th className="p-3 text-left">Status</th>
-                <th className="p-3 text-left">Date</th>
-                <th className="p-3 text-left">Invoice</th>
+                <th className="p-3">Vehicle</th>
+                <th className="p-3">Amount</th>
+                <th className="p-3">Payment ID</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Date</th>
               </tr>
             </thead>
             <tbody>
-              {payments.map((booking) => (
-                <tr key={booking._id} className="border-t dark:border-gray-700">
-                  <td className="p-3">{booking.vehicle?.title || "N/A"}</td>
-                  <td className="p-3">{new Date(booking.startDate).toLocaleDateString()}</td>
-                  <td className="p-3">{new Date(booking.endDate).toLocaleDateString()}</td>
-                  <td className="p-3 text-green-600 font-medium">
-                    ₹{booking.payment?.amount / 100}
+              {payments.map((payment) => (
+                <tr key={payment._id} className="border-t hover:bg-gray-50">
+                  <td className="p-3">{payment.vehicleId?.name || "N/A"}</td>
+                  <td className="p-3 text-green-600 font-semibold">
+                    ₹ {(payment.amount ).toFixed(0)} 
                   </td>
-                  <td className="p-3 text-sm break-all">
-                    {booking.payment?.razorpayPaymentId || "N/A"}
+                  <td className="p-3 break-all">
+                    {payment.razorpayPaymentId || "N/A"}
                   </td>
-                  <td className="p-3">
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                        booking.status === "cancelled"
-                          ? "bg-red-100 text-red-600"
-                          : "bg-green-100 text-green-700"
-                      }`}
-                    >
-                      {booking.status}
-                    </span>
-                  </td>
-                  <td className="p-3 text-sm">
-                    {new Date(booking.payment?.createdAt).toLocaleDateString()}
+                  <td className="p-3 capitalize">
+                    {payment.status || "N/A"}
                   </td>
                   <td className="p-3">
-                    {booking.status === "cancelled" ? (
-                      <button
-                        disabled
-                        className="text-sm px-3 py-1 rounded bg-gray-400 text-white cursor-not-allowed"
-                      >
-                        Invoice
-                      </button>
-                    ) : (
-                      <InvoiceTemplate payment={booking} />
-                    )}
+                    {new Date(payment.createdAt).toLocaleDateString()}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
+      )}
     </div>
-
-    </section>
   );
 }
 

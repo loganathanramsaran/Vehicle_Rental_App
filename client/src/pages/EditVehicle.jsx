@@ -1,138 +1,172 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 
 function EditVehicle() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  const [form, setForm] = useState({
-    title: "",
-    type: "SUV",
-    model: "",
-    year: "",
-    pricePerDay: "",
-    location: "",
-    brand: "",
-    fuelType: "",
-    transmission: "",
-    seats: "",
-    available: true,
-    image: "",
-  });
-
-  const token = localStorage.getItem("token");
+  const [vehicle, setVehicle] = useState(null);
+  const [form, setForm] = useState({ name: "", type: "Car", rentPerDay: "", description: "" });
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`);
-        setForm(res.data);
+        const { data } = await axios.get(`/api/vehicles/details/${id}`);
+        setVehicle(data);
+        setForm({
+          name: data.name,
+          type: data.type,
+          rentPerDay: data.rentPerDay,
+          description: data.description,
+        });
+        setPreviewUrl(`${import.meta.env.VITE_SERVER_URL}${data.image}`);
       } catch (err) {
-        toast.error("Failed to fetch vehicle details");
+        toast.error("Failed to load vehicle details");
       }
     };
     fetchVehicle();
   }, [id]);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
-  };
-
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("image", file);
-
-    try {
-      const res = await axios.put(
-        `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setForm({ ...form, image: res.data.image });
-      toast.success("Image uploaded");
-    } catch (err) {
-      console.error("Image upload failed", err);
-      toast.error("Failed to upload image");
-    }
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("name", form.name);
+    formData.append("type", form.type);
+    formData.append("rentPerDay", form.rentPerDay);
+    formData.append("description", form.description);
+    if (image) formData.append("image", image);
 
     try {
-      const res = await axios.put(
-        `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`,
-        form,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      toast.success("Vehicle updated successfully");
-      navigate("/admin/vehicles");
+      const token = localStorage.getItem("token");
+      await axios.put(`/api/vehicles/${id}`, formData, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Vehicle updated and sent for re-approval");
+      navigate("/my-vehicles");
     } catch (err) {
-      console.error(err);
-      toast.error("Update failed");
+      toast.error(err.response?.data?.error || "Update failed");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const imageSrc = form.image?.startsWith("http")
-    ? form.image
-    : form.image
-    ? `${import.meta.env.VITE_SERVER_URL}${form.image}`
-    : "/placeholder.png";
+  if (!vehicle) return <div className="text-center mt-10">Loading...</div>;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Edit Vehicle</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input name="title" value={form.title} onChange={handleChange} placeholder="Title" className="w-full border px-3 py-2 rounded" required />
-        <select name="type" value={form.type} onChange={handleChange} className="w-full border px-3 py-2 rounded" required>
-          {["SUV", "Sedan", "Bike", "Hatchback", "Truck", "Van"].map((opt) => (
-            <option key={opt} value={opt}>{opt}</option>
-          ))}
-        </select>
-        <input name="model" value={form.model} onChange={handleChange} placeholder="Model" className="w-full border px-3 py-2 rounded" />
-        <input name="year" value={form.year} onChange={handleChange} placeholder="Year" type="number" className="w-full border px-3 py-2 rounded" />
-        <input name="pricePerDay" value={form.pricePerDay} onChange={handleChange} placeholder="Price Per Day" type="number" className="w-full border px-3 py-2 rounded" required />
-        <input name="location" value={form.location} onChange={handleChange} placeholder="Location" className="w-full border px-3 py-2 rounded" required />
-        <input name="brand" value={form.brand} onChange={handleChange} placeholder="Brand" className="w-full border px-3 py-2 rounded" />
-        <input name="fuelType" value={form.fuelType} onChange={handleChange} placeholder="Fuel Type" className="w-full border px-3 py-2 rounded" />
-        <input name="transmission" value={form.transmission} onChange={handleChange} placeholder="Transmission" className="w-full border px-3 py-2 rounded" />
-        <input name="seats" value={form.seats} onChange={handleChange} placeholder="Seats" type="number" className="w-full border px-3 py-2 rounded" />
-        <label className="flex items-center space-x-2">
-          <input type="checkbox" name="available" checked={form.available} onChange={handleChange} />
-          <span>Available</span>
-        </label>
+    <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-2xl mt-10">
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-semibold">Edit Vehicle</h1>
+        <span
+          className={`px-3 py-1 rounded-full text-sm font-medium ${
+            vehicle.isApproved
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {vehicle.isApproved ? "Approved" : "Pending Approval"}
+        </span>
+      </div>
 
-        {/* Image Preview */}
-        {form.image && (
-          <img
-            src={imageSrc}
-            alt="Preview"
-            className="h-40 w-fit rounded mb-2 border"
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Vehicle Name */}
+        <div>
+          <label className="block font-medium mb-1">Name</label>
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring"
           />
-        )}
+        </div>
+
+        {/* Vehicle Type */}
+        <div>
+          <label className="block font-medium mb-1">Type</label>
+          <select
+            name="type"
+            value={form.type}
+            onChange={handleChange}
+            required
+            className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none"
+          >
+            <option value="Car">Car</option>
+            <option value="Bike">Bike</option>
+            <option value="Van">Van</option>
+            <option value="SUV">SUV</option>
+          </select>
+        </div>
+
+        {/* Rent Per Day */}
+        <div>
+          <label className="block font-medium mb-1">Rent Per Day (₹)</label>
+          <input
+            type="number"
+            name="rentPerDay"
+            value={form.rentPerDay}
+            onChange={handleChange}
+            required
+            min="100"
+            className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none"
+          />
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block font-medium mb-1">Description</label>
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            rows="4"
+            required
+            className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none"
+          />
+        </div>
 
         {/* Image Upload */}
-        <input type="file" accept="image/*" onChange={handleImageUpload} className="block w-full border px-3 py-2 rounded" />
+        <div>
+          <label className="block font-medium mb-1">Vehicle Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files[0];
+              setImage(file);
+              if (file) {
+                const reader = new FileReader();
+                reader.onloadend = () => setPreviewUrl(reader.result);
+                reader.readAsDataURL(file);
+              }
+            }}
+            className="mb-2"
+          />
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt="Preview"
+              className="w-48 h-32 object-cover border rounded shadow-md"
+            />
+          )}
+        </div>
 
-        <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-          Update Vehicle
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          {loading ? "Updating..." : "Update Vehicle"}
         </button>
       </form>
     </div>

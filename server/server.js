@@ -18,7 +18,7 @@ app.use((req, res, next) => {
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
   res.setHeader("Access-Control-Allow-Credentials", "true");
 
@@ -32,6 +32,7 @@ app.use((req, res, next) => {
 // ✅ Still keep cors() middleware for safety
 app.use(cors({
   origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true,
 }));
 

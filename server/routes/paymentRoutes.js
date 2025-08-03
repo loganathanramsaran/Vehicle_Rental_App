@@ -1,9 +1,10 @@
 const express = require("express");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
-const Payment = require("../models/payment");
-const Vehicle = require("../models/Vehicle")
 const { verifyToken } = require("../middleware/auth");
+const Payment = require("../models/payment");
+const Booking = require("../models/Booking");
+
 const router = express.Router();
 
 const razorpay = new Razorpay({
@@ -11,61 +12,50 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-// Create Razorpay order
+// Create order
 router.post("/orders", verifyToken, async (req, res) => {
+  const { amount } = req.body;
+  if (!amount) return res.status(400).json({ message: "Amount is required" });
+
   try {
-    const { amount } = req.body;
-
-    if (!amount || isNaN(amount)) {
-      return res.status(400).json({ message: "Invalid amount" });
-    }
-
     const options = {
-      amount, // in paise
+      amount: amount * 100, // Razorpay needs amount in paise
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
     };
-
     const order = await razorpay.orders.create(options);
-    res.status(200).json(order);
+    res.json(order);
   } catch (err) {
     console.error("Create order error:", err);
     res.status(500).json({ message: "Failed to create Razorpay order" });
   }
 });
 
-// Verify Razorpay payment
+// Verify and create Payment + Booking
 router.post("/verify", verifyToken, async (req, res) => {
-  try {
-    const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature,
-      vehicleId,
-      amount,
-    } = req.body;
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    vehicleId,
+    startDate,
+    endDate,
+    amount,
+  } = req.body;
 
-    if (
-      !razorpay_order_id ||
-      !razorpay_payment_id ||
-      !razorpay_signature ||
-      !vehicleId ||
-      !amount
-    ) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
-    }
-
-    const generatedSignature = crypto
+  const isValid =
+    crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
+      .digest("hex") === razorpay_signature;
 
-    if (generatedSignature !== razorpay_signature) {
-      return res.status(400).json({ success: false, message: "Invalid signature" });
-    }
+  if (!isValid)
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid signature" });
 
-    // Save payment
-    await Payment.create({
+  try {
+    const payment = await Payment.create({
       userId: req.user.id,
       vehicleId,
       razorpayOrderId: razorpay_order_id,
@@ -74,25 +64,35 @@ router.post("/verify", verifyToken, async (req, res) => {
       status: "success",
     });
 
-    res.status(200).json({ success: true });
+    await Booking.create({
+      vehicle: vehicleId,
+      user: req.user.id,
+      startDate,
+      endDate,
+      totalPrice: amount,
+      payment: payment._id,
+      status: "confirmed",
+    });
+
+    res.json({ success: true });
   } catch (err) {
-    console.error("Verify payment error:", err);
-    res.status(500).json({ success: false, message: "Payment verification failed" });
+    console.error("Verification error:", err);
+    res.status(500).json({ success: false, message: "Booking failed" });
   }
 });
 
-
-// Get logged-in user's payment history
-router.get("/history", verifyToken, async (req, res) => {
+// Get all payments for a user
+router.get("/mine", verifyToken, async (req, res) => {
   try {
+    console.log("Fetching payments for user:", req.user.id); // Add this
     const payments = await Payment.find({ userId: req.user.id })
-      .populate("vehicleId", "title")
+      .populate("vehicleId", "name type")
       .sort({ createdAt: -1 });
 
     res.json(payments);
   } catch (err) {
-    console.error("Error fetching payment history:", err);
-    res.status(500).json({ error: "Failed to load payment history" });
+    console.error("Fetch payments error:", err);
+    res.status(500).json({ message: "Failed to fetch payments" });
   }
 });
 
