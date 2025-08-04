@@ -201,22 +201,25 @@ function BookVehicle() {
             selected={endDate}
             onChange={(date) => {
               let validEnd = new Date(date);
-              for (
-                let d = new Date(startDate);
-                d <= validEnd;
-                d.setDate(d.getDate() + 1)
-              ) {
-                if (
+                // Prevent selecting an end date that overlaps with booked dates
+                if (startDate && date) {
+                for (
+                  let d = new Date(startDate);
+                  d <= validEnd;
+                  d.setDate(d.getDate() + 1)
+                ) {
+                  if (
                   bookedDates.some(
                     (b) => b.toDateString() === d.toDateString()
                   )
-                ) {
+                  ) {
                   validEnd = new Date(d);
                   validEnd.setDate(validEnd.getDate() - 1);
                   toast.warn("End date adjusted to avoid booked dates.");
                   break;
+                  }
                 }
-              }
+                }
               setEndDate(validEnd);
             }}
             selectsEnd
