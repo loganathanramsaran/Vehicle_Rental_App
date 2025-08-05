@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 function VehicleCard({ vehicle }) {
   const placeholderImage = "/placeholder.png";
 
-  const imageSrc = vehicle.image?.startsWith("http")
-    ? vehicle.image
-    : vehicle.image
-    ? `${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`
-    : placeholderImage;
+  // const imageSrc = vehicle.image?.startsWith("http")
+  //   ? vehicle.image
+  //   : vehicle.image
+  //   ? `${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`
+  //   : placeholderImage;
 
   const {
     name = "Untitled Vehicle",
@@ -26,16 +26,11 @@ function VehicleCard({ vehicle }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col">
       <div className="relative w-full h-48 md:h-56 overflow-hidden">
-        <img
-          src={imageSrc}
-          alt={`Image of ${name}`}
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = placeholderImage;
-          }}
-          loading="lazy"
-          className="w-fit p-5 object-cover hover:scale-105 transition-transform duration-300"
-        />
+<img
+  src={`${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`}
+  alt={vehicle.name}
+  className="w-full h-48 object-cover rounded"
+/>
 
         <span
           className={`absolute top-2 right-2 text-white text-xs px-2 py-1 rounded-full shadow ${

@@ -20,12 +20,17 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
+  console.log("Received file:", file.originalname);
+  console.log("MIME type:", file.mimetype);
+
   const allowedTypes = /jpeg|jpg|png|webp/;
   const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
   const mimetype = allowedTypes.test(file.mimetype);
+
   if (extname && mimetype) {
     cb(null, true);
   } else {
+    console.log("Rejected file - not a valid image");
     cb(new Error("Only images (jpeg, jpg, png, webp) are allowed"));
   }
 };

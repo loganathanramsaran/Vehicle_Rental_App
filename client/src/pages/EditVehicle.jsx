@@ -15,7 +15,7 @@ function EditVehicle() {
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const { data } = await axios.get(`/api/vehicles/details/${id}`);
+        const { data } = await axios.get(`/api/vehicles/${id}`);
         setVehicle(data);
         setForm({
           name: data.name,

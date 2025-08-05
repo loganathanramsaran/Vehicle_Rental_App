@@ -14,6 +14,16 @@ const {
   rejectVehicle,
 } = require("../controllers/vehicleController");
 
+
+// route using upload
+router.post(
+  "/vehicles",
+  upload.single("image"),
+  verifyToken,  // if auth is required
+  createVehicle
+);
+
+
 // PUBLIC: Get all approved and available vehicles
 router.get("/", getAllApprovedVehicles);
 
