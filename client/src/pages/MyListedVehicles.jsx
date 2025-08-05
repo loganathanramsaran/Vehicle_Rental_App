@@ -88,7 +88,7 @@ function MyListedVehicles() {
                 src={
                   vehicle.image?.startsWith("http")
                     ? vehicle.image
-                    : `${SERVER_URL}${vehicle.image}`
+                    : `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
                 }
                 alt={vehicle.name}
                 className="h-44 w-full object-cover"

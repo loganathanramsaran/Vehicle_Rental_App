@@ -83,7 +83,7 @@ export default function MyBookings() {
                       vehicle?.image?.startsWith("http")
                         ? vehicle.image
                         : vehicle?.image
-                        ? `${SERVER}${vehicle.image}`
+                        ? `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
                         : "https://via.placeholder.com/150"
                     }
                     alt={vehicle?.name || "Vehicle"}
@@ -142,18 +142,12 @@ export default function MyBookings() {
                         className={`px-3 py-1 text-sm rounded border transition ${
                           isCancelled
                             ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
-                            : "text-yellow-700 border-yellow-700 hover:bg-yellow-50"
+                            : "text-red-700 border-red-700 hover:bg-red-200"
                         }`}
                       >
-                        Cancel (Soft)
+                        Cancel Booking
                       </button>
 
-                      <button
-                        onClick={() => handleDelete(booking._id)}
-                        className="px-3 py-1 text-sm text-red-600 border border-red-600 rounded hover:bg-red-50"
-                      >
-                        Delete (Hard)
-                      </button>
                     </div>
                   </div>
                 </div>
