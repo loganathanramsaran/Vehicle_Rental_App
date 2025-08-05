@@ -18,7 +18,7 @@ function VehicleCard({ vehicle }) {
     available = false,
     _id,
     type = "Unknown",
-    owner
+    owner,
   } = vehicle;
 
   const isPeerListed = !!owner;
@@ -26,11 +26,11 @@ function VehicleCard({ vehicle }) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col">
       <div className="relative w-full h-48 md:h-56 overflow-hidden">
-<img
-  src={`${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`}
-  alt={vehicle.name}
-  className="w-full h-48 object-cover rounded"
-/>
+        <img
+          src={`${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`}
+          alt={vehicle.name}
+          className="w-full h-48 object-cover rounded"
+        />
 
         <span
           className={`absolute top-2 right-2 text-white text-xs px-2 py-1 rounded-full shadow ${
@@ -55,7 +55,9 @@ function VehicleCard({ vehicle }) {
           {name}
         </h3>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400">📍 {location}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          📍 {location}
+        </p>
 
         <p className="text-sm text-gray-600 dark:text-gray-300">
           🚗 Type: {type}

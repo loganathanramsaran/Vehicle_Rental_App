@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const SERVER = import.meta.env.VITE_SERVER_URL;
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -13,7 +12,7 @@ export default function MyBookings() {
   const fetchMyBookings = async () => {
     try {
       const token = localStorage.getItem("token");
-      const { data } = await axios.get("/api/bookings/my-bookings", {
+      const { data } = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/bookings/my-bookings`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -34,7 +33,7 @@ export default function MyBookings() {
   const handleCancel = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.patch(`${SERVER}/api/bookings/cancel/${id}`, {}, {
+      await axios.patch(`${import.meta.env.VITE_SERVER_URL}/api/bookings/cancel/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Booking cancelled successfully");
@@ -47,7 +46,7 @@ export default function MyBookings() {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${SERVER}/api/bookings/delete/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_SERVER_URL}/api/bookings/delete/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Booking deleted successfully");

@@ -9,7 +9,7 @@ function PaymentHistory() {
     const fetchPayments = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("/api/payment/mine", {
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/payment/mine`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

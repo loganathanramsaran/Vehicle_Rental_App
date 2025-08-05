@@ -41,7 +41,7 @@ function ListMyVehicle() {
       formData.append("description", form.description);
       formData.append("image", image);
 
-      await axios.post("/api/vehicles", formData, {
+      await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/vehicles`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

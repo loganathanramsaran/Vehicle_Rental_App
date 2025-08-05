@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./BookedDate.css"; // Include custom styles
+import "./BookedDate.css";
 
 function BookVehicle() {
   const { id } = useParams();
@@ -21,7 +21,7 @@ function BookVehicle() {
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const res = await axios.get(`/api/vehicles/${id}`);
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`);
         setVehicle(res.data);
         setLoading(false);
       } catch (error) {
@@ -40,7 +40,7 @@ function BookVehicle() {
 
     const fetchBookedDates = async () => {
       try {
-        const res = await axios.get(`/api/bookings/booked-dates/${id}`);
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/bookings/booked-dates/${id}`);
         const dates = [];
 
         res.data.forEach(({ startDate, endDate }) => {
@@ -99,7 +99,7 @@ function BookVehicle() {
       const token = localStorage.getItem("token");
 
       const { data: order } = await axios.post(
-        "/api/payment/orders",
+        `${import.meta.env.VITE_SERVER_URL}/api/payment/orders`,
         { amount: totalAmount },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -115,7 +115,7 @@ function BookVehicle() {
         order_id: order.id,
         handler: async function (response) {
           const verifyRes = await axios.post(
-            "/api/payment/verify",
+            `${import.meta.env.VITE_SERVER_URL}/api/payment/verify`,
             {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,

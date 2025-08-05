@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 function MyListedVehicles() {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:5000";
 
   useEffect(() => {
     const fetchVehicles = async () => {
@@ -16,7 +15,7 @@ function MyListedVehicles() {
           toast.error("Missing or invalid token");
           return;
         }
-        const res = await axios.get(`${SERVER_URL}/api/vehicles/my`, {
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setVehicles(res.data);
@@ -37,7 +36,7 @@ function MyListedVehicles() {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`${SERVER_URL}/api/vehicles/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setVehicles((prev) => prev.filter((v) => v._id !== id));

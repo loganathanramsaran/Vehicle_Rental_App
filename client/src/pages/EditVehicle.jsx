@@ -15,7 +15,7 @@ function EditVehicle() {
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const { data } = await axios.get(`/api/vehicles/${id}`);
+        const { data } = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`);
         setVehicle(data);
         setForm({
           name: data.name,
@@ -47,7 +47,7 @@ function EditVehicle() {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`/api/vehicles/${id}`, formData, {
+      await axios.put(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`, formData, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
       });
       toast.success("Vehicle updated and sent for re-approval");
