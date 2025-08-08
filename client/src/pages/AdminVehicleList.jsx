@@ -69,7 +69,7 @@ function AdminVehicleList() {
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 min-h-screen py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 className="text-3xl font-bold text-center text-orange-600 dark:text-orange-400 mb-8">
-          Admin - Manage Vehicles
+          Admin - All Vehicles
         </h1>
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
@@ -112,7 +112,6 @@ function AdminVehicleList() {
                   <th className="px-6 py-3">Image</th>
                   <th className="px-6 py-3">Type</th>
                   <th className="px-6 py-3">Price / Day</th>
-                  <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -125,33 +124,19 @@ function AdminVehicleList() {
                         : "bg-orange-200 dark:bg-gray-800"
                     } hover:bg-orange-400 dark:hover:bg-gray-600 transition`}
                   >
-                    <td className="px-6 py-3 truncate max-w-xs">{vehicle.title}</td>
+                    <td className="px-6 py-3 truncate max-w-xs">{vehicle.name}</td>
                     <td className="px-6 py-3 truncate max-w-xs">
                       <img
                         src={vehicle.image?.startsWith("http")
                           ? vehicle.image
-                          : `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`}
+                          : `${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`}
                         alt={vehicle.title}
                         className="h-20 w-fit rounded max-md:hidden mix-blend-multiply"
                         onError={(e) => (e.target.src = "/placeholder.png")}
                       />
                     </td>
                     <td className="px-6 py-3">{vehicle.type}</td>
-                    <td className="px-6 py-3">₹{vehicle.pricePerDay}</td>
-                    <td className="px-6 py-3 text-center space-x-2">
-                      <button
-                        onClick={() => navigate(`/vehicles/edit/${vehicle._id}`)}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded transition"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(vehicle._id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-1 rounded transition"
-                      >
-                        Delete
-                      </button>
-                    </td>
+                    <td className="px-6 py-3">₹{vehicle.rentPerDay}</td>
                   </tr>
                 ))}
               </tbody>
