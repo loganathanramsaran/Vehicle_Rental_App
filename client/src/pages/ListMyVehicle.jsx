@@ -120,7 +120,7 @@ function ListMyVehicle() {
           <img
             src={preview}
             alt="Preview"
-            className="mt-3 rounded w-full h-64 object-cover shadow"
+            className="mt-3 rounded w-fit h-64 object-cover shadow"
           />
         )}
 

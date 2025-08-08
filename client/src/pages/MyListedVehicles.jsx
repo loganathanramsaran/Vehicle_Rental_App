@@ -79,8 +79,8 @@ function MyListedVehicles() {
 
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 min-h-screen py-10">
-      <div className="max-w-6xl mx-auto px-4 py-6 min-h-screen">
-        <h2 className="text-2xl font-bold mb-6 dark:text-white">
+      <div className="max-w-6xl mx-auto p-6 min-h-screen">
+        <h2 className="text-2xl font-bold mb-6 text-orange-600 dark:text-white">
           My Listed Vehicles
         </h2>
 
@@ -104,7 +104,7 @@ function MyListedVehicles() {
                         }`
                   }
                   alt={vehicle.name}
-                  className="h-44 w-full object-cover"
+                  className="h-44 w-fit"
                   onError={(e) => (e.target.src = "/no-image.jpg")}
                 />
                 <div className="p-4 flex flex-col flex-1">
