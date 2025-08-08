@@ -18,30 +18,10 @@ const features = [
     to: "/vehicles",
   },
   {
-    title: "My Bookings",
-    img: myBookings,
-    bg: "bg-purple-600",
-    to: "/my-bookings",
-  },
-  {
     title: "Edit Profile",
     img: editProfile,
     bg: "bg-gray-700",
     to: "/profile",
-  },
-  {
-    title: "Add Vehicle",
-    img: addVehicle,
-    bg: "bg-yellow-500",
-    to: "/add-vehicle",
-    adminOnly: true,
-  },
-  {
-    title: "Manage Vehicles",
-    img: manageVehicle,
-    bg: "bg-blue-700",
-    to: "/admin/vehicles",
-    adminOnly: true,
   },
   {
     title: "All Bookings",

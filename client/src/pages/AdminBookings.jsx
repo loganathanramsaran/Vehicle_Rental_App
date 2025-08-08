@@ -40,7 +40,7 @@ function AdminBookings() {
   };
 
   return (
-    <section>
+    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-semibold mb-6">All Bookings</h1>
 
@@ -49,13 +49,13 @@ function AdminBookings() {
           <Loader2 className="animate-spin h-8 w-8 text-blue-600" />
         </div>
       ) : bookings.length === 0 ? (
-        <p className="text-gray-500">No bookings found.</p>
+        <p className="text-gray-500 dark:text-white">No bookings found.</p>
       ) : (
         <div className="grid gap-6 md:grid-cols-2">
           {bookings.map((booking) => (
             <div
               key={booking._id}
-              className="bg-white border rounded-xl shadow p-4 space-y-3"
+              className="bg-orange-200 dark:bg-gray-600 dark:text-white border rounded-xl shadow p-4 space-y-3"
             >
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">
@@ -66,7 +66,7 @@ function AdminBookings() {
                 </span>
               </div>
 
-              <div className="text-gray-700 space-y-1">
+              <div className="text-gray-700 dark:text-gray-300 space-y-1">
                 <p>
                   <strong>User:</strong> {booking.user?.name} ({booking.user?.email})
                 </p>

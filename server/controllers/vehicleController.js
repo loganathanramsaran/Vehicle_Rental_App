@@ -164,6 +164,7 @@ const rejectVehicle = async (req, res) => {
 
     vehicle.isApproved = false;
     vehicle.available = false;
+    vehicle.isRejected = true; 
     await vehicle.save();
 
     res.json({ success: true, message: "Vehicle rejected successfully" });

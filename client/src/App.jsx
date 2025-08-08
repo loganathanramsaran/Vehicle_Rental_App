@@ -1,6 +1,8 @@
 // src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import About from "./pages/About";
 import Services from "./pages/Services";
@@ -226,6 +228,7 @@ function App() {
             }
           />
         </Routes>
+        <ToastContainer position="top-right" autoClose={3000} />
         {/* Toast container should be rendered once in the app */}
       </UserProvider>
     </>

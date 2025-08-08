@@ -166,7 +166,7 @@ function BookVehicle() {
         src={
           vehicle.image?.startsWith("http")
             ? vehicle.image
-            : `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
+            : `${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`
         }
         alt={vehicle.name}
         className="w-full h-64 object-cover rounded mb-4"

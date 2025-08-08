@@ -16,18 +16,20 @@ function VehicleList() {
   const [sort, setSort] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
-useEffect(() => {
-  const fetchVehicles = async () => {
-    try {
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles`);
-      setVehicles(res.data); // or setFiltered(res.data) if using filtered array
-    } catch (err) {
-      console.error("Failed to fetch vehicles:", err);
-    }
-  };
+  useEffect(() => {
+    const fetchVehicles = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_SERVER_URL}/api/vehicles`
+        );
+        setVehicles(res.data); // or setFiltered(res.data) if using filtered array
+      } catch (err) {
+        console.error("Failed to fetch vehicles:", err);
+      }
+    };
 
-  fetchVehicles();
-}, []);
+    fetchVehicles();
+  }, []);
   useEffect(() => {
     let filteredList = [...vehicles];
 
@@ -48,7 +50,9 @@ useEffect(() => {
     }
 
     if (maxPrice) {
-      filteredList = filteredList.filter((v) => v.rentPerDay <= parseFloat(maxPrice));
+      filteredList = filteredList.filter(
+        (v) => v.rentPerDay <= parseFloat(maxPrice)
+      );
     }
 
     if (minRating) {
@@ -62,14 +66,16 @@ useEffect(() => {
     } else if (sort === "priceHighLow") {
       filteredList.sort((a, b) => b.rentPerDay - a.rentPerDay);
     } else if (sort === "ratingHighLow") {
-      filteredList.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+      filteredList.sort(
+        (a, b) => (b.averageRating || 0) - (a.averageRating || 0)
+      );
     }
 
     setFiltered(filteredList);
   }, [vehicles, search, type, location, maxPrice, minRating, sort]);
 
   return (
-    <section className="min-h-screen bg-gradient-to-r from-white via-orange-50 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
+    <section className="h-screen overflow-hidden bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-orange-600 dark:text-orange-400">
@@ -120,7 +126,9 @@ useEffect(() => {
                 onChange={(e) => setMaxPrice(e.target.value)}
                 className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white dark:border-gray-600"
               />
-              <label className="text-sm font-medium dark:text-yellow-300">Min Rating</label>
+              <label className="text-sm font-medium dark:text-yellow-300">
+                Min Rating
+              </label>
               <select
                 value={minRating}
                 onChange={(e) => setMinRating(parseFloat(e.target.value))}
@@ -131,7 +139,9 @@ useEffect(() => {
                 <option value={3}>3★ & up</option>
                 <option value={2}>2★ & up</option>
               </select>
-              <label className="text-sm font-medium dark:text-yellow-300">Sort</label>
+              <label className="text-sm font-medium dark:text-yellow-300">
+                Sort
+              </label>
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
@@ -146,11 +156,13 @@ useEffect(() => {
           </div>
 
           {/* Vehicle Grid */}
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto max-h-[calc(100vh-100px)] pr-2">
             {error ? (
               <p className="text-center text-red-500">{error}</p>
             ) : filtered.length === 0 ? (
-              <p className="text-center text-gray-500 mt-10">No vehicles found.</p>
+              <p className="text-center text-gray-500 mt-10">
+                No vehicles found.
+              </p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filtered.map((v) => (
@@ -179,8 +191,6 @@ useEffect(() => {
                 <X size={24} />
               </button>
             </div>
-            {/* You can reuse the same filters as in the desktop version here */}
-            {/* Or extract them into a reusable component if needed */}
           </div>
         </>
       )}

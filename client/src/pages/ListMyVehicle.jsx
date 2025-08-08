@@ -61,8 +61,9 @@ function ListMyVehicle() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md">
-      <h2 className="text-3xl font-semibold mb-6 text-center text-blue-700">
+    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 min-h-screen py-10">
+    <div className="max-w-2xl mx-auto p-10 bg-orange-200 dark:bg-gray-600 rounded-xl shadow-md">
+      <h2 className="text-3xl font-semibold mb-6 text-center text-orange-600">
         List Your Vehicle
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -72,14 +73,14 @@ function ListMyVehicle() {
           value={form.name}
           onChange={handleChange}
           required
-          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-blue-500"
+          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-orange-500"
         />
 
         <select
           name="type"
           value={form.type}
           onChange={handleChange}
-          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-blue-500"
+          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-orange-500"
         >
           <option value="Car">Car</option>
           <option value="Bike">Bike</option>
@@ -95,7 +96,7 @@ function ListMyVehicle() {
           value={form.rentPerDay}
           onChange={handleChange}
           required
-          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-blue-500"
+          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-orange-500"
         />
 
         <textarea
@@ -105,7 +106,7 @@ function ListMyVehicle() {
           onChange={handleChange}
           required
           rows={4}
-          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-blue-500"
+          className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-orange-500"
         />
 
         <input
@@ -126,12 +127,13 @@ function ListMyVehicle() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition duration-300"
+          className="w-full bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition duration-300"
         >
           {loading ? "Submitting..." : "Submit for Approval"}
         </button>
       </form>
     </div>
+    </section>
   );
 }
 

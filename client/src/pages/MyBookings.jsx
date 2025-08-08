@@ -83,7 +83,7 @@ export default function MyBookings() {
                       vehicle?.image?.startsWith("http")
                         ? vehicle.image
                         : vehicle?.image
-                        ? `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
+                        ? `${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`
                         : "https://via.placeholder.com/150"
                     }
                     alt={vehicle?.name || "Vehicle"}
