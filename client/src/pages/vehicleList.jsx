@@ -75,18 +75,12 @@ function VehicleList() {
   }, [vehicles, search, type, location, maxPrice, minRating, sort]);
 
   return (
-    <section className="h-screen overflow-hidden bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
+    <section className=" bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-orange-600 dark:text-orange-400">
             Explore Vehicles
           </h1>
-          <button
-            onClick={() => setShowFilters(true)}
-            className="lg:hidden bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Filters
-          </button>
         </div>
 
         {/* Filter Sidebar */}
@@ -174,26 +168,6 @@ function VehicleList() {
         </div>
       </div>
 
-      {/* Mobile filter drawer */}
-      {showFilters && (
-        <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setShowFilters(false)}
-          />
-          <div className="fixed top-0 left-0 w-80 h-full bg-white dark:bg-gray-800 z-50 p-4 space-y-4 overflow-y-auto shadow-xl">
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Filters</h2>
-              <button
-                onClick={() => setShowFilters(false)}
-                className="text-gray-600 hover:text-red-500"
-              >
-                <X size={24} />
-              </button>
-            </div>
-          </div>
-        </>
-      )}
     </section>
   );
 }

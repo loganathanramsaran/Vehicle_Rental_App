@@ -19,6 +19,7 @@ const getMyBookings = async (req, res) => {
   }
 };
 
+// POST /api/bookings
 const createBooking = async (req, res) => {
   const {
     vehicle,
@@ -31,11 +32,31 @@ const createBooking = async (req, res) => {
   const userId = req.user.id;
 
   try {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    if (start > end) {
+      return res.status(400).json({ error: "Invalid date range" });
+    }
+
+    // FIXED: Correct overlap detection
+    const overlappingBooking = await Booking.findOne({
+      vehicle,
+      status: "confirmed",
+      startDate: { $lte: end },
+      endDate: { $gte: start }
+    });
+
+    if (overlappingBooking) {
+      return res.status(400).json({
+        error: "This vehicle is already booked for the selected dates.",
+      });
+    }
+
     const newBooking = await Booking.create({
       user: userId,
       vehicle,
-      startDate,
-      endDate,
+      startDate: start,
+      endDate: end,
       totalPrice,
       razorpayOrderId,
       razorpayPaymentId,
@@ -44,6 +65,7 @@ const createBooking = async (req, res) => {
 
     res.status(201).json(newBooking);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Booking creation failed." });
   }
 };
@@ -51,16 +73,20 @@ const createBooking = async (req, res) => {
 // GET /api/bookings/booked-dates/:vehicleId
 const getBookedDates = async (req, res) => {
   try {
-    const bookings = await Booking.find({ vehicle: req.params.vehicleId });
+    const bookings = await Booking.find({ 
+      vehicle: req.params.vehicleId,
+      status: "confirmed"
+    });
     const dateRanges = bookings.map((b) => ({
-      start: b.startDate,
-      end: b.endDate,
+      startDate: b.startDate,
+      endDate: b.endDate,
     }));
     res.json(dateRanges);
   } catch (err) {
     res.status(500).json({ message: "Error fetching booked dates" });
   }
 };
+
 
 // PATCH /api/bookings/cancel/:id
 const cancelBooking = async (req, res) => {

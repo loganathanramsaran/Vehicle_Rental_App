@@ -1,5 +1,17 @@
 .booked-date {
-  background-color: #ef4444 !important; /* red-500 */
+  background-color: rgba(255, 99, 71, 0.7) !important;
   color: white !important;
-  border-radius: 50%;
+  border-radius: 50% !important;
+}
+/* Booked single days */
+.react-datepicker__day.booked-date {
+  background-color: rgba(239, 68, 68, 0.85) !important;
+  color: white !important;
+  border-radius: 50% !important;
+  cursor: not-allowed !important;
+}
+
+/* Optional: hover */
+.react-datepicker__day.booked-date:hover {
+  background-color: rgba(220, 38, 38, 0.95) !important;
 }

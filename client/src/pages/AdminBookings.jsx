@@ -41,7 +41,7 @@ function AdminBookings() {
 
   return (
     <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div className="max-w-5xl min-h-screen mx-auto px-4 py-8">
       <h1 className="text-3xl font-semibold mb-6">All Bookings</h1>
 
       {loading ? (
@@ -55,7 +55,7 @@ function AdminBookings() {
           {bookings.map((booking) => (
             <div
               key={booking._id}
-              className="bg-orange-200 dark:bg-gray-600 dark:text-white border rounded-xl shadow p-4 space-y-3"
+              className="bg-orange-100 dark:bg-gray-600 dark:text-white border rounded-xl shadow p-4 space-y-3"
             >
               <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">

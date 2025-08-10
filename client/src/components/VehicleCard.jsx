@@ -29,7 +29,7 @@ function VehicleCard({ vehicle }) {
         <img
           src={`${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`}
           alt={vehicle.name}
-          className="w-full h-48 object-cover rounded"
+          className="w-fit h-48 object-cover rounded"
         />
 
         <span

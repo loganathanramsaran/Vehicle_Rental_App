@@ -66,37 +66,38 @@ function HeroFilter({ onResults }) {
     <div className=" relative max-w-5xl mx-auto p-6  ">
       <div className="border-2 border-orange-300 flex justify-evenly p-8 pb-10 rounded-lg flex-wrap bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
         {/* Start Date */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Start Date
-          </label>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            placeholderText="Select start date"
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
-          />
-        </div>
+        {/* Start Date */}
+        <DatePicker
+          selected={startDate}
+          onChange={(date) => {
+            setStartDate(date);
+
+            // Auto-set end date to next day
+            if (date) {
+              const nextDay = new Date(date);
+              nextDay.setDate(nextDay.getDate() + 1);
+              setEndDate(nextDay);
+            }
+          }}
+          selectsStart
+          startDate={startDate}
+          endDate={endDate}
+          minDate={new Date()} // ⬅ No past dates
+          placeholderText="Select start date"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
+        />
 
         {/* End Date */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            End Date
-          </label>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate || new Date()}
-            placeholderText="Select end date"
-            className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
-          />
-        </div>
+        <DatePicker
+          selected={endDate}
+          onChange={(date) => setEndDate(date)}
+          selectsEnd
+          startDate={startDate}
+          endDate={endDate}
+          minDate={startDate ? new Date(startDate) : new Date()} // ⬅ Must be start date or after
+          placeholderText="Select end date"
+          className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
+        />
 
         {/* Vehicle Type */}
         <div>
@@ -145,12 +146,11 @@ function HeroFilter({ onResults }) {
           </button>
         </div>
       </div>
-              {resultsCount > 0 && (
-          <p className="absolute right-12 bottom-3 rounded-lg text-xs border-2 border-orange-300 bg-orange-300 dark:bg-gray-600 px-1 py-1 text-gray-700 dark:text-gray-300 mt-2">
-            {resultsCount} vehicle{resultsCount > 1 ? "s" : ""} found
-          </p>
-        )}
-
+      {resultsCount > 0 && (
+        <p className="absolute right-12 bottom-3 rounded-lg text-xs border-2 border-orange-300 bg-orange-300 dark:bg-gray-600 px-1 py-1 text-gray-700 dark:text-gray-300 mt-2">
+          {resultsCount} vehicle{resultsCount > 1 ? "s" : ""} found
+        </p>
+      )}
     </div>
   );
 }

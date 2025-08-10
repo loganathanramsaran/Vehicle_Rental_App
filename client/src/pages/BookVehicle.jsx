@@ -18,10 +18,19 @@ function BookVehicle() {
   const [loading, setLoading] = useState(true);
   const [bookedDates, setBookedDates] = useState([]);
 
+  // Helper to normalize to midnight
+  const normalizeDate = (date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  };
+
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`);
+        const res = await axios.get(
+          `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`
+        );
         setVehicle(res.data);
         setLoading(false);
       } catch (error) {
@@ -40,21 +49,23 @@ function BookVehicle() {
 
     const fetchBookedDates = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/bookings/booked-dates/${id}`);
-        const dates = [];
+        const res = await axios.get(
+          `${import.meta.env.VITE_SERVER_URL}/api/bookings/booked-dates/${id}`
+        );
 
-        res.data.forEach(({ startDate, endDate }) => {
-          const start = new Date(startDate);
-          const end = new Date(endDate);
+        const dates = [];
+        res.data.forEach(({ start, end }) => {
+          const startDate = normalizeDate(start);
+          const endDate = normalizeDate(end);
 
           for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-            dates.push(new Date(d.getTime())); // clone to avoid mutation
+            dates.push(new Date(d.getTime()));
           }
         });
 
         setBookedDates(dates);
       } catch (error) {
-        console.error("Failed to fetch booked dates");
+        console.error("Failed to fetch booked dates", error);
       }
     };
 
@@ -66,9 +77,7 @@ function BookVehicle() {
   const isRangeOverlapping = (start, end) => {
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       if (
-        bookedDates.some(
-          (b) => b.toDateString() === new Date(d).toDateString()
-        )
+        bookedDates.some((b) => b.toDateString() === new Date(d).toDateString())
       ) {
         return true;
       }
@@ -157,107 +166,114 @@ function BookVehicle() {
   };
 
   if (loading) return <div className="p-6 text-lg">Loading...</div>;
-  if (!vehicle) return <div className="p-6 text-red-600">Vehicle not found</div>;
+  if (!vehicle)
+    return <div className="p-6 text-red-600">Vehicle not found</div>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded shadow mt-6">
-      <h2 className="text-2xl font-bold mb-4">{vehicle.name}</h2>
-      <img
-        src={
-          vehicle.image?.startsWith("http")
-            ? vehicle.image
-            : `${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`
-        }
-        alt={vehicle.name}
-        className="w-full h-64 object-cover rounded mb-4"
-      />
-      <p className="text-gray-700 mb-2">{vehicle.description}</p>
-      <p className="text-gray-800 font-semibold">₹{vehicle.rentPerDay} / day</p>
-
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <section className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 min-h-screen">
+      <div className="max-w-4xl max-md:max-w-xl min-h-screen mx-auto items-center grid lg:grid-cols-2 gap-6 p-6">
         <div>
-          <label className="block font-medium">Start Date</label>
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            minDate={new Date()}
-            excludeDates={bookedDates}
-            dayClassName={(date) =>
-              bookedDates.some(
-                (booked) => booked.toDateString() === date.toDateString()
-              )
-                ? "booked-date"
-                : undefined
+          <h2 className="text-2xl font-bold mb-4">{vehicle.name}</h2>
+          <img
+            src={
+              vehicle.image?.startsWith("http")
+                ? vehicle.image
+                : `${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`
             }
-            className="w-full p-2 border rounded"
+            alt={vehicle.name}
+            className="w-fit h-64 object-cover rounded mb-4"
           />
         </div>
         <div>
-          <label className="block font-medium">End Date</label>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => {
-              let validEnd = new Date(date);
-                // Prevent selecting an end date that overlaps with booked dates
-                if (startDate && date) {
-                for (
-                  let d = new Date(startDate);
-                  d <= validEnd;
-                  d.setDate(d.getDate() + 1)
-                ) {
-                  if (
+          <p className="text-gray-700 mb-2">{vehicle.description}</p>
+          <p className="text-gray-800 font-semibold">
+            ₹{vehicle.rentPerDay} / day
+          </p>
+
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block font-medium">Start Date</label>
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                minDate={new Date()}
+                excludeDates={bookedDates}
+                dayClassName={(date) =>
                   bookedDates.some(
-                    (b) => b.toDateString() === d.toDateString()
+                    (b) => b.toDateString() === date.toDateString()
                   )
-                  ) {
-                  validEnd = new Date(d);
-                  validEnd.setDate(validEnd.getDate() - 1);
-                  toast.warn("End date adjusted to avoid booked dates.");
-                  break;
+                    ? "booked-date"
+                    : undefined
+                }
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label className="block font-medium">End Date</label>
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => {
+                  let validEnd = new Date(date);
+                  if (startDate && date) {
+                    for (
+                      let d = new Date(startDate);
+                      d <= validEnd;
+                      d.setDate(d.getDate() + 1)
+                    ) {
+                      if (
+                        bookedDates.some(
+                          (b) => b.toDateString() === d.toDateString()
+                        )
+                      ) {
+                        validEnd = new Date(d);
+                        validEnd.setDate(validEnd.getDate() - 1);
+                        toast.warn("End date adjusted to avoid booked dates.");
+                        break;
+                      }
+                    }
                   }
+                  setEndDate(validEnd);
+                }}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate || new Date()}
+                excludeDates={bookedDates}
+                dayClassName={(date) =>
+                  bookedDates.some(
+                    (b) => b.toDateString() === date.toDateString()
+                  )
+                    ? "booked-date"
+                    : undefined
                 }
-                }
-              setEndDate(validEnd);
-            }}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate || new Date()}
-            excludeDates={bookedDates}
-            dayClassName={(date) =>
-              bookedDates.some(
-                (booked) => booked.toDateString() === date.toDateString()
-              )
-                ? "booked-date"
-                : undefined
-            }
-            className="w-full p-2 border rounded"
-          />
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <p className="text-lg font-semibold">
+              Total Days: {calculateDays()} | Total: ₹{totalAmount}
+            </p>
+          </div>
+
+          <button
+            onClick={handlePayment}
+            className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
+          >
+            Pay & Book
+          </button>
+
+          <div className="mt-4 text-sm text-gray-600">
+            <span className="inline-block w-3 h-3 bg-red-400 rounded-full mr-2"></span>
+            Booked Dates
+          </div>
         </div>
       </div>
-
-      <div className="mt-6">
-        <p className="text-lg font-semibold">
-          Total Days: {calculateDays()} | Total: ₹{totalAmount}
-        </p>
-      </div>
-
-      <button
-        onClick={handlePayment}
-        className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700"
-      >
-        Pay & Book
-      </button>
-
-      {/* Legend */}
-      <div className="mt-4 text-sm text-gray-600">
-        <span className="inline-block w-3 h-3 bg-red-400 rounded-full mr-2"></span>
-        Booked Dates
-      </div>
-    </div>
+    </section>
   );
 }
 
