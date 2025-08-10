@@ -1,157 +1,111 @@
 const Booking = require("../models/Booking");
-const Vehicle = require("../models/Vehicle");
 
-// GET /api/bookings/my-bookings
 const getMyBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.user.id })
-      .populate({
-        path: "vehicle",
-        populate: { path: "owner", select: "name email" },
-      })
-      .populate("payment")
-      .sort({ createdAt: -1 });
-
+    const bookings = await Booking.find({ user: req.user.id }).populate("vehicle");
     res.json(bookings);
   } catch (err) {
-    console.error("Fetch bookings error:", err);
-    res.status(500).json({ message: "Failed to fetch bookings" });
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch bookings" });
   }
 };
 
-// POST /api/bookings
-const createBooking = async (req, res) => {
-  const {
-    vehicle,
-    startDate,
-    endDate,
-    totalPrice,
-    razorpayOrderId,
-    razorpayPaymentId,
-  } = req.body;
-  const userId = req.user.id;
-
+// Get booked dates for a vehicle (excluding cancelled bookings)
+const getBookedDates = async (req, res) => {
   try {
+    const bookings = await Booking.find({
+      vehicle: req.params.vehicleId,
+      status: { $ne: "cancelled" },
+    }).select("startDate endDate");
+
+    res.json(
+      bookings.map((b) => ({
+        start: b.startDate,
+        end: b.endDate,
+      }))
+    );
+  } catch (error) {
+    console.error("Error fetching booked dates:", error);
+    res.status(500).json({ message: "Failed to fetch booked dates" });
+  }
+};
+
+// Create booking (block overlapping active bookings)
+const createBooking = async (req, res) => {
+  try {
+    const { vehicleId, startDate, endDate, amount } = req.body;
+    const userId = req.user.id;
+
     const start = new Date(startDate);
     const end = new Date(endDate);
-    if (start > end) {
-      return res.status(400).json({ error: "Invalid date range" });
-    }
 
-    // FIXED: Correct overlap detection
+    // Check for overlap with non-cancelled bookings
     const overlappingBooking = await Booking.findOne({
-      vehicle,
-      status: "confirmed",
-      startDate: { $lte: end },
-      endDate: { $gte: start }
+      vehicle: vehicleId,
+      status: { $ne: "cancelled" },
+      $or: [
+        { startDate: { $lte: end }, endDate: { $gte: start } } // overlapping dates
+      ]
     });
 
     if (overlappingBooking) {
       return res.status(400).json({
-        error: "This vehicle is already booked for the selected dates.",
+        message: "Vehicle already booked for the selected dates",
       });
     }
 
-    const newBooking = await Booking.create({
+    // Create booking
+    const booking = new Booking({
       user: userId,
-      vehicle,
+      vehicle: vehicleId,
       startDate: start,
       endDate: end,
-      totalPrice,
-      razorpayOrderId,
-      razorpayPaymentId,
+      amount,
       status: "confirmed",
     });
 
-    res.status(201).json(newBooking);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Booking creation failed." });
-  }
-};
+    await booking.save();
+    res.status(201).json(booking);
 
-// GET /api/bookings/booked-dates/:vehicleId
-const getBookedDates = async (req, res) => {
-  try {
-    const bookings = await Booking.find({ 
-      vehicle: req.params.vehicleId,
-      status: "confirmed"
-    });
-    const dateRanges = bookings.map((b) => ({
-      startDate: b.startDate,
-      endDate: b.endDate,
-    }));
-    res.json(dateRanges);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching booked dates" });
+  } catch (error) {
+    console.error("Error creating booking:", error);
+    res.status(500).json({ message: "Error creating booking" });
   }
 };
 
 
-// PATCH /api/bookings/cancel/:id
 const cancelBooking = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.id);
-
     if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
+      return res.status(404).json({ error: "Booking not found" });
     }
-
-    // Optional: Check if the booking belongs to the logged-in user
-    if (booking.user.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-
     booking.status = "cancelled";
     await booking.save();
-
-    res.status(200).json({ message: "Booking cancelled successfully" });
-  } catch (error) {
-    console.error("Cancel booking error:", error);
-    res
-      .status(500)
-      .json({ message: "Server error during booking cancellation" });
+    res.json({ message: "Booking cancelled" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to cancel booking" });
   }
 };
 
-// DELETE /api/bookings/delete/:id
 const deleteBooking = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id);
-
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-
-    // Optional: Check if the booking belongs to the logged-in user
-    if (booking.user.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Unauthorized" });
-    }
-
-    await booking.deleteOne();
-
-    res.status(200).json({ message: "Booking deleted successfully" });
-  } catch (error) {
-    console.error("Delete booking error:", error);
-    res.status(500).json({ message: "Server error during booking deletion" });
+    await Booking.findByIdAndDelete(req.params.id);
+    res.json({ message: "Booking deleted" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete booking" });
   }
 };
 
-// GET /api/bookings/admin
 const getAllBookingsForAdmin = async (req, res) => {
   try {
-    const bookings = await Booking.find()
-      .populate("user", "name email")
-      .populate("vehicle", "name type rentPerDay")
-      .populate({
-        path: "payment",
-        select: "razorpayPaymentId amount status createdAt",
-      });
-
-    res.status(200).json(bookings);
+    const bookings = await Booking.find().populate("vehicle user");
+    res.json(bookings);
   } catch (err) {
-    console.error("Error fetching bookings for admin:", err);
-    res.status(500).json({ message: "Failed to retrieve bookings" });
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch bookings" });
   }
 };
 
@@ -159,11 +113,12 @@ const getBookingsByVehicleId = async (req, res) => {
   try {
     const bookings = await Booking.find({
       vehicle: req.params.vehicleId,
-      status: "confirmed", // Only show confirmed bookings
+      status: { $ne: "cancelled" }
     });
-    res.status(200).json(bookings);
+    res.json(bookings);
   } catch (err) {
-    res.status(500).json({ error: "Failed to fetch bookings for vehicle" });
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch bookings" });
   }
 };
 

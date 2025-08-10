@@ -4,7 +4,6 @@ import { format } from "date-fns";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,11 +11,14 @@ export default function MyBookings() {
   const fetchMyBookings = async () => {
     try {
       const token = localStorage.getItem("token");
-      const { data } = await axios.get(`${import.meta.env.VITE_SERVER_URL}/api/bookings/my-bookings`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/bookings/my-bookings`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setBookings(data);
     } catch (err) {
       console.error("Failed to fetch bookings:", err);
@@ -33,11 +35,18 @@ export default function MyBookings() {
   const handleCancel = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.patch(`${import.meta.env.VITE_SERVER_URL}/api/bookings/cancel/${id}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.patch(
+        `${import.meta.env.VITE_SERVER_URL}/api/bookings/cancel/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       toast.success("Booking cancelled successfully");
       fetchMyBookings();
+
+      // Notify calendar to update
+      window.dispatchEvent(new Event("bookingCancelled"));
     } catch (err) {
       toast.error("Error cancelling booking");
     }
@@ -51,6 +60,9 @@ export default function MyBookings() {
       });
       toast.success("Booking deleted successfully");
       fetchMyBookings();
+
+      // Also notify calendar update (optional)
+      window.dispatchEvent(new Event("bookingCancelled"));
     } catch (err) {
       toast.error("Error deleting booking");
     }
@@ -58,9 +70,7 @@ export default function MyBookings() {
 
   return (
     <div className="max-w-5xl mx-auto p-4">
-      <h2 className="text-3xl font-bold mb-8 text-center text-blue-600">
-        My Bookings
-      </h2>
+      <h2 className="text-3xl font-bold mb-8 text-center text-blue-600">My Bookings</h2>
 
       {loading ? (
         <div className="text-center text-gray-500">Loading bookings...</div>
@@ -99,10 +109,7 @@ export default function MyBookings() {
                       <>
                         <p className="text-sm text-gray-600">Type: {vehicle.type}</p>
                         <p className="text-sm text-gray-600">
-                          Owner:{" "}
-                          <span className="font-medium">
-                            {vehicle.owner?.name || "N/A"}
-                          </span>
+                          Owner: <span className="font-medium">{vehicle.owner?.name || "N/A"}</span>
                         </p>
                       </>
                     )}
@@ -116,9 +123,7 @@ export default function MyBookings() {
                     </p>
                     <p className="text-sm text-gray-600">
                       Total Price:{" "}
-                      <span className="font-semibold text-green-600">
-                        ₹{booking.totalPrice}
-                      </span>
+                      <span className="text-green-600 font-semibold">₹{booking.totalPrice}</span>
                     </p>
                     <p className="text-sm text-gray-600">
                       Booking Status:{" "}
@@ -147,7 +152,12 @@ export default function MyBookings() {
                       >
                         Cancel Booking
                       </button>
-
+                      <button
+                        onClick={() => handleDelete(booking._id)}
+                        className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition"
+                      >
+                        Delete Booking
+                      </button>
                     </div>
                   </div>
                 </div>

@@ -18,57 +18,57 @@ function BookVehicle() {
   const [loading, setLoading] = useState(true);
   const [bookedDates, setBookedDates] = useState([]);
 
-  // Helper to normalize to midnight
+  // Normalize date to midnight
   const normalizeDate = (date) => {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
     return d;
   };
 
+  const fetchVehicle = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`
+      );
+      setVehicle(res.data);
+      setLoading(false);
+    } catch (error) {
+      toast.error("Vehicle not found");
+      setLoading(false);
+    }
+  };
+
+  const fetchUser = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      setUser(payload);
+    }
+  };
+
+  const fetchBookedDates = async () => {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/api/bookings/booked-dates/${id}`
+      );
+
+      const dates = [];
+      res.data.forEach(({ start, end }) => {
+        const startDate = normalizeDate(start);
+        const endDate = normalizeDate(end);
+
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+          dates.push(new Date(d.getTime()));
+        }
+      });
+
+      setBookedDates(dates);
+    } catch (error) {
+      console.error("Failed to fetch booked dates", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchVehicle = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_SERVER_URL}/api/vehicles/${id}`
-        );
-        setVehicle(res.data);
-        setLoading(false);
-      } catch (error) {
-        toast.error("Vehicle not found");
-        setLoading(false);
-      }
-    };
-
-    const fetchUser = () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUser(payload);
-      }
-    };
-
-    const fetchBookedDates = async () => {
-      try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_SERVER_URL}/api/bookings/booked-dates/${id}`
-        );
-
-        const dates = [];
-        res.data.forEach(({ start, end }) => {
-          const startDate = normalizeDate(start);
-          const endDate = normalizeDate(end);
-
-          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-            dates.push(new Date(d.getTime()));
-          }
-        });
-
-        setBookedDates(dates);
-      } catch (error) {
-        console.error("Failed to fetch booked dates", error);
-      }
-    };
-
     fetchVehicle();
     fetchUser();
     fetchBookedDates();
@@ -143,6 +143,7 @@ function BookVehicle() {
 
           if (verifyRes.data.success) {
             toast.success("Booking successful!");
+            fetchBookedDates(); // Refresh after booking
             navigate("/my-bookings");
           } else {
             toast.error("Payment verification failed!");
