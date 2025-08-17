@@ -1,8 +1,17 @@
 const Booking = require("../models/Booking");
+const Vehicle = require("../models/Vehicle");
+const sendEmail = require("../utils/sendEmail");
+const user = require("../models/User");
 
 const getMyBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ user: req.user.id }).populate("vehicle");
+    const bookings = await Booking.find({ user: req.user.id }).populate({
+      path: "vehicle",
+      populate: {
+        path: "owner",
+        select: "name email", 
+      },
+    });
     res.json(bookings);
   } catch (err) {
     console.error(err);
@@ -30,7 +39,7 @@ const getBookedDates = async (req, res) => {
   }
 };
 
-// Create booking (block overlapping active bookings)
+// Create booking
 const createBooking = async (req, res) => {
   try {
     const { vehicleId, startDate, endDate, amount } = req.body;
@@ -39,13 +48,13 @@ const createBooking = async (req, res) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    // Check for overlap with non-cancelled bookings
+    // Check for overlap
     const overlappingBooking = await Booking.findOne({
       vehicle: vehicleId,
       status: { $ne: "cancelled" },
       $or: [
-        { startDate: { $lte: end }, endDate: { $gte: start } } // overlapping dates
-      ]
+        { startDate: { $lte: end }, endDate: { $gte: start } },
+      ],
     });
 
     if (overlappingBooking) {
@@ -65,23 +74,54 @@ const createBooking = async (req, res) => {
     });
 
     await booking.save();
-    res.status(201).json(booking);
 
+    // Fetch user's email
+    const bookedUser = await user.findById(userId).select("email");
+
+    // Send confirmation email
+    try {
+      await transporter.sendEmail({
+        from: `"Your App" <${process.env.EMAIL_USER}>`,
+        to: bookedUser.email,
+        subject: "Booking Confirmation",
+        text: `Your booking has been confirmed from ${start.toDateString()} to ${end.toDateString()}.`,
+        html: `<p>Your booking has been <b>confirmed</b> from ${start.toDateString()} to ${end.toDateString()}.</p>`,
+      });
+    } catch (emailErr) {
+      console.error("Email sending failed:", emailErr);
+    }
+
+    res.status(201).json(booking);
   } catch (error) {
     console.error("Error creating booking:", error);
     res.status(500).json({ message: "Error creating booking" });
   }
 };
 
-
+// Cancel booking
 const cancelBooking = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id);
+    const booking = await Booking.findById(req.params.id).populate("user", "email");
     if (!booking) {
       return res.status(404).json({ error: "Booking not found" });
     }
+
     booking.status = "cancelled";
     await booking.save();
+
+    // Send cancellation email
+    try {
+      await transporter.sendEmail({
+        from: `"Your App" <${process.env.EMAIL_USER}>`,
+        to: booking.user.email,
+        subject: "Booking Cancelled",
+        text: `Your booking from ${booking.startDate.toDateString()} to ${booking.endDate.toDateString()} has been cancelled.`,
+        html: `<p>Your booking from <b>${booking.startDate.toDateString()}</b> to <b>${booking.endDate.toDateString()}</b> has been <b>cancelled</b>.</p>`,
+      });
+    } catch (emailErr) {
+      console.error("Email sending failed:", emailErr);
+    }
+
     res.json({ message: "Booking cancelled" });
   } catch (err) {
     console.error(err);
@@ -113,7 +153,7 @@ const getBookingsByVehicleId = async (req, res) => {
   try {
     const bookings = await Booking.find({
       vehicle: req.params.vehicleId,
-      status: { $ne: "cancelled" }
+      status: { $ne: "cancelled" },
     });
     res.json(bookings);
   } catch (err) {

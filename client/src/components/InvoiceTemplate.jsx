@@ -1,9 +1,17 @@
 import { jwtDecode } from "jwt-decode";
 
 function InvoiceTemplate({ payment }) {
-  if (!payment || !payment.payment) return <p>Invalid payment data</p>;
+  if (!payment) return <p>Invalid payment data</p>;
 
-  const { vehicle, startDate, endDate, totalPrice, payment: pay } = payment;
+  // Vehicle name
+  const vehicleName = payment.vehicleId?.name || "N/A";
+
+  // Dates come from populated booking
+  const startDate = payment.bookingId?.startDate || null;
+  const endDate = payment.bookingId?.endDate || null;
+
+  // Payment info
+  const pay = payment;
 
   // Decode user from token
   let user = { name: "N/A" };
@@ -16,9 +24,19 @@ function InvoiceTemplate({ payment }) {
     }
   }
 
+  // Amounts
+  const baseAmount = pay?.amount || 0;
   const tax = pay?.tax || 0;
-  const baseAmount = pay?.amount / 100 || 0;
   const grandTotal = baseAmount + tax;
+
+  // Short invoice ID
+  const invoiceId = pay?._id
+    ? pay._id.slice(-6).toUpperCase()
+    : "N/A";
+
+  // Currency formatter
+  const formatCurrency = (val) =>
+    val.toLocaleString("en-IN", { style: "currency", currency: "INR" });
 
   const handlePrint = () => {
     const invoiceWindow = window.open("", "_blank");
@@ -29,18 +47,26 @@ function InvoiceTemplate({ payment }) {
           <style>
             body { font-family: Arial, sans-serif; padding: 20px; }
             h1 { text-align: center; color: #333; }
+            .header { text-align: center; margin-bottom: 30px; }
+            .header img { max-width: 120px; margin-bottom: 10px; }
             table { width: 100%; border-collapse: collapse; margin-top: 20px; }
             th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
             th { background-color: #f5f5f5; }
             .summary { margin-top: 20px; float: right; }
+            .footer { margin-top: 80px; text-align: center; font-size: 14px; color: #555; }
           </style>
         </head>
         <body>
-          <h1>RENTAL INVOICE</h1>
-          <p><strong>Invoice #:</strong> ${pay._id}</p>
-          <p><strong>Date:</strong> ${new Date(pay.createdAt).toLocaleDateString()}</p>
+          <div class="header">
+            <img src="https://dummyimage.com/200x60/000/fff&text=Your+Logo" alt="Company Logo" />
+            <h1>RENTAL INVOICE</h1>
+          </div>
+
+          <p><strong>Invoice #:</strong> ${invoiceId}</p>
+          <p><strong>Date:</strong> ${pay?.createdAt ? new Date(pay.createdAt).toLocaleDateString() : "-"}</p>
           <p><strong>Customer:</strong> ${user.name || "N/A"}</p>
-          <p><strong>Vehicle:</strong> ${vehicle?.title || "N/A"}</p>
+          <p><strong>Vehicle:</strong> ${vehicleName}</p>
+          <p><strong>Payment ID:</strong> ${pay?.razorpayPaymentId || "N/A"}</p>
 
           <table>
             <thead>
@@ -57,27 +83,28 @@ function InvoiceTemplate({ payment }) {
               <tr>
                 <td>Car Rental</td>
                 <td>1</td>
-                <td>₹${baseAmount}</td>
-                <td>${startDate ? new Date(startDate).toLocaleDateString() : "Invalid"}</td>
-                <td>${endDate ? new Date(endDate).toLocaleDateString() : "Invalid"}</td>
-                <td>₹${baseAmount}</td>
+                <td>${formatCurrency(baseAmount)}</td>
+                <td>${startDate ? new Date(startDate).toLocaleDateString() : "-"}</td>
+                <td>${endDate ? new Date(endDate).toLocaleDateString() : "-"}</td>
+                <td>${formatCurrency(baseAmount)}</td>
               </tr>
             </tbody>
           </table>
 
           <div class="summary">
-            <p><strong>Subtotal:</strong> ₹${baseAmount}</p>
-            <p><strong>Tax:</strong> ₹${tax}</p>
-            <p><strong>Total Paid:</strong> ₹${grandTotal}</p>
+            <p><strong>Subtotal:</strong> ${formatCurrency(baseAmount)}</p>
+            <p><strong>Tax:</strong> ${formatCurrency(tax)}</p>
+            <p><strong>Total Paid:</strong> ${formatCurrency(grandTotal)}</p>
           </div>
 
-          <p style="margin-top: 80px; text-align: center;">THANK YOU FOR YOUR BUSINESS!</p>
+          <p class="footer">THANK YOU FOR YOUR BUSINESS!</p>
         </body>
       </html>
     `;
     invoiceWindow.document.write(html);
     invoiceWindow.document.close();
     invoiceWindow.print();
+    invoiceWindow.onafterprint = () => invoiceWindow.close();
   };
 
   return (

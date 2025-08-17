@@ -8,7 +8,7 @@ function MiniVehicleCard({ vehicle }) {
               <img
                 src={
                   vehicle.image
-                    ? `${import.meta.env.VITE_SERVER_URL}${vehicle.image}`
+                    ? `${import.meta.env.VITE_SERVER_URL}/uploads/${vehicle.image}`
                     : "/placeholder.png"
                 }
                 alt={vehicle.title}
@@ -17,15 +17,15 @@ function MiniVehicleCard({ vehicle }) {
 
       <div className="p-3">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white truncate">
-          {vehicle.title}
+          {vehicle.name}
         </h3>
 
         <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
-          {vehicle.make} {vehicle.model} ({vehicle.year})
+          {vehicle.description || "No description available"} 
         </p>
 
         <p className="text-sm text-orange-700 font-medium mt-1">
-          ₹{vehicle.pricePerDay}/day
+          ₹{vehicle.rentPerDay}/day
         </p>
 
         <Link to={`/vehicles/${vehicle._id}/book`}>

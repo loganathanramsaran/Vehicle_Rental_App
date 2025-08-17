@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import InvoiceTemplate from "../components/InvoiceTemplate";
 
 function PaymentHistory() {
   const [payments, setPayments] = useState([]);
@@ -46,6 +47,7 @@ function PaymentHistory() {
                   <th className="p-3">Payment ID</th>
                   <th className="p-3">Status</th>
                   <th className="p-3">Date</th>
+                  <th className="p-3">Invoice</th>
                 </tr>
               </thead>
               <tbody>
@@ -69,6 +71,10 @@ function PaymentHistory() {
                     </td>
                     <td className="p-3">
                       {new Date(payment.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-2">
+                      {/* 👇 Fix: pass `payment`, not `booking` */}
+                      <InvoiceTemplate payment={payment} />
                     </td>
                   </tr>
                 ))}
