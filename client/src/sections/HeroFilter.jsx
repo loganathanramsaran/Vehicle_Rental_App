@@ -64,9 +64,11 @@ function HeroFilter({ onResults }) {
 
   return (
     <div className=" relative max-w-5xl mx-auto p-6  ">
-      <div className="border-2 border-orange-300 flex justify-evenly p-8 pb-10 rounded-lg flex-wrap bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
-        {/* Start Date */}
-        {/* Start Date */}
+      <div className="border-2 border-orange-300 flex justify-evenly items-center p-8 pb-10 rounded-lg flex-wrap bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700">
+        <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Start Date
+        </label>
         <DatePicker
           selected={startDate}
           onChange={(date) => {
@@ -86,8 +88,11 @@ function HeroFilter({ onResults }) {
           placeholderText="Select start date"
           className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
         />
-
-        {/* End Date */}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            End Date
+          </label>
         <DatePicker
           selected={endDate}
           onChange={(date) => setEndDate(date)}
@@ -98,6 +103,7 @@ function HeroFilter({ onResults }) {
           placeholderText="Select end date"
           className="w-full border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-sm bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200"
         />
+        </div>
 
         {/* Vehicle Type */}
         <div>

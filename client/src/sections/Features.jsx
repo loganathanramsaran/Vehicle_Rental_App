@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import { ArrowBigRight } from "lucide-react";
 
@@ -33,7 +33,14 @@ const features = [
 ];
 
 const Features = () => {
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    navigate("/login");
+  };
 
   const filteredFeatures = features.filter((item) => {
     if (item.adminOnly && !user?.isAdmin) return false;
@@ -41,11 +48,12 @@ const Features = () => {
   });
 
   return (
-    <section id="features" className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 mx-auto py-10">
+    <section
+      id="features"
+      className="bg-gradient-to-r from-white via-orange-300 to-white dark:from-gray-700 dark:via-gray-900 dark:to-gray-700 mx-auto py-10"
+    >
       <div className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-orange-600 ">
-          Explore Features
-        </h2>
+        <h2 className="text-4xl font-bold text-orange-600 ">Explore Features</h2>
         <p className="text-gray-600 dark:text-gray-300 mt-2">
           Built for both customers and administrators
         </p>
@@ -66,7 +74,35 @@ const Features = () => {
             />
           </Link>
         ))}
+
+        {/* Login / Logout card */}
+        {!user ? (
+          <Link
+            to="/login"
+            className="bg-green-600 text-white flex flex-col justify-evenly items-center p-6 rounded-xl shadow hover:scale-105 transition"
+          >
+            <p className="text-xl font-semibold mb-2">Login</p>
+            <img
+              src={myBookings}
+              alt="Login"
+              className="w-24 h-24 object-contain"
+            />
+          </Link>
+        ) : (
+          <button
+            onClick={handleLogout}
+            className="bg-red-600 text-white flex flex-col justify-evenly items-center p-6 rounded-xl shadow hover:scale-105 transition"
+          >
+            <p className="text-xl font-semibold mb-2">Logout</p>
+            <img
+              src={manageVehicle}
+              alt="Logout"
+              className="w-24 h-24 object-contain"
+            />
+          </button>
+        )}
       </div>
+
       <div className="flex justify-center items-center mt-16">
         <Link to={"/dashboard"}>
           <button className="flex animate-bounce items-center text-orange-500 hover:text-white hover:bg-orange-500 bg-orange-100 px-2 py-1 rounded-full">

@@ -1,7 +1,7 @@
-const Booking = require("../models/Booking");
+const Booking = require("../models/Booking"); 
 const Vehicle = require("../models/Vehicle");
 const sendEmail = require("../utils/sendEmail");
-const user = require("../models/User");
+const User = require("../models/User");
 
 const getMyBookings = async (req, res) => {
   try {
@@ -40,8 +40,11 @@ const getBookedDates = async (req, res) => {
 };
 
 // Create booking
+// Create booking
 const createBooking = async (req, res) => {
   try {
+    console.log("📥 Incoming booking request:", req.body);
+
     const { vehicleId, startDate, endDate, amount } = req.body;
     const userId = req.user.id;
 
@@ -49,21 +52,22 @@ const createBooking = async (req, res) => {
     const end = new Date(endDate);
 
     // Check for overlap
+    console.log("🔎 Checking overlapping bookings...");
     const overlappingBooking = await Booking.findOne({
       vehicle: vehicleId,
       status: { $ne: "cancelled" },
-      $or: [
-        { startDate: { $lte: end }, endDate: { $gte: start } },
-      ],
+      $or: [{ startDate: { $lte: end }, endDate: { $gte: start } }],
     });
 
     if (overlappingBooking) {
+      console.log("❌ Overlapping booking found");
       return res.status(400).json({
         message: "Vehicle already booked for the selected dates",
       });
     }
 
     // Create booking
+    console.log("✅ No overlaps. Creating booking...");
     const booking = new Booking({
       user: userId,
       vehicle: vehicleId,
@@ -74,34 +78,46 @@ const createBooking = async (req, res) => {
     });
 
     await booking.save();
+    console.log("💾 Booking saved to DB:", booking._id);
 
     // Fetch user's email
-    const bookedUser = await user.findById(userId).select("email");
+    const bookedUser = await User.findById(userId).select("email name");
+    console.log("👤 User fetched for email:", bookedUser);
+
+    if (!bookedUser || !bookedUser.email) {
+      console.log("⚠️ No user email found, skipping email sending.");
+      return res.status(201).json(booking);
+    }
+
+    // Log before sending
+    console.log("📩 Sending confirmation email to:", bookedUser.email);
 
     // Send confirmation email
     try {
-      await transporter.sendEmail({
-        from: `"Your App" <${process.env.EMAIL_USER}>`,
-        to: bookedUser.email,
-        subject: "Booking Confirmation",
-        text: `Your booking has been confirmed from ${start.toDateString()} to ${end.toDateString()}.`,
-        html: `<p>Your booking has been <b>confirmed</b> from ${start.toDateString()} to ${end.toDateString()}.</p>`,
-      });
+      await sendEmail(
+        bookedUser.email,
+        "Booking Confirmation",
+        `<p>Hi ${bookedUser.name || "User"},</p>
+         <p>Your booking has been <b>confirmed</b> from 
+         ${start.toDateString()} to ${end.toDateString()}.</p>`
+      );
+      console.log("✅ Confirmation email sent!");
     } catch (emailErr) {
-      console.error("Email sending failed:", emailErr);
+      console.error("❌ Email sending failed:", emailErr);
     }
 
     res.status(201).json(booking);
   } catch (error) {
-    console.error("Error creating booking:", error);
+    console.error("🔥 Error creating booking:", error);
     res.status(500).json({ message: "Error creating booking" });
   }
 };
 
+
 // Cancel booking
 const cancelBooking = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id).populate("user", "email");
+    const booking = await Booking.findById(req.params.id).populate("user", "email name");
     if (!booking) {
       return res.status(404).json({ error: "Booking not found" });
     }
@@ -109,15 +125,19 @@ const cancelBooking = async (req, res) => {
     booking.status = "cancelled";
     await booking.save();
 
+    console.log("Booking cancelled:", booking);
+    console.log("📩 Sending confirmation email to:", bookedUser.email);
+
+
     // Send cancellation email
     try {
-      await transporter.sendEmail({
-        from: `"Your App" <${process.env.EMAIL_USER}>`,
-        to: booking.user.email,
-        subject: "Booking Cancelled",
-        text: `Your booking from ${booking.startDate.toDateString()} to ${booking.endDate.toDateString()} has been cancelled.`,
-        html: `<p>Your booking from <b>${booking.startDate.toDateString()}</b> to <b>${booking.endDate.toDateString()}</b> has been <b>cancelled</b>.</p>`,
-      });
+      await sendEmail(
+        booking.user.email,
+        "Booking Cancelled",
+        `<p>Hi ${booking.user.name || "User"},</p>
+         <p>Your booking from <b>${booking.startDate.toDateString()}</b> 
+         to <b>${booking.endDate.toDateString()}</b> has been <b>cancelled</b>.</p>`
+      );
     } catch (emailErr) {
       console.error("Email sending failed:", emailErr);
     }
