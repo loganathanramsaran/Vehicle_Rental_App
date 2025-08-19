@@ -10,7 +10,8 @@ const router = express.Router();
 // Send OTP to email
 router.post("/send-otp", async (req, res) => {
   const { name, email } = req.body;
-  if (!name || !email) return res.status(400).json({ error: "Name and Email required" });
+  if (!name || !email)
+    return res.status(400).json({ error: "Name and Email required" });
 
   try {
     const otp = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
@@ -21,18 +22,21 @@ router.post("/send-otp", async (req, res) => {
       { upsert: true }
     );
 
-    await sendEmail({
-      to: email,
-      subject: "Your OTP - Vehicle Rental",
-      html: `<p>Hi ${name},</p><p>Your OTP is: <strong>${otp}</strong></p>`
-    });
+    // ✅ Correct sendEmail usage
+    await sendEmail(
+      email,
+      "Your OTP - Vehicle Rental",
+      `<p>Hi ${name},</p><p>Your OTP is: <strong>${otp}</strong></p>`
+    );
 
+    console.log("📩 OTP sent to:", email); // Optional log
     res.json({ message: "OTP sent to email" });
   } catch (err) {
     console.error("Send OTP error:", err);
     res.status(500).json({ error: "Failed to send OTP" });
   }
 });
+
 
 // Register
 router.post("/register", async (req, res) => {

@@ -1,22 +1,15 @@
 require("dotenv").config();
-const mongoose = require("mongoose");
-const User = require("./models/User");
+const sendEmail = require("./utils/sendEmail"); // path to your updated sendEmail
 
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(async () => {
-    console.log("Connected to MongoDB ✅");
-
-    await User.create({
-      name: "Test User",
-      email: "testuser@example.com",
-      password: "123456",
-    });
-
-    console.log("✅ User inserted");
-    process.exit();
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-    process.exit(1);
-  });
+(async () => {
+  try {
+    await sendEmail(
+      "yourtestemail@gmail.com",
+      "Test Email",
+      "<p>This is a test email from Vehicle Rental App</p>"
+    );
+    console.log("✅ Test email sent successfully");
+  } catch (err) {
+    console.error("❌ Test email failed", err);
+  }
+})();
