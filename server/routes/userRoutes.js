@@ -101,13 +101,13 @@ router.post("/send-password-otp", verifyToken, async (req, res) => {
 
     console.log("📧 Sending OTP to:", user.email);
 
-    await sendEmail({
-      to: user.email,
-      subject: "Your Password Reset OTP - Vehicle Rental",
-      html: `<p>Hi ${user.name || "User"},</p>
-             <p>Your OTP to reset your password is: <strong>${otp}</strong></p>
-             <p>This OTP is valid for 10 minutes.</p>`,
-    });
+await sendEmail(
+  user.email,
+  "Your Password Reset OTP - Vehicle Rental",
+  `<p>Hi ${user.name},</p>
+   <p>Your OTP to reset your password is: <strong>${otp}</strong></p>
+   <p>This OTP is valid for 10 minutes.</p>`
+);
 
     console.log(`📨 OTP sent to ${user.email}: ${otp}`);
     res.json({ message: "OTP sent successfully" });
