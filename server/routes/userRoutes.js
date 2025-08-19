@@ -89,16 +89,24 @@ router.post("/send-password-otp", verifyToken, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    if (!user.email) {
+      console.error("❌ No email found for user:", user);
+      return res.status(400).json({ error: "User does not have an email defined" });
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     user.passwordOtp = otp;
     user.passwordOtpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     await user.save();
 
     console.log("📧 Sending OTP to:", user.email);
+
     await sendEmail({
       to: user.email,
       subject: "Your Password Reset OTP - Vehicle Rental",
-      html: `<p>Hi ${user.name},</p><p>Your OTP to reset your password is: <strong>${otp}</strong></p><p>This OTP is valid for 10 minutes.</p>`,
+      html: `<p>Hi ${user.name || "User"},</p>
+             <p>Your OTP to reset your password is: <strong>${otp}</strong></p>
+             <p>This OTP is valid for 10 minutes.</p>`,
     });
 
     console.log(`📨 OTP sent to ${user.email}: ${otp}`);

@@ -29,10 +29,11 @@ exports.createOrder = async (req, res) => {
   }
 };
 
-// ✅ Verify payment + save booking + send email
+// ✅ Verify payment, save booking, and send confirmation email
 exports.verifyPayment = async (req, res) => {
   try {
     console.log("🎯 verifyPayment controller called");
+
     const {
       razorpay_order_id,
       razorpay_payment_id,
@@ -43,25 +44,24 @@ exports.verifyPayment = async (req, res) => {
       amount,
     } = req.body;
 
-    // 1. Verify signature
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSign = crypto
+    // 1. Verify Razorpay signature
+    const generatedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign.toString())
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
-    if (razorpay_signature !== expectedSign) {
+    if (razorpay_signature !== generatedSignature) {
       console.error("❌ Invalid Razorpay signature");
       return res.status(400).json({ error: "Invalid signature" });
     }
 
-    // 2. Save booking
+    // 2. Create booking
     const booking = new Booking({
       user: req.user.id,
       vehicle: vehicleId,
-      startDate,
-      endDate,
-      totalAmount: amount,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      totalPrice: amount, // Must match your Booking schema
       paymentId: razorpay_payment_id,
       status: "confirmed",
     });
@@ -70,18 +70,29 @@ exports.verifyPayment = async (req, res) => {
 
     // 3. Send confirmation email
     const bookedUser = await User.findById(req.user.id).select("email name");
-    console.log("📩 Sending confirmation email to:", bookedUser.email);
 
-    await sendEmail(
-      bookedUser.email,
-      "Booking Confirmation",
-      `<p>Hi ${bookedUser.name || "User"},</p>
-       <p>Your booking has been <b>confirmed</b> from ${startDate} to ${endDate}.</p>
-       <p>Payment ID: <b>${razorpay_payment_id}</b></p>
-       <p>Amount Paid: ₹${amount}</p>`
-    );
+    try {
+      await sendEmail(
+        bookedUser.email,
+        "Booking Confirmation - Vehicle Rental",
+        `<p>Hi ${bookedUser.name || "User"},</p>
+         <p>Your booking has been <b>confirmed</b> from ${new Date(
+           startDate
+         ).toDateString()} to ${new Date(endDate).toDateString()}.</p>
+         <p>Payment ID: <b>${razorpay_payment_id}</b></p>
+         <p>Amount Paid: ₹${amount}</p>
+         <p>Thank you for choosing our service!</p>`
+      );
+      console.log("📩 Confirmation email sent successfully");
+    } catch (emailErr) {
+      console.error("❌ Email sending failed:", emailErr);
+    }
 
-    res.status(200).json({ message: "Payment verified & booking confirmed" });
+res.status(200).json({
+  success: true,
+  message: "Payment verified & booking confirmed",
+  booking,
+});
   } catch (err) {
     console.error("Payment verification error:", err);
     res.status(500).json({ error: "Failed to verify payment" });

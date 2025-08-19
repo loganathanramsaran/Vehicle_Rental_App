@@ -93,36 +93,38 @@ function BookVehicle() {
 
   const totalAmount = calculateDays() * (vehicle?.rentPerDay || 0);
 
-  const handlePayment = async () => {
-    if (!startDate || !endDate) {
-      toast.warn("Please select both start and end dates");
-      return;
-    }
+const handlePayment = async () => {
+  if (!startDate || !endDate) {
+    toast.warn("Please select both start and end dates");
+    return;
+  }
 
-    if (isRangeOverlapping(startDate, endDate)) {
-      toast.error("Selected range includes booked dates. Please choose again.");
-      return;
-    }
+  if (isRangeOverlapping(startDate, endDate)) {
+    toast.error("Selected range includes booked dates. Please choose again.");
+    return;
+  }
 
-    try {
-      const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
+    const bookingAmount = totalAmount; // guaranteed number
 
-      const { data: order } = await axios.post(
-        `${import.meta.env.VITE_SERVER_URL}/api/payment/orders`,
-        { amount: totalAmount },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+    // 1️⃣ Create Razorpay order
+    const { data: order } = await axios.post(
+      `${import.meta.env.VITE_SERVER_URL}/api/payment/orders`,
+      { amount: bookingAmount },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: "Vehicle Rental",
-        description: "Vehicle booking payment",
-        order_id: order.id,
-        handler: async function (response) {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: order.amount,
+      currency: order.currency,
+      name: "Vehicle Rental",
+      description: `Booking for ${vehicle.name}`,
+      order_id: order.id,
+      handler: async function (response) {
+        try {
+          // 2️⃣ Verify payment + create booking on backend
           const verifyRes = await axios.post(
             `${import.meta.env.VITE_SERVER_URL}/api/payment/verify`,
             {
@@ -130,41 +132,39 @@ function BookVehicle() {
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
               vehicleId: vehicle._id,
-              startDate,
-              endDate,
-              amount: totalAmount,
+              startDate: startDate.toISOString(),
+              endDate: endDate.toISOString(),
+              amount: bookingAmount,
             },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
+            { headers: { Authorization: `Bearer ${token}` } }
           );
 
           if (verifyRes.data.success) {
             toast.success("Booking successful!");
-            fetchBookedDates(); // Refresh after booking
+            fetchBookedDates(); // refresh booked dates
             navigate("/my-bookings");
           } else {
             toast.error("Payment verification failed!");
           }
-        },
-        prefill: {
-          name: user.name,
-          email: user.email,
-        },
-        theme: {
-          color: "#2563eb",
-        },
-      };
+        } catch (err) {
+          console.error("Booking/verification error:", err);
+          toast.error("Failed to confirm booking.");
+        }
+      },
+      prefill: {
+        name: user.name,
+        email: user.email,
+      },
+      theme: { color: "#2563eb" },
+    };
 
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error) {
-      console.error("Payment failed", error);
-      toast.error("Payment initiation failed!");
-    }
-  };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch (error) {
+    console.error("Payment initiation error:", error);
+    toast.error("Payment initiation failed!");
+  }
+};
 
   if (loading) return <div className="p-6 text-lg">Loading...</div>;
   if (!vehicle)
