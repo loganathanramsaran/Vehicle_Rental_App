@@ -10,6 +10,7 @@ const {
   deleteBooking,
   getAllBookingsForAdmin,
   getBookingsByVehicleId,
+  getInvoice,
 } = require("../controllers/bookingController");
 
 router.get("/my-bookings", verifyToken, getMyBookings);
@@ -19,5 +20,6 @@ router.delete("/delete/:id", verifyToken, deleteBooking);
 router.get("/admin", verifyToken, requireAdmin, getAllBookingsForAdmin);
 router.post("/", verifyToken, createBooking);
 router.get("/vehicle/:vehicleId", getBookingsByVehicleId);
+router.get("/:id/invoice", verifyToken, getInvoice);
 
 module.exports = router;

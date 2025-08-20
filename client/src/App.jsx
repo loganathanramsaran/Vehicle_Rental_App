@@ -229,7 +229,6 @@ function App() {
           />
         </Routes>
         <ToastContainer position="top-right" autoClose={3000} />
-        {/* Toast container should be rendered once in the app */}
       </UserProvider>
     </>
   );

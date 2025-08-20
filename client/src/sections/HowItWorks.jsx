@@ -58,7 +58,7 @@ const HowItWorks = () => {
         <p className="text-gray-600 dark:text-gray-300 mb-12 max-w-xl mx-auto">
           Renting a vehicle has never been easier. Follow these simple steps to
           get started with your next ride.
-        </p>
+        </p> 
 
         <div className="grid lg:grid-cols-3 gap-10 mx-auto">
           {steps.map((step) => (

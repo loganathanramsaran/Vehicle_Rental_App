@@ -43,7 +43,7 @@ function Hero() {
             </Link>
             <Link
               to="/vehicles"
-              className="animate-pulse text-gray-800 flex gap-2 dark:text-white font-medium hover:underline hover:text-blue-700 dark:hover:bg-gray-700 transition"
+              className="animate-pulse text-gray-800 flex gap-2 dark:text-white font-medium hover:underline hover:text-orange-700 dark:hover:bg-gray-700 transition"
             >
               Browse Vehicles <ArrowRightCircle className="w-5" />
             </Link>
