@@ -86,12 +86,12 @@ function AdminBookings() {
               {booking.payment ? (
                 <div className="bg-gray-50 p-3 rounded border text-sm text-gray-600 space-y-1">
                   <p>
-                    <strong>Payment:</strong> ₹{booking.payment.amount} (
-                    {booking.payment.status})
+                    <strong>Payment:</strong> {booking.totalPrice} (
+                    {booking.status})
                   </p>
                   <p>
-                    <strong>Txn ID:</strong>{" "}
-                    {booking.payment.razorpayPaymentId}
+                    <strong>Payment ID:</strong>{" "}
+                    {booking.payment}
                   </p>
                 </div>
               ) : (
