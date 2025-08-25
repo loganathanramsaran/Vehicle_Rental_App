@@ -109,7 +109,7 @@ function Register() {
           <input
             name="email"
             type="email"
-            placeholder="Email Address"
+            placeholder="Enter Unique Email (one per mobile number)"
             value={form.email}
             onChange={handleChange}
             className="w-full border px-3 py-2 rounded"
@@ -186,7 +186,7 @@ function Register() {
               <input
                 name="mobile"
                 type="tel"
-                placeholder="Mobile Number"
+                placeholder="Enter unique mobile number (one per email)"
                 value={form.mobile}
                 pattern="[6-9]{1}[0-9]{9}"
                 title="Enter a valid 10-digit mobile number starting with 6-9"
